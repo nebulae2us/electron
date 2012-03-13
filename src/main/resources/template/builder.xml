@@ -1,0 +1,188 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
+<properties>
+
+<entry key="builders_each_model_class"><![CDATA[
+    public static PersonBuilder<?> person() {
+        return new PersonBuilder<Object>();
+    }
+
+    public static PersonBuilder<?> person$restoreFrom(BuilderRepository repo, int builderId) {
+        return (PersonBuilder<?>)repo.get(builderId);
+    }
+]]></entry>
+
+<entry key="builder_constructors_methods"><![CDATA[
+	private B parentBuilder;
+
+	private Procedure procedure;
+
+	public PersonBuilder(B parentBuilder, Procedure procedure) {
+		this.parentBuilder = parentBuilder;
+		this.procedure = procedure;
+	}
+
+	public PersonBuilder() {
+	}
+
+    public B end() {
+        procedure.execute(this);
+        return parentBuilder;
+    }
+
+    public PersonBuilder<B> storeTo(BuilderRepository repo, int builderId) {
+    	repo.put(builderId, this);
+    	return this;
+    }
+]]></entry>
+
+<entry key="fieldname_getter_setter"><![CDATA[
+    private String name;
+
+    public String getName() {
+        return this.name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+]]></entry>
+
+<entry key="scalar_field"><![CDATA[
+    public PersonBuilder<B> name(String name) {
+        this.name = name;
+        return this;
+    }
+]]></entry>
+
+<entry key="builder_field"><![CDATA[
+    public PersonBuilder<SpeechBuilder<B>> owner() {
+        return new PersonBuilder<SpeechBuilder<B>>(this,
+            new Procedure() {
+                public void execute(Object ... arguments) {
+                    SpeechBuilder.this.owner = (PersonBuilder<?>)arguments[0];
+                }
+            });
+    }
+
+    public SpeechBuilder<B> owner(PersonBuilder<?> owner) {
+        this.owner = owner;
+        return this;
+    }
+
+    public SpeechBuilder<B> owner$restoreFrom(BuilderRepository repo, int builderId) {
+        Object person = repo.get(builderId);
+        if (person == null) {
+        	if (repo.isSupportLazy()) {
+        		repo.addObjectStoredListener(builderId, new Procedure() {
+					public void execute(Object... arguments) {
+						SpeechBuilder.this.owner = (PersonBuilder<?>)arguments[0];
+					}
+				});
+        	}
+        	else {
+                throw new IllegalStateException("Object does not exist with id " + builderId);
+        	}
+        }
+        else {
+            this.owner = (PersonBuilder<?>)person;
+        }
+        return this;
+    }
+]]></entry>
+
+<!-- Copy from SpeechBuilder.java -->
+<entry key="list_scalar_field"><![CDATA[
+    public SpeechBuilder<B> keyword(String keyword) {
+        if (this.keywords == null) {
+            this.keywords = new ArrayList<String>();
+        }
+        this.keywords.add(keyword);
+        return this;
+    }
+
+    public SpeechBuilder<B> keywords(String ... keywords) {
+        if (this.keywords == null) {
+            this.keywords = new ArrayList<String>();
+        }
+        for (String o : keywords) {
+            this.keywords.add(o);
+        }
+        return this;
+    }
+]]></entry>
+
+
+<!-- Copy from HobbyBuilder.java -->
+<entry key="list_field"><![CDATA[
+    public PersonBuilder<HobbyBuilder<B>> person() {
+        if (this.people == null) {
+            this.people = new ArrayList<PersonBuilder<?>>();
+        }
+
+        return new PersonBuilder<HobbyBuilder<B>>(this,
+            new Procedure() {
+                public void execute(Object ... arguments) {
+                    HobbyBuilder.this.people.add((PersonBuilder<?>)arguments[0]);
+                }
+            });
+    }
+
+    public HobbyBuilder<B> person(PersonBuilder<?> person) {
+        if (this.people == null) {
+            this.people = new ArrayList<PersonBuilder<?>>();
+        }
+        this.people.add(person);
+        return this;
+    }
+
+    public HobbyBuilder<B> people(PersonBuilder<?> ... people) {
+        if (this.people == null) {
+            this.people = new ArrayList<PersonBuilder<?>>();
+        }
+        for (PersonBuilder<?> o : people) {
+            this.people.add(o);
+        }
+        return this;
+    }
+
+    public HobbyBuilder<B> person$restoreFrom(BuilderRepository repo, int builderId) {
+        Object person = repo.get(builderId);
+        if (this.people == null) {
+            this.people = new ArrayList<PersonBuilder<?>>();
+        }
+
+        if (person == null) {
+        	if (repo.isSupportLazy()) {
+                
+        		final int size = this.people.size();
+        		this.people.add(null);
+
+        		repo.addObjectStoredListener(builderId, new Procedure() {
+					public void execute(Object... arguments) {
+						HobbyBuilder.this.people.set(size, (PersonBuilder<?>)arguments[0]);
+					}
+				});
+        	}
+        	else {
+                throw new IllegalStateException("Object does not exist with id " + builderId);
+        	}
+        }
+        else {
+            this.people.add((PersonBuilder<?>)person);
+        }
+    	
+    	return this;
+    }
+
+    public HobbyBuilder<B> people$restoreFrom(BuilderRepository repo, int ... builderIds) {
+
+    	for (int builderId : builderIds) {
+    		person$restoreFrom(repo, builderId);
+    	}
+    	
+    	return this;
+    }
+]]></entry>
+
+</properties>
