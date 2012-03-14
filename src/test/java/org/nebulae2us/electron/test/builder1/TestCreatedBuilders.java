@@ -32,12 +32,6 @@ public class TestCreatedBuilders {
 
 	
 	@Test
-	public void aaa() {
-		
-		
-	}
-	
-	@Test
 	public void create_person() {
 		
 		PersonBuilder<?> personBuilder = person()
@@ -56,6 +50,14 @@ public class TestCreatedBuilders {
 		assertEquals(2, personBuilder.getChildren().size());
 		assertEquals("Joe Deere", personBuilder.getChildren().get(0).getName());
 		assertEquals("Hannah Deere", personBuilder.getChildren().get(1).getName());
+		
+		Person person = personBuilder.toPerson();
+		
+		assertEquals("John Deere", person.getName());
+		assertEquals(30, person.getAge());
+		assertEquals(2, person.getChildren().size());
+		assertEquals("Joe Deere", person.getChildren().get(0).getName());
+		assertEquals("Hannah Deere", person.getChildren().get(1).getName());
 	}
 	
 	@Test
@@ -84,6 +86,11 @@ public class TestCreatedBuilders {
 		
 		assertEquals(4, s1.getKeywords().size());
 		assertEquals(Arrays.asList("free", "skin", "slave", "color"), s1.getKeywords());
+		
+		Speech speech = s1.toSpeech();
+		
+		assertEquals(4, speech.getKeywords().size());
+		assertEquals(Arrays.asList("free", "skin", "slave", "color"), speech.getKeywords());
 	}
 
 	@Test

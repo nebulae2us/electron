@@ -126,8 +126,8 @@ public class BuilderGenerator {
 		
 		builder.append(getTemplates().getProperty("builder_constructors_methods")
 				.replaceAll("PersonBuilder", builderClassName)
+				.replaceAll("Person", className)
 				);
-		
 		
 		Field[] fields = modelClass.getDeclaredFields();
 		for (Field field : fields) {

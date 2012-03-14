@@ -34,6 +34,10 @@
     	repo.put(builderId, this);
     	return this;
     }
+    
+    public Person toPerson() {
+    	return new Converter(this).to(Person.class);
+    }
 ]]></entry>
 
 <entry key="fieldname_getter_setter"><![CDATA[
