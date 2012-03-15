@@ -16,6 +16,7 @@
 package org.nebulae2us.electron.util;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.Set;
 
@@ -26,6 +27,10 @@ public class ImmutableSet<E> extends AbstractImmutableCollection<E> implements S
 
     private final ImmutableMap<E, ?> hashes;
 
+    public ImmutableSet() {
+    	this(Collections.EMPTY_LIST);
+    }
+    
     public ImmutableSet(Collection<E> c, EqualityComparator<E> equalityComparator) {
         hashes = new ImmutableMap<E, Object>(c, equalityComparator);
     }

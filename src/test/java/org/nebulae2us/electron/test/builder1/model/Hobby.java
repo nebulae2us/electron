@@ -32,7 +32,7 @@ public class Hobby {
 	public Hobby(Converter converter) {
 		converter.register(this);
 		
-		this.name = converter.getString("name");
+		this.name = converter.toString("name");
 		this.people = converter.toListOf(Person.class, "people");
 	}
 

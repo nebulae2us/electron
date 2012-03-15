@@ -235,7 +235,8 @@ public class BuilderGenerator {
 		
 
 		for (Class<?> modelClass : modelClasses) {
-			builder.append("import " + modelClass.getName() + "Builder;\n");
+			builder.append("import " + modelClass.getName() + ";\n")
+				.append("import " + modelClass.getName() + "Builder;\n");
 		}
 		builder.append("\n");
 		

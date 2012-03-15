@@ -16,9 +16,11 @@
 package org.nebulae2us.electron.test.builder1;
 
 import java.util.Arrays;
+import java.util.Map;
 
 import org.junit.Test;
 import org.nebulae2us.electron.BuilderRepository;
+import org.nebulae2us.electron.Converter;
 import org.nebulae2us.electron.test.builder1.model.*;
 
 import static org.nebulae2us.electron.test.builder1.Builders.*;
@@ -76,6 +78,15 @@ public class TestCreatedBuilders {
 		assertEquals(2, personBuilder.getChildren().size());
 		assertEquals("Joe Deere", personBuilder.getChildren().get(0).getName());
 		assertEquals("Hannah Deere", personBuilder.getChildren().get(1).getName());
+
+		Person person = personBuilder.toPerson();
+		
+		assertEquals("John Deere", person.getName());
+		assertEquals(30, person.getAge());
+		assertEquals(2, person.getChildren().size());
+		assertEquals("Joe Deere", person.getChildren().get(0).getName());
+		assertEquals("Hannah Deere", person.getChildren().get(1).getName());
+	
 	}
 	
 	@Test
@@ -108,6 +119,9 @@ public class TestCreatedBuilders {
 
 		assertTrue(personBuilder == personBuilder.getChildren().get(0).getParent());
 		
+		Person person = Converter.convert(Person.class, personBuilder);
+		
+		assertTrue(person == person.getChildren().get(0).getParent());
 	}
 	
 	@Test
@@ -147,6 +161,20 @@ public class TestCreatedBuilders {
 		assertTrue(john == tom.getFriends().get(0));
 		assertTrue(john.getChildren().get(0) == sarah.getChildren().get(0));
 		
+		
+		Map<?, ?> map = Converter.convertGroup()
+			.convert(tom, john, sarah).to(Person.class)
+			.getValues();
+		
+		Person _tom = (Person)map.get(tom);
+		Person _john = (Person)map.get(john);
+		Person _sarah = (Person)map.get(sarah);
+		
+		assertTrue(_tom == _john.getFriends().get(0));
+		assertTrue(_john == _tom.getFriends().get(0));
+		assertTrue(_john.getChildren().get(0) == _sarah.getChildren().get(0));
+		
+		
 	}
 
 	@Test
@@ -167,7 +195,10 @@ public class TestCreatedBuilders {
 		
 		assertTrue(tom == john.getFriends().get(0));
 		assertTrue(john == tom.getFriends().get(0));
-				
+		
+		Person _tom = Converter.convert(Person.class, tom);
+		
+		assertTrue(_tom == _tom.getFriends().get(0).getFriends().get(0));
 	}
 	
 	@Test
@@ -187,6 +218,11 @@ public class TestCreatedBuilders {
 		
 		assertEquals(5, washington.getSpeeches().size());
 		assertTrue(washington == washington.getSpeeches().get(0).getOwner());
+	
+		Person _washington = Converter.convert(Person.class, washington);
+		
+		assertEquals(5, _washington.getSpeeches().size());
+		assertTrue(_washington == _washington.getSpeeches().get(0).getOwner());
 		
 	}
 	
@@ -208,7 +244,26 @@ public class TestCreatedBuilders {
 		assertTrue(washington == s3.getOwner());
 		assertTrue(washington == s4.getOwner());
 		assertTrue(washington == s5.getOwner());
-
+		
+		
+		Map<?, ?> map = Converter.convertGroup()
+			.convert(washington).to(Person.class)
+			.convert(s1, s2, s3, s4, s5).to(Speech.class)
+			.getValues();
+		
+		Person _washington = (Person)map.get(washington);
+		Speech _s1 = (Speech)map.get(s1);
+		Speech _s2 = (Speech)map.get(s2);
+		Speech _s3 = (Speech)map.get(s3);
+		Speech _s4 = (Speech)map.get(s4);
+		Speech _s5 = (Speech)map.get(s5);
+		
+		assertTrue(_washington == _s1.getOwner());
+		assertTrue(_washington == _s2.getOwner());
+		assertTrue(_washington == _s3.getOwner());
+		assertTrue(_washington == _s4.getOwner());
+		assertTrue(_washington == _s5.getOwner());
+		
 	}
 	
 	@Test
@@ -247,6 +302,24 @@ public class TestCreatedBuilders {
 		assertTrue(h3.getPeople().get(0) == p2);
 
 	
+		Map<?, ?> map = Converter.convertGroup()
+			.convert(h1, h2, h3).to(Hobby.class)
+			.convert(p1, p2).to(Person.class)
+			.getValues();
+		
+		Hobby _h1 = (Hobby)map.get(h1);
+		Hobby _h2 = (Hobby)map.get(h2);
+		Hobby _h3 = (Hobby)map.get(h3);
+		Person _p1 = (Person)map.get(p1);
+		Person _p2 = (Person)map.get(p2);
+		
+		assertTrue(_p1.getHobbies().get(0) == _h1);
+		assertTrue(_h1.getPeople().get(0) == _p1);
+		assertTrue(_p2.getHobbies().get(0) == _h2);
+		assertTrue(_h2.getPeople().get(1) == _p2);
+		assertTrue(_p2.getHobbies().get(1) == _h3);
+		assertTrue(_h3.getPeople().get(0) == _p2);
+		
 	}
 	
 	@Test
@@ -276,6 +349,25 @@ public class TestCreatedBuilders {
 		assertTrue(p2.getHobbies().get(1) == h3);
 		assertTrue(h3.getPeople().get(0) == p2);
 	
+		
+		Map<?, ?> map = Converter.convertGroup()
+				.convert(h1, h2, h3).to(Hobby.class)
+				.convert(p1, p2).to(Person.class)
+				.getValues();
+			
+		Hobby _h1 = (Hobby)map.get(h1);
+		Hobby _h2 = (Hobby)map.get(h2);
+		Hobby _h3 = (Hobby)map.get(h3);
+		Person _p1 = (Person)map.get(p1);
+		Person _p2 = (Person)map.get(p2);
+		
+		assertTrue(_p1.getHobbies().get(0) == _h1);
+		assertTrue(_h1.getPeople().get(0) == _p1);
+		assertTrue(_p2.getHobbies().get(0) == _h2);
+		assertTrue(_h2.getPeople().get(1) == _p2);
+		assertTrue(_p2.getHobbies().get(1) == _h3);
+		assertTrue(_h3.getPeople().get(0) == _p2);
+		
 	}
 	
 }

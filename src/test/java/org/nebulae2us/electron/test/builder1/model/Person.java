@@ -42,8 +42,8 @@ public class Person {
 	public Person(Converter converter) {
 		converter.register(this);
 		
-		this.name = converter.getString("name");
-		this.age = converter.intValue("age");
+		this.name = converter.toString("name");
+		this.age = converter.toIntValue("age");
 		
 		this.parent = converter.to(Person.class, "parent");
 		this.children = converter.toListOf(Person.class, "children");

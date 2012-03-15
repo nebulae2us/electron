@@ -37,9 +37,10 @@ public class ConvertTest {
 
 	@Test
 	public void convert_basic_type() {
-		
-		assertEquals(0, Converter.convertBasicType(int.class, "String"));
-		assertEquals(12L, Converter.convertBasicType(long.class, 12));
+		assertTrue(0 == Converter.convertBasicType(int.class, "String"));
+		assertTrue(0 == Converter.convertBasicType(long.class, null));
+		assertTrue(null == Converter.convertBasicType(Integer.class, "String"));
+		assertTrue(null == Converter.convertBasicType(Long.class, null));
 	}
 	
 	@Test

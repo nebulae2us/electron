@@ -10,6 +10,10 @@
     public static PersonBuilder<?> person$restoreFrom(BuilderRepository repo, int builderId) {
         return (PersonBuilder<?>)repo.get(builderId);
     }
+
+    public static PersonBuilder<?> person$copyFrom(Person person) {
+    	return Converter.convert(PersonBuilder.class, person);
+    }
 ]]></entry>
 
 <entry key="builder_constructors_methods"><![CDATA[

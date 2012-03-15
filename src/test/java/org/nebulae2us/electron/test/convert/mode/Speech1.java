@@ -34,7 +34,7 @@ public class Speech1 {
 	public Speech1(Converter converter) {
 		converter.register(this);
 		
-		this.name = converter.getString("name");
+		this.name = converter.toString("name");
 		this.owner = converter.to(Person1.class, "owner");
 		this.keywords = converter.toListOf(String.class, "keywords");
 	}

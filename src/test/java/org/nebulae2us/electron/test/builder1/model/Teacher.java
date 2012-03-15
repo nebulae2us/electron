@@ -32,7 +32,7 @@ public class Teacher extends Person {
 	public Teacher(Converter converter) {
 		super(converter);
 		
-		this.salary = converter.getDouble("salary");
+		this.salary = converter.toDoubleValue("salary");
 		this.students = converter.toListOf(Student.class, "students");
 	}
 

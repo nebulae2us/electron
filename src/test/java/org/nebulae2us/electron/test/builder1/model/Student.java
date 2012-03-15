@@ -32,7 +32,7 @@ public class Student extends Person {
 	public Student(Converter converter) {
 		super(converter);
 		
-		this.partTime = converter.getBoolean("converter");
+		this.partTime = converter.toBooleanValue("converter");
 		this.teachers = converter.toListOf(Teacher.class, "teachers");
 	}
 
