@@ -17,7 +17,7 @@ package org.nebulae2us.electron.test.builder1.model;
 
 import java.util.List;
 
-import org.nebulae2us.electron.Converter;
+import org.nebulae2us.electron.Mirror;
 
 /**
  * @author Trung Phan
@@ -29,7 +29,7 @@ public class Teacher extends Person {
 	
 	private final List<Student> students;
 	
-	public Teacher(Converter converter) {
+	public Teacher(Mirror converter) {
 		super(converter);
 		
 		this.salary = converter.toDoubleValue("salary");

@@ -17,7 +17,7 @@ package org.nebulae2us.electron.test.convert.mode;
 
 import java.util.List;
 
-import org.nebulae2us.electron.Converter;
+import org.nebulae2us.electron.Mirror;
 
 /**
  * @author Trung Phan
@@ -29,7 +29,7 @@ public class Student1 extends Person1 {
 	
 	private final List<Teacher1> teachers;
 	
-	public Student1(Converter converter) {
+	public Student1(Mirror converter) {
 		super(converter);
 		
 		this.partTime = converter.toBooleanValue("converter");

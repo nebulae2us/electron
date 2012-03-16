@@ -13,45 +13,33 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.nebulae2us.electron.test.convert.mode;
+package org.nebulae2us.electron.test.builder1;
 
-import java.util.List;
+import org.junit.Test;
+import org.nebulae2us.electron.test.builder1.model.*;
 
-import org.nebulae2us.electron.Mirror;
+import static org.junit.Assert.*;
+import static org.nebulae2us.electron.test.builder1.Builders.*;
 
 /**
  * @author Trung Phan
  *
  */
-public class Speech1 {
-	
-	private final String name;
+public class InheritanceTest {
 
-	private final Person1 owner;
-	
-	private final List<String> keywords;
-	
-	public Speech1(Mirror converter) {
-		converter.register(this);
+	@Test
+	public void object_to_immutable() {
 		
-		this.name = converter.toString("name");
-		this.owner = converter.to(Person1.class, "owner");
-		this.keywords = converter.toListOf(String.class, "keywords");
+		PersonBuilder<?> personBuilder = person()
+			.parent(
+				teacher()
+			);
+		
+		assertTrue(personBuilder.getParent() instanceof TeacherBuilder);
+		
+		Person person = personBuilder.toPerson();
+		
+		assertTrue(person.getParent() instanceof Teacher);
 	}
-
-	/**
-	 * @return the keywords
-	 */
-	public List<String> getKeywords() {
-		return keywords;
-	}
-
-	public String getName() {
-		return name;
-	}
-
-	public Person1 getOwner() {
-		return owner;
-	}
-
+	
 }

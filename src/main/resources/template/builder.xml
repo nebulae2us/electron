@@ -2,6 +2,21 @@
 <!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
 <properties>
 
+<entry key="builders_declare"><![CDATA[
+package packageName;
+
+import java.util.Arrays;
+import java.util.List;
+
+import org.nebulae2us.electron.*;
+import Person;
+public class Builders {
+
+	public static final List<Class<?>> HINTS = Arrays.asList(new Class<?>[] {
+			Person.class, PersonBuilder.class
+			});
+]]></entry>
+
 <entry key="builders_each_model_class"><![CDATA[
     public static PersonBuilder<?> person() {
         return new PersonBuilder<Object>();
@@ -12,7 +27,7 @@
     }
 
     public static PersonBuilder<?> person$copyFrom(Person person) {
-    	return Converter.convert(PersonBuilder.class, person);
+    	return new Converter().convert(person).to(PersonBuilder.class);
     }
 ]]></entry>
 
@@ -40,7 +55,7 @@
     }
     
     public Person toPerson() {
-    	return new Converter(this).to(Person.class);
+    	return new Converter().convert(this).to(Person.class);
     }
 ]]></entry>
 

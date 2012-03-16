@@ -13,45 +13,37 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.nebulae2us.electron.test.convert.mode;
+package org.nebulae2us.electron.util;
 
-import java.util.List;
-
-import org.nebulae2us.electron.Mirror;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * @author Trung Phan
  *
  */
-public class Speech1 {
-	
-	private final String name;
+public class MapBuilder<K, V> {
 
-	private final Person1 owner;
+	private Map<K, V> result = new HashMap<K, V>();
 	
-	private final List<String> keywords;
-	
-	public Speech1(Mirror converter) {
-		converter.register(this);
+	public MapBuilder() {
 		
-		this.name = converter.toString("name");
-		this.owner = converter.to(Person1.class, "owner");
-		this.keywords = converter.toListOf(String.class, "keywords");
+	}
+	
+	public MapBuilder(Map<? extends K, ? extends V> map) {
+		result.putAll(map);
 	}
 
-	/**
-	 * @return the keywords
-	 */
-	public List<String> getKeywords() {
-		return keywords;
+	
+	
+	public MapBuilder<K, V> put(K key, V value) {
+		result.put(key, value);
+		return this;
 	}
-
-	public String getName() {
-		return name;
+	
+	public Map<K, V> toMap() {
+		return new ImmutableMap<K, V>(result, new ObjectEqualityComparator<K>());
 	}
-
-	public Person1 getOwner() {
-		return owner;
-	}
-
+	
+	
 }

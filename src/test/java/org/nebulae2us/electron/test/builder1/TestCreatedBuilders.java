@@ -32,6 +32,7 @@ import static org.junit.Assert.*;
  */
 public class TestCreatedBuilders {
 
+	private Converter converter = new Converter();
 	
 	@Test
 	public void create_person() {
@@ -119,7 +120,7 @@ public class TestCreatedBuilders {
 
 		assertTrue(personBuilder == personBuilder.getChildren().get(0).getParent());
 		
-		Person person = Converter.convert(Person.class, personBuilder);
+		Person person = personBuilder.toPerson();
 		
 		assertTrue(person == person.getChildren().get(0).getParent());
 	}
@@ -162,7 +163,7 @@ public class TestCreatedBuilders {
 		assertTrue(john.getChildren().get(0) == sarah.getChildren().get(0));
 		
 		
-		Map<?, ?> map = Converter.convertGroup()
+		Map<?, ?> map = converter.convertGroup()
 			.convert(tom, john, sarah).to(Person.class)
 			.getValues();
 		
@@ -196,7 +197,7 @@ public class TestCreatedBuilders {
 		assertTrue(tom == john.getFriends().get(0));
 		assertTrue(john == tom.getFriends().get(0));
 		
-		Person _tom = Converter.convert(Person.class, tom);
+		Person _tom = tom.toPerson();
 		
 		assertTrue(_tom == _tom.getFriends().get(0).getFriends().get(0));
 	}
@@ -219,7 +220,7 @@ public class TestCreatedBuilders {
 		assertEquals(5, washington.getSpeeches().size());
 		assertTrue(washington == washington.getSpeeches().get(0).getOwner());
 	
-		Person _washington = Converter.convert(Person.class, washington);
+		Person _washington = washington.toPerson();
 		
 		assertEquals(5, _washington.getSpeeches().size());
 		assertTrue(_washington == _washington.getSpeeches().get(0).getOwner());
@@ -246,7 +247,7 @@ public class TestCreatedBuilders {
 		assertTrue(washington == s5.getOwner());
 		
 		
-		Map<?, ?> map = Converter.convertGroup()
+		Map<?, ?> map = converter.convertGroup()
 			.convert(washington).to(Person.class)
 			.convert(s1, s2, s3, s4, s5).to(Speech.class)
 			.getValues();
@@ -302,7 +303,7 @@ public class TestCreatedBuilders {
 		assertTrue(h3.getPeople().get(0) == p2);
 
 	
-		Map<?, ?> map = Converter.convertGroup()
+		Map<?, ?> map = converter.convertGroup()
 			.convert(h1, h2, h3).to(Hobby.class)
 			.convert(p1, p2).to(Person.class)
 			.getValues();
@@ -350,7 +351,7 @@ public class TestCreatedBuilders {
 		assertTrue(h3.getPeople().get(0) == p2);
 	
 		
-		Map<?, ?> map = Converter.convertGroup()
+		Map<?, ?> map = converter.convertGroup()
 				.convert(h1, h2, h3).to(Hobby.class)
 				.convert(p1, p2).to(Person.class)
 				.getValues();

@@ -35,13 +35,7 @@ import static org.junit.Assert.*;
  */
 public class ConvertTest {
 
-	@Test
-	public void convert_basic_type() {
-		assertTrue(0 == Converter.convertBasicType(int.class, "String"));
-		assertTrue(0 == Converter.convertBasicType(long.class, null));
-		assertTrue(null == Converter.convertBasicType(Integer.class, "String"));
-		assertTrue(null == Converter.convertBasicType(Long.class, null));
-	}
+	private Converter converter = new Converter();
 	
 	@Test
 	public void convert_one_object() {
@@ -49,12 +43,12 @@ public class ConvertTest {
 		Hobby2 hobby2 = new Hobby2();
 		hobby2.setName("Walking");
 		
-		Hobby1 hobby1 = Converter.convert(Hobby1.class, hobby2);
+		Hobby1 hobby1 = converter.convert(hobby2).to(Hobby1.class);
 		
 		assertEquals("Walking", hobby1.getName());
 		assertNull(hobby1.getPeople());
 		
-		hobby2 = Converter.convert(Hobby2.class, hobby1);
+		hobby2 = converter.convert(hobby1).to(Hobby2.class);
 		
 		assertEquals("Walking", hobby2.getName());
 		assertNull(hobby2.getPeople());
@@ -89,7 +83,7 @@ public class ConvertTest {
 		
 		hobby2_2.getPeople().add(person2_1);
 		
-		Person1 person1 = Converter.convert(Person1.class, person2_1);
+		Person1 person1 = converter.convert(person2_1).to(Person1.class);
 		
 		assertEquals(person2_1.getHobbies().size(), person1.getHobbies().size());
 		for (int i = 0; i < person2_1.getHobbies().size(); i++) {
@@ -99,7 +93,7 @@ public class ConvertTest {
 		}
 		
 		
-		person2_1 = Converter.convert(Person2.class, person1);
+		person2_1 = converter.convert(person1).to(Person2.class);
 
 		assertEquals(person2_1.getHobbies().size(), person1.getHobbies().size());
 		for (int i = 0; i < person2_1.getHobbies().size(); i++) {
@@ -123,12 +117,12 @@ public class ConvertTest {
 		person2.getSpeeches().add(speech2_1);
 		person2.getSpeeches().add(speech2_2);
 		
-		Person1 person1 = Converter.convert(Person1.class, person2);
+		Person1 person1 = converter.convert(person2).to(Person1.class);
 		
 		assertEquals(person1, person1.getSpeeches().get(0).getOwner());
 		assertEquals(person1, person1.getSpeeches().get(1).getOwner());
 		
-		person2 = Converter.convert(Person2.class, person1);
+		person2 = converter.convert(person1).to(Person2.class);
 		
 		assertEquals(person2, person2.getSpeeches().get(0).getOwner());
 		assertEquals(person2, person2.getSpeeches().get(1).getOwner());
@@ -141,11 +135,11 @@ public class ConvertTest {
 		Person2 person2 = new Person2();
 		person2.setParent(person2);
 		
-		Person1 person1 = Converter.convert(Person1.class, person2);
+		Person1 person1 = converter.convert(person2).to(Person1.class);
 		
 		assertTrue(person1.getParent() == person1);
 		
-		person2 = Converter.convert(Person2.class, person1);
+		person2 = converter.convert(person1).to(Person2.class);
 		
 		assertTrue(person2.getParent() == person2);
 		
@@ -160,13 +154,13 @@ public class ConvertTest {
 		person2.getChildren().get(0).setParent(person2);
 		person2.getChildren().get(1).setParent(person2);
 		
-		Person1 person1 = Converter.convert(Person1.class, person2);
+		Person1 person1 = converter.convert(person2).to(Person1.class);
 		
 		assertEquals(person2.getChildren().size(), person1.getChildren().size());
 		assertTrue(person1.getChildren().get(0).getParent() == person1);
 		assertTrue(person1.getChildren().get(1).getParent() == person1);
 		
-		person2 = Converter.convert(Person2.class, person1);
+		person2 = converter.convert(person1).to(Person2.class);
 		
 		assertEquals(person2.getChildren().size(), person1.getChildren().size());
 		assertTrue(person2.getChildren().get(0).getParent() == person2);
@@ -184,7 +178,7 @@ public class ConvertTest {
 		teacher2.setAge(30);
 		teacher2.setSalary(10.0);
 		
-		Teacher1 teacher1 = Converter.convert(Teacher1.class, teacher2);
+		Teacher1 teacher1 = converter.convert(teacher2).to(Teacher1.class);
 		
 		assertEquals(teacher2.getAge(), teacher1.getAge());
 		assertEquals(teacher2.getName(), teacher1.getName());

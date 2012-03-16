@@ -16,11 +16,7 @@
 package org.nebulae2us.electron.test.builder1;
 
 import org.junit.Test;
-import org.nebulae2us.electron.Converter;
-import org.nebulae2us.electron.Procedure;
 import org.nebulae2us.electron.test.builder1.model.Person;
-import org.nebulae2us.electron.test.builder1.model.PersonBuilder;
-import org.nebulae2us.electron.test.builder1.model.Speech;
 
 import static org.nebulae2us.electron.test.builder1.Builders.*;
 import static org.junit.Assert.*;

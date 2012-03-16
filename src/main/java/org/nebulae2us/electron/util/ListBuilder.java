@@ -13,45 +13,43 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.nebulae2us.electron.test.convert.mode;
+package org.nebulae2us.electron.util;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
-
-import org.nebulae2us.electron.Mirror;
 
 /**
  * @author Trung Phan
  *
  */
-public class Speech1 {
+public class ListBuilder<E> {
 	
-	private final String name;
-
-	private final Person1 owner;
+	private List<E> result = new ArrayList<E>();
 	
-	private final List<String> keywords;
-	
-	public Speech1(Mirror converter) {
-		converter.register(this);
+	public ListBuilder() {
 		
-		this.name = converter.toString("name");
-		this.owner = converter.to(Person1.class, "owner");
-		this.keywords = converter.toListOf(String.class, "keywords");
 	}
-
-	/**
-	 * @return the keywords
-	 */
-	public List<String> getKeywords() {
-		return keywords;
+	
+	public ListBuilder(E ...elements) {
+		add(elements);
 	}
-
-	public String getName() {
-		return name;
+	
+	public ListBuilder<E> add(E ... elements) {
+		for (E element : elements) {
+			result.add(element);
+		}
+		return this;
 	}
-
-	public Person1 getOwner() {
-		return owner;
+	
+	public ListBuilder<E> add(Collection<E> elements) {
+		for (E element : elements) {
+			result.add(element);
+		}
+		return this;
 	}
-
+	
+	public List<E> toList() {
+		return new ImmutableList<E>(result);
+	}
 }

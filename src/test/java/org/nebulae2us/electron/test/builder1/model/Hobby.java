@@ -17,7 +17,7 @@ package org.nebulae2us.electron.test.builder1.model;
 
 import java.util.List;
 
-import org.nebulae2us.electron.Converter;
+import org.nebulae2us.electron.Mirror;
 
 /**
  * @author Trung Phan
@@ -29,7 +29,7 @@ public class Hobby {
 	
 	private final List<Person> people;
 	
-	public Hobby(Converter converter) {
+	public Hobby(Mirror converter) {
 		converter.register(this);
 		
 		this.name = converter.toString("name");

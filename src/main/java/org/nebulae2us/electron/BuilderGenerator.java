@@ -21,24 +21,18 @@ import java.io.IOException;
 import java.lang.reflect.Field;
 import java.lang.reflect.ParameterizedType;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Properties;
+
+import static org.nebulae2us.electron.Constants.*;
 
 /**
  * @author Trung Phan
  *
  */
 public class BuilderGenerator {
-
-	private static final List<String> SCALAR_TYPES = 
-			Arrays.asList("int", "short", "byte", "long", "double", "float", "char", "boolean",
-					"java.lang.Integer", "java.lang.Short", "java.lang.Byte", "java.lang.Long", 
-					"java.lang.Double", "java.lang.Float", "java.lang.Character", "java.lang.Boolean",
-					"java.math.BigDecimal", "java.math.BigInteger",
-					"java.lang.String", "java.util.Date");
 
 	private static Properties templates;
 	
@@ -137,7 +131,7 @@ public class BuilderGenerator {
 			String fieldBuilderClassName = fieldClassName + "Builder";
 			String fieldClassCamelCase = toCamelCase(fieldClassName);
 			
-			if (SCALAR_TYPES.contains(fieldClass.getName())) {
+			if (SCALAR_TYPES.contains(fieldClass)) {
 
 				builder.append(genFieldNameAndGetterSetter(fieldClassName, fieldName));
 				
@@ -187,7 +181,7 @@ public class BuilderGenerator {
 							);
 					
 				}
-				else if (SCALAR_TYPES.contains(fieldSubClass.getName())) {
+				else if (SCALAR_TYPES.contains(fieldSubClass)) {
 					builder.append(genFieldNameAndGetterSetter(fieldClassName + "<" + fieldSubClassName + ">", fieldName));
 
 					String template = getTemplates().getProperty("list_scalar_field");
@@ -225,23 +219,35 @@ public class BuilderGenerator {
 	
 	private static void buildBuilders(File genFolder, String packageName, List<Class<?>> modelClasses) {
 		
-		StringBuilder builder = new StringBuilder();
-		builder.append("package ").append(packageName).append(";\n\n");
+		String declareTemplate = getTemplates().getProperty("builders_declare");
 		
-		
-		
-		builder
-		.append("import org.nebulae2us.electron.*;\n");
-		
-
+		StringBuilder importBuilder = new StringBuilder();
+		StringBuilder hint = new StringBuilder();
 		for (Class<?> modelClass : modelClasses) {
-			builder.append("import " + modelClass.getName() + ";\n")
-				.append("import " + modelClass.getName() + "Builder;\n");
+			importBuilder.append("import ")
+				.append(modelClass.getName())
+				.append(";\n")
+				.append("import ")
+				.append(modelClass.getName())
+				.append("Builder;\n");
+			
+			hint.append(modelClass.getSimpleName())
+				.append(".class, ")
+				.append(modelClass.getSimpleName())
+				.append("Builder.class,\n\t\t\t");
 		}
-		builder.append("\n");
+		if (hint.length() >= 5)
+			hint.delete(hint.length() - 5, hint.length());
 		
-		builder.append("public class Builders {\n\n");
+		
+		StringBuilder builder = new StringBuilder();
 
+		builder.append(declareTemplate
+				.replaceAll("packageName", packageName)
+				.replaceAll("import Person;", importBuilder.toString())
+				.replaceAll("Person.class, PersonBuilder.class", hint.toString())
+				);
+		
 		String template = getTemplates().getProperty("builders_each_model_class");
 		
 		for (Class<?> modelClass : modelClasses) {

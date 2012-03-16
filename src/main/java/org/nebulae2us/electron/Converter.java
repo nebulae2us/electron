@@ -15,15 +15,17 @@
  */
 package org.nebulae2us.electron;
 
+import static org.nebulae2us.electron.Constants.SCALAR_TYPES;
+
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
-import java.lang.reflect.Modifier;
 import java.lang.reflect.ParameterizedType;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
@@ -32,54 +34,119 @@ import java.util.Set;
 import org.nebulae2us.electron.util.ImmutableList;
 import org.nebulae2us.electron.util.ImmutableSet;
 
-import static org.nebulae2us.electron.Constants.*;
+import static org.nebulae2us.electron.internal.util.ClassUtils.*;
 
 /**
  * @author Trung Phan
  *
  */
 public class Converter {
+
+	
+	public Converter() {
+		
+	}
+
 	
 
-	private final Map<Object, Object> builders;
-	
-	private final Object builder;
-	
-	public Converter(Object builder) {
-		this(new IdentityHashMap<Object, Object>(), builder);
-	}
-	
-	private Converter(Map<Object, Object> builders, Object builder) {
-		if (builder == null) {
-			throw new NullPointerException();
+	public class ConvertBuilder {
+		private final Object object;
+		
+		public ConvertBuilder(Object object) {
+			this.object = object;
 		}
 		
-		this.builder = builder;
-		this.builders = builders;
+		public <T> T to(Class<T> destClass) {
+			if (this.object == null) {
+				return defaultPrimitiveValue(destClass);
+			}
+			
+			return new MirrorImpl(this.object).to(destClass);
+		}
 	}
 	
-	public static <T> T convert(Class<T> objectClass, Object builder) {
-	
-		IdentityHashMap<Object, Object> builders = new IdentityHashMap<Object, Object>();
-		Converter converter = new Converter(builders, builder);
-		return converter.to(objectClass);
-	
+	public ConvertBuilder convert(Object object) {
+		return new ConvertBuilder(object);
 	}
 	
-	public static class ConvertGroupBuilder {
+	
+	public class ConvertListBuilder {
 		
-		private List<Class<?>> classes = new ArrayList<Class<?>>();
+		private final List<Object> objects = new ArrayList<Object>();
+		
+		private ConvertListBuilder(Object ... objects) {
+			for (Object object : objects) {
+				this.objects.add(object);
+			}
+		}
+		
+		private ConvertListBuilder(Collection<?> objects) {
+			for (Object object : objects) {
+				this.objects.add(object);
+			}
+		}
+
+		@SuppressWarnings("unchecked")
+		public <T> List<T> toListOf(Class<T> destClass) {
+			IdentityHashMap<Object, Object> builders = new IdentityHashMap<Object, Object>();
+			for (int i = 0; i < objects.size(); i++) {
+				MirrorImpl converter = new MirrorImpl(builders, objects.get(i));
+				converter.to(destClass);
+			}
+
+			List<T> result = new ArrayList<T>();
+			for (Object object : this.objects) {
+				result.add((T)builders.get(object));
+			}
+			
+			return result;
+		}
+
+		@SuppressWarnings("unchecked")
+		public <T> Set<T> toSetOf(Class<T> destClass) {
+			IdentityHashMap<Object, Object> builders = new IdentityHashMap<Object, Object>();
+			for (int i = 0; i < objects.size(); i++) {
+				MirrorImpl converter = new MirrorImpl(builders, objects.get(i));
+				converter.to(destClass);
+			}
+
+			Set<T> result = new HashSet<T>();
+			for (Object object : this.objects) {
+				result.add((T)builders.get(object));
+			}
+			
+			return result;
+		}
+		
+	}
+	
+
+	public class ConvertGroupBuilder {
+		
+		private List<Class<?>> destClasses = new ArrayList<Class<?>>();
+		
 		private List<Object> objects = new ArrayList<Object>();
 		
 		public class ConvertBuilder {
-			private final Object[] _objects;
-			private ConvertBuilder(Object[] _objects) {
-				this._objects = _objects;
+			
+			private final List<Object> localObjects = new ArrayList<Object>();
+			
+			private ConvertBuilder(Object ... localObjects) {
+				for (Object object : localObjects) {
+					this.localObjects.add(object);
+				}
 			}
-			public ConvertGroupBuilder to(Class<?> newClass) {
-				for (Object object : _objects) {
-					classes.add(newClass);
-					objects.add(object);
+
+			private ConvertBuilder(Collection<?> localObjects) {
+				for (Object object : localObjects) {
+					this.localObjects.add(object);
+				}
+			}
+			
+			public ConvertGroupBuilder to(Class<?> destClass) {
+				for (Object object : localObjects) {
+					ConvertGroupBuilder.this.destClasses.add(destClass);
+					ConvertGroupBuilder.this.objects.add(object);
 				}
 				return ConvertGroupBuilder.this;
 			}
@@ -89,19 +156,23 @@ public class Converter {
 			return new ConvertBuilder(objects);
 		}
 		
+		public ConvertBuilder convert(Collection<?> objects) {
+			return new ConvertBuilder(objects);
+		}
+		
 		public Map<?, ?> getValues() {
 			
 			IdentityHashMap<Object, Object> builders = new IdentityHashMap<Object, Object>();
 			for (int i = 0; i < objects.size(); i++) {
-				Converter converter = new Converter(builders, objects.get(i));
-				converter.to(classes.get(i));
+				MirrorImpl converter = new MirrorImpl(builders, objects.get(i));
+				converter.to(destClasses.get(i));
 			}
 			
 			return builders;
 		}
 	}
 	
-	public static ConvertGroupBuilder convertGroup() {
+	public ConvertGroupBuilder convertGroup() {
 		return new ConvertGroupBuilder();
 	}
 
@@ -136,7 +207,7 @@ public class Converter {
 		return (T)result;
 	}
 	
-	public static <T> T convertBasicType(Class<T> objectClass, Object builder) {
+	private static <T> T convertBasicType(Class<T> objectClass, Object builder) {
 		if (builder == null) {
 			return defaultPrimitiveValue(objectClass);
 		}
@@ -232,296 +303,266 @@ public class Converter {
 		
 		return (T)result;
 	}
-	
-	public <T> T to(Class<T> objectClass) {
 
-		if (SCALAR_TYPES.contains(builder.getClass()) || SCALAR_TYPES.contains(objectClass)) {
-			return convertBasicType(objectClass, builder);
+
+	public final static class MirrorImpl implements Mirror {
+		
+		private final Map<Object, Object> builders;
+		
+		private final Object builder;
+		
+		private MirrorImpl(Object builder) {
+			this(new IdentityHashMap<Object, Object>(), builder);
 		}
 		
-		T result = (T)this.builders.get(this.builder);
-		if (result != null) {
-			return result; 
+		private MirrorImpl(Map<Object, Object> builders, Object builder) {
+			if (builder == null) {
+				throw new NullPointerException();
+			}
+			
+			this.builder = builder;
+			this.builders = builders;
 		}
+		
+		private <T> T to(Class<T> objectClass) {
 
-		
-		
-		Constructor<T> constructor = null;
-		try {
-			constructor = objectClass.getConstructor(Converter.class);
-		} catch (Exception e) {}
-		
-		if (constructor != null) {
+			if (SCALAR_TYPES.contains(builder.getClass()) || SCALAR_TYPES.contains(objectClass)) {
+				return convertBasicType(objectClass, builder);
+			}
+			
+			T result = (T)this.builders.get(this.builder);
+			if (result != null) {
+				return result; 
+			}
+
+			
+			
+			Constructor<T> constructor = null;
 			try {
-				result = constructor.newInstance(this);
+				constructor = objectClass.getConstructor(Mirror.class);
+			} catch (Exception e) {}
+			
+			if (constructor != null) {
+				try {
+					result = constructor.newInstance(this);
+					
+					if (!this.builders.containsKey(this.builder)) {
+						this.builders.put(this.builder, result);
+					}
+					
+					return result;
+				} catch (Exception e) {
+					throw new RuntimeException("Failed to instantiate " + objectClass, e);
+				}
+			}
+			else {
+
+				result = instantiate(objectClass);
+				this.builders.put(this.builder, result);
 				
-				if (!this.builders.containsKey(this.builder)) {
-					this.builders.put(this.builder, result);
+				if (result == null) {
+					return objectClass.isPrimitive() ? (T)defaultPrimitiveValue(objectClass) : null;
 				}
 				
-				return result;
-			} catch (Exception e) {
-				throw new RuntimeException("Failed to instantiate " + objectClass, e);
-			}
-		}
-		else {
-			
-			try {
-				result = objectClass.newInstance();
-			} catch (Exception e) {
-				return null;
-			}
-			
-			this.builders.put(this.builder, result);
-			
-			for (Field field : getFields(builder.getClass())) {
-				Field friendField = getField(objectClass, field.getName());
-				if (friendField == null)
-					continue;
+				for (Field field : getFields(builder.getClass())) {
+					Field friendField = getField(objectClass, field.getName());
+					if (friendField == null)
+						continue;
 
-				field.setAccessible(true);
-				friendField.setAccessible(true);
+					field.setAccessible(true);
+					friendField.setAccessible(true);
 
-				
-				if (SCALAR_TYPES.contains(field.getType())) {
-					if (field.getType() == friendField.getType()) {
-						Object value = getValue(field, builder);
-						if (field.getType() == Date.class && value != null) {
-							value = new Date(((Date)value).getTime());
-						}
+					
+					if (SCALAR_TYPES.contains(field.getType())) {
+						Object value = convertBasicType(friendField.getType(), getValue(field, builder));
 						setValue(friendField, result, value);
 					}
-				}
-				else if ( List.class.isAssignableFrom( field.getType() )) {
-					if (friendField.getType() == List.class ) {
+					else if ( List.class.isAssignableFrom( field.getType() )) {
+						if (friendField.getType() == List.class ) {
 
-						List valueList = (List)getValue(field, builder);
-						if (valueList == null) {
-							setValue(friendField, result, null);
-						}
-						else {
-							List newList = new ArrayList();
-							setValue(friendField, result, newList);
-							
-							ParameterizedType friendSubType = (ParameterizedType)friendField.getGenericType();
-							Class<?> friendFieldSubClass = (Class<?>)friendSubType.getActualTypeArguments()[0];
-							
-							for (Object o : valueList) {
-								Object newValue = new Converter(builders, o).to(friendFieldSubClass);
-								newList.add(newValue);
+							List valueList = (List)getValue(field, builder);
+							if (valueList == null) {
+								setValue(friendField, result, null);
+							}
+							else {
+								List newList = new ArrayList();
+								setValue(friendField, result, newList);
+								
+								ParameterizedType friendSubType = (ParameterizedType)friendField.getGenericType();
+								Class<?> friendFieldSubClass = (Class<?>)friendSubType.getActualTypeArguments()[0];
+								
+								for (Object o : valueList) {
+									Object newValue = new MirrorImpl(builders, o).to(friendFieldSubClass);
+									newList.add(newValue);
+								}
 							}
 						}
 					}
-				}
-				else if (!field.getType().isInterface() && !field.getType().isInterface()) {
-					if (!friendField.getType().isInterface() && !friendField.getType().isInterface()) {
-						
-						Object value = getValue(field, builder);
-						Object newValue = null;
-						if (value != null) {
-							newValue = new Converter(this.builders, value).to(friendField.getType());
+					else if (!field.getType().isInterface() && !field.getType().isInterface()) {
+						if (!friendField.getType().isInterface() && !friendField.getType().isInterface()) {
+							
+							Object value = getValue(field, builder);
+							Object newValue = null;
+							if (value != null) {
+								newValue = new MirrorImpl(this.builders, value).to(friendField.getType());
+							}
+							setValue(friendField, result, newValue);
 						}
-						setValue(friendField, result, newValue);
+						
 					}
-					
 				}
+				
+				return result;
+			}
+		}
+		
+		@SuppressWarnings("unchecked")
+		public <T> T to(Class<T> objectClass, String fieldName) {
+
+			Object builderObject = toObject(fieldName);
+			
+			
+			if (builderObject == null) {
+				if (objectClass.isPrimitive()) {
+					return defaultPrimitiveValue(objectClass);
+				}
+				else {
+					return null;
+				}
+			}
+			
+			T result = (T)builders.get(builderObject);
+			if (result == null) {
+				MirrorImpl converter = new MirrorImpl(builders, builderObject);
+				result = (T)converter.to(objectClass);
 			}
 			
 			return result;
 		}
-	}
-	
-	private static List<Field> getFields(Class<?> c) {
-		List<Field> result = new ArrayList<Field>();
-		for (Field field : c.getDeclaredFields()) {
-			if ((field.getModifiers() & Modifier.STATIC) == 0) {
-				result.add(field);
-			}
-		}
 		
-		if (c != Object.class && c.getSuperclass() != null) {
-			result.addAll(getFields(c.getSuperclass()));
-		}
-		
-		return result;
-	}
-	
-	private static Field getField(Class c, String fieldName) {
-		try {
-			Field result = c.getDeclaredField(fieldName);
-			return result;
-		} catch (Exception e) {
-			if (c != Object.class && c.getSuperclass() != null) {
-				return getField(c.getSuperclass(), fieldName);
+		public <T> List<T> toListOf(Class<T> objectClass, String fieldName) {
+			
+			Field field = getField(builder.getClass(), fieldName);
+			Object value = getValue(field, builder);
+			
+	        if (value instanceof Collection) {
+				List<T> result = new ArrayList<T>();
+				
+				Collection<?> valueList = (Collection<?>)value;
+				for (Object o : valueList) {
+					
+					T convertedValue = new MirrorImpl(this.builders, o).to(objectClass);
+					result.add(convertedValue);
+				}
+				
+				return new ImmutableList<T>(result);
 			}
-			else {
-				return null;
-			}
-		}
-	}
-	
-	private static Object getValue(Field field, Object object) {
-		try {
-			field.setAccessible(true);
-			return field.get(object);
-		} catch (Exception e) {
+			
 			return null;
 		}
-	}
-	
-	private static void setValue(Field field, Object object, Object value) {
-		try {
-			field.setAccessible(true);
-			field.set(object, value);
-		} catch (Exception e) {
-		}
-	}
-	
-	@SuppressWarnings("unchecked")
-	public <T> T to(Class<T> objectClass, String fieldName) {
 
-		Object builderObject = toObject(fieldName);
-		
-		
-		if (builderObject == null) {
-			if (objectClass.isPrimitive()) {
-				return defaultPrimitiveValue(objectClass);
-			}
-			else {
-				return null;
-			}
-		}
-		
-		T result = (T)builders.get(builderObject);
-		if (result == null) {
-			Converter converter = new Converter(builders, builderObject);
-			result = (T)converter.to(objectClass);
-		}
-		
-		return result;
-	}
-	
-	public <T> List<T> toListOf(Class<T> objectClass, String fieldName) {
-		
-		Field field = getField(builder.getClass(), fieldName);
-		Object value = getValue(field, builder);
-		
-        if (value instanceof Collection) {
-			List<T> result = new ArrayList<T>();
+		public <T> Set<T> toSetOf(Class<T> objectClass, String fieldName) {
 			
-			Collection<?> valueList = (Collection<?>)value;
-			for (Object o : valueList) {
+			Field field = getField(builder.getClass(), fieldName);
+			Object value = getValue(field, builder);
+			
+	        if (value instanceof Collection) {
+				List<T> result = new ArrayList<T>();
 				
-				T convertedValue = new Converter(this.builders, o).to(objectClass);
-				result.add(convertedValue);
-			}
-			
-			return new ImmutableList<T>(result);
-		}
-		
-		return null;
-	}
-
-	public <T> Set<T> toSetOf(Class<T> objectClass, String fieldName) {
-		
-		Field field = getField(builder.getClass(), fieldName);
-		Object value = getValue(field, builder);
-		
-        if (value instanceof Collection) {
-			List<T> result = new ArrayList<T>();
-			
-			Collection<?> valueList = (Collection<?>)value;
-			for (Object o : valueList) {
+				Collection<?> valueList = (Collection<?>)value;
+				for (Object o : valueList) {
+					
+					T convertedValue = new MirrorImpl(this.builders, o).to(objectClass);
+					result.add(convertedValue);
+				}
 				
-				T convertedValue = new Converter(this.builders, o).to(objectClass);
-				result.add(convertedValue);
+				return new ImmutableSet<T>(result);
 			}
 			
-			return new ImmutableSet<T>(result);
+			return null;
 		}
 		
-		return null;
-	}
-	
-	
-	public Object toObject(String fieldName) {
-		Field field = getField(builder.getClass(), fieldName);
-		return field == null ? null : getValue(field, builder);
-	}
+		
+		public Object toObject(String fieldName) {
+			Field field = getField(builder.getClass(), fieldName);
+			return field == null ? null : getValue(field, builder);
+		}
 
-	public String toString(String fieldName) {
-		return convertBasicType(String.class, toObject(fieldName));
-	}
+		public String toString(String fieldName) {
+			return convertBasicType(String.class, toObject(fieldName));
+		}
 
-	public Integer toInteger(String fieldName) {
-		return convertBasicType(Integer.class, toObject(fieldName));
-	}
-	
-	public int toIntValue(String fieldName) {
-		return convertBasicType(int.class, toObject(fieldName));
-	}
+		public Integer toInteger(String fieldName) {
+			return convertBasicType(Integer.class, toObject(fieldName));
+		}
+		
+		public int toIntValue(String fieldName) {
+			return convertBasicType(int.class, toObject(fieldName));
+		}
 
-	public Long toLong(String fieldName) {
-		return convertBasicType(Long.class, toObject(fieldName));
-	}
-	
-	public long toLongValue(String fieldName) {
-		return convertBasicType(long.class, toObject(fieldName));
-	}
+		public Long toLong(String fieldName) {
+			return convertBasicType(Long.class, toObject(fieldName));
+		}
+		
+		public long toLongValue(String fieldName) {
+			return convertBasicType(long.class, toObject(fieldName));
+		}
 
-	public Short toShort(String fieldName) {
-		return convertBasicType(Short.class, toObject(fieldName));
-	}
-	
-	public short toShortValue(String fieldName) {
-		return convertBasicType(short.class, toObject(fieldName));
-	}
+		public Short toShort(String fieldName) {
+			return convertBasicType(Short.class, toObject(fieldName));
+		}
+		
+		public short toShortValue(String fieldName) {
+			return convertBasicType(short.class, toObject(fieldName));
+		}
 
-	public Byte toByte(String fieldName) {
-		return convertBasicType(Byte.class, toObject(fieldName));
-	}
-	
-	public byte toByteValue(String fieldName) {
-		return convertBasicType(byte.class, toObject(fieldName));
-	}
+		public Byte toByte(String fieldName) {
+			return convertBasicType(Byte.class, toObject(fieldName));
+		}
+		
+		public byte toByteValue(String fieldName) {
+			return convertBasicType(byte.class, toObject(fieldName));
+		}
 
-	public Double toDouble(String fieldName) {
-		return convertBasicType(Double.class, toObject(fieldName));
-	}
-	
-	public double toDoubleValue(String fieldName) {
-		return convertBasicType(double.class, toObject(fieldName));
-	}
+		public Double toDouble(String fieldName) {
+			return convertBasicType(Double.class, toObject(fieldName));
+		}
+		
+		public double toDoubleValue(String fieldName) {
+			return convertBasicType(double.class, toObject(fieldName));
+		}
 
-	public Float toFloat(String fieldName) {
-		return convertBasicType(Float.class, toObject(fieldName));
-	}
-	
-	public float toFloatValue(String fieldName) {
-		return convertBasicType(float.class, toObject(fieldName));
-	}
+		public Float toFloat(String fieldName) {
+			return convertBasicType(Float.class, toObject(fieldName));
+		}
+		
+		public float toFloatValue(String fieldName) {
+			return convertBasicType(float.class, toObject(fieldName));
+		}
 
-	public Boolean toBoolean(String fieldName) {
-		return convertBasicType(Boolean.class, toObject(fieldName));
-	}
-	
-	public boolean toBooleanValue(String fieldName) {
-		return convertBasicType(boolean.class, toObject(fieldName));
-	}
+		public Boolean toBoolean(String fieldName) {
+			return convertBasicType(Boolean.class, toObject(fieldName));
+		}
+		
+		public boolean toBooleanValue(String fieldName) {
+			return convertBasicType(boolean.class, toObject(fieldName));
+		}
 
-	public Character toCharacter(String fieldName) {
-		return convertBasicType(Character.class, toObject(fieldName));
-	}
-	
-	public char toCharValue(String fieldName) {
-		return convertBasicType(char.class, toObject(fieldName));
-	}
+		public Character toCharacter(String fieldName) {
+			return convertBasicType(Character.class, toObject(fieldName));
+		}
+		
+		public char toCharValue(String fieldName) {
+			return convertBasicType(char.class, toObject(fieldName));
+		}
 
 
-	public void register(Object object) {
-		this.builders.put(builder, object);
-	}
-	
-	
-	
+		public void register(Object object) {
+			this.builders.put(builder, object);
+		}
+		
+		
+		
+	}	
+
 }
