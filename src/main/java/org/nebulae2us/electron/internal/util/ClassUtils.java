@@ -15,10 +15,16 @@
  */
 package org.nebulae2us.electron.internal.util;
 
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
+
+import org.nebulae2us.electron.Mirror;
 
 /**
  * @author Trung Phan
@@ -41,7 +47,7 @@ public class ClassUtils {
 		return result;
 	}
 	
-	public static Field getField(Class c, String fieldName) {
+	public static Field getField(Class<?> c, String fieldName) {
 		try {
 			Field result = c.getDeclaredField(fieldName);
 			return result;
@@ -81,5 +87,45 @@ public class ClassUtils {
 		}
 	}
 	
+	public static Class<?> getClass(Type type) {
+		if (type instanceof Class) {
+			return (Class<?>)type;
+		}
+		
+		if (type instanceof ParameterizedType) {
+			ParameterizedType paramType = (ParameterizedType)type;
+			if (paramType.getRawType() instanceof Class) {
+				return (Class<?>)paramType.getRawType();
+			}
+		}
+		
+
+		return null;
+	}
 	
+	public static Type getGenericSubType(Type type) {
+		if (type instanceof ParameterizedType) {
+			ParameterizedType paramType = (ParameterizedType)type;
+			Type[] subTypes = paramType.getActualTypeArguments();
+			return subTypes.length > 0 ? subTypes[0] : null;
+		}
+		return null;
+	}
+	
+	public static boolean isCollectionType(Type type) {
+		
+		Class<?> c = getClass(type);
+		return c != null && Collection.class.isAssignableFrom(c);
+	}
+
+	public static Constructor<?> getConverterConstructor(Class<?> destClass) {
+		Constructor<?> constructor = null;
+		try {
+			constructor = destClass.getConstructor(Mirror.class);
+			return constructor;
+		} catch (Exception e) {
+			return null;
+		}
+		
+	}
 }

@@ -5,21 +5,18 @@
 <entry key="builders_declare"><![CDATA[
 package packageName;
 
-import java.util.Arrays;
-import java.util.List;
-
 import org.nebulae2us.electron.*;
 import Person;
 public class Builders {
 
-	public static final List<Class<?>> HINTS = Arrays.asList(new Class<?>[] {
-			Person.class, PersonBuilder.class
-			});
+	public static final ConverterOption CONVERTER_OPTIONS = new ConverterOption()
+		.associate(Person.class, PersonBuilder.class)
+		;
 ]]></entry>
 
 <entry key="builders_each_model_class"><![CDATA[
     public static PersonBuilder<?> person() {
-        return new PersonBuilder<Object>();
+        return new PersonBuilder<Object>(CONVERTER_OPTIONS);
     }
 
     public static PersonBuilder<?> person$restoreFrom(BuilderRepository repo, int builderId) {
@@ -27,21 +24,29 @@ public class Builders {
     }
 
     public static PersonBuilder<?> person$copyFrom(Person person) {
-    	return new Converter().convert(person).to(PersonBuilder.class);
+    	return new Converter(CONVERTER_OPTIONS).convert(person).to(PersonBuilder.class);
     }
 ]]></entry>
 
 <entry key="builder_constructors_methods"><![CDATA[
-	private B parentBuilder;
+	private final ConverterOption option;
 
-	private Procedure procedure;
+	private final B parentBuilder;
 
-	public PersonBuilder(B parentBuilder, Procedure procedure) {
+	private final Procedure procedure;
+
+	public PersonBuilder(ConverterOption option, B parentBuilder, Procedure procedure) {
+		this.option = option != null ? option : new ConverterOption();
 		this.parentBuilder = parentBuilder;
 		this.procedure = procedure;
 	}
 
 	public PersonBuilder() {
+		this(null, null, null);	
+	}
+	
+	public PersonBuilder(ConverterOption option) {
+		this(option, null, null);
 	}
 
     public B end() {
@@ -55,7 +60,7 @@ public class Builders {
     }
     
     public Person toPerson() {
-    	return new Converter().convert(this).to(Person.class);
+    	return new Converter(this.option).convert(this).to(Person.class);
     }
 ]]></entry>
 
@@ -80,7 +85,7 @@ public class Builders {
 
 <entry key="builder_field"><![CDATA[
     public PersonBuilder<SpeechBuilder<B>> owner() {
-        return new PersonBuilder<SpeechBuilder<B>>(this,
+        return new PersonBuilder<SpeechBuilder<B>>(option, this,
             new Procedure() {
                 public void execute(Object ... arguments) {
                     SpeechBuilder.this.owner = (PersonBuilder<?>)arguments[0];
@@ -143,7 +148,7 @@ public class Builders {
             this.people = new ArrayList<PersonBuilder<?>>();
         }
 
-        return new PersonBuilder<HobbyBuilder<B>>(this,
+        return new PersonBuilder<HobbyBuilder<B>>(option, this,
             new Procedure() {
                 public void execute(Object ... arguments) {
                     HobbyBuilder.this.people.add((PersonBuilder<?>)arguments[0]);

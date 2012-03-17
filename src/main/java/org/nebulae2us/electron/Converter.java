@@ -20,6 +20,7 @@ import static org.nebulae2us.electron.Constants.SCALAR_TYPES;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.ArrayList;
@@ -31,6 +32,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.nebulae2us.electron.internal.util.ClassUtils;
 import org.nebulae2us.electron.util.ImmutableList;
 import org.nebulae2us.electron.util.ImmutableSet;
 
@@ -42,11 +44,15 @@ import static org.nebulae2us.electron.internal.util.ClassUtils.*;
  */
 public class Converter {
 
+	private final ConverterOption option;
 	
 	public Converter() {
-		
+		this( new ConverterOption() );
 	}
 
+	public Converter(ConverterOption option) {
+		this.option = option != null ? option : new ConverterOption();
+	}
 	
 
 	public class ConvertBuilder {
@@ -61,7 +67,7 @@ public class Converter {
 				return defaultPrimitiveValue(destClass);
 			}
 			
-			return new MirrorImpl(this.object).to(destClass);
+			return (T)new MirrorImpl(this.object, option).to(destClass);
 		}
 	}
 	
@@ -90,7 +96,7 @@ public class Converter {
 		public <T> List<T> toListOf(Class<T> destClass) {
 			IdentityHashMap<Object, Object> builders = new IdentityHashMap<Object, Object>();
 			for (int i = 0; i < objects.size(); i++) {
-				MirrorImpl converter = new MirrorImpl(builders, objects.get(i));
+				MirrorImpl converter = new MirrorImpl(builders, objects.get(i), option);
 				converter.to(destClass);
 			}
 
@@ -106,7 +112,7 @@ public class Converter {
 		public <T> Set<T> toSetOf(Class<T> destClass) {
 			IdentityHashMap<Object, Object> builders = new IdentityHashMap<Object, Object>();
 			for (int i = 0; i < objects.size(); i++) {
-				MirrorImpl converter = new MirrorImpl(builders, objects.get(i));
+				MirrorImpl converter = new MirrorImpl(builders, objects.get(i), option);
 				converter.to(destClass);
 			}
 
@@ -164,7 +170,7 @@ public class Converter {
 			
 			IdentityHashMap<Object, Object> builders = new IdentityHashMap<Object, Object>();
 			for (int i = 0; i < objects.size(); i++) {
-				MirrorImpl converter = new MirrorImpl(builders, objects.get(i));
+				MirrorImpl converter = new MirrorImpl(builders, objects.get(i), option);
 				converter.to(destClasses.get(i));
 			}
 			
@@ -176,7 +182,7 @@ public class Converter {
 		return new ConvertGroupBuilder();
 	}
 
-	private static <T> T defaultPrimitiveValue(Class<?> objectClass) {
+	private static <T> T defaultPrimitiveValue(Class<T> objectClass) {
 		Object result = null;
 		
 		if (objectClass == int.class) {
@@ -311,61 +317,94 @@ public class Converter {
 		
 		private final Object builder;
 		
-		private MirrorImpl(Object builder) {
-			this(new IdentityHashMap<Object, Object>(), builder);
+		private final ConverterOption option;
+		
+		private MirrorImpl(Object builder, ConverterOption option) {
+			this(new IdentityHashMap<Object, Object>(), builder, option);
 		}
 		
-		private MirrorImpl(Map<Object, Object> builders, Object builder) {
+		private MirrorImpl(Map<Object, Object> builders, Object builder, ConverterOption option) {
 			if (builder == null) {
 				throw new NullPointerException();
 			}
 			
 			this.builder = builder;
 			this.builders = builders;
+			this.option = option;
 		}
 		
-		private <T> T to(Class<T> objectClass) {
-
-			if (SCALAR_TYPES.contains(builder.getClass()) || SCALAR_TYPES.contains(objectClass)) {
-				return convertBasicType(objectClass, builder);
+		
+		private static Collection<?> createMutableCollection(Class<?> c) {
+			if (List.class.isAssignableFrom(c)) {
+				
+				return new ArrayList();
+					
 			}
 			
-			T result = (T)this.builders.get(this.builder);
-			if (result != null) {
-				return result; 
+			return new HashSet();
+		}
+		
+		private Collection convertCollectionType(Type type, Object builder) {
+			if (ClassUtils.isCollectionType(type) && builder instanceof Collection) {
+				Class<?> destClass = ClassUtils.getClass(type);
+
+				Type subType = ClassUtils.getGenericSubType(type);
+				Class<?> subClass = subType != null ? ClassUtils.getClass(subType) : Object.class;
+
+				Collection result = createMutableCollection(destClass);
+				for (Object o : (Collection<?>)builder) {
+					Object newValue = new MirrorImpl(builders, o, option).to(subClass);
+					result.add(newValue);
+				}
+				return result;
 			}
 
+			return null;
+		}
+		
+		@SuppressWarnings("rawtypes")
+		private Object to(Type type) {
+
+			if (SCALAR_TYPES.contains(builder.getClass()) || SCALAR_TYPES.contains(type)) {
+				return convertBasicType((Class<?>)type, builder);
+			}
 			
+			if (this.builders.containsKey(this.builder)) {
+				return this.builders.get(this.builder);
+			}
+
+			if (ClassUtils.isCollectionType(type)) {
+				if (ClassUtils.isCollectionType(builder.getClass())) {
+					return convertCollectionType(type, builder);
+				}
+				return null;
+			}
 			
-			Constructor<T> constructor = null;
-			try {
-				constructor = objectClass.getConstructor(Mirror.class);
-			} catch (Exception e) {}
+			Class<?> destClass = this.option.findBestDestinationClass(builder.getClass(), ClassUtils.getClass(type));
 			
+			Constructor<?> constructor = ClassUtils.getConverterConstructor(destClass);
+
 			if (constructor != null) {
 				try {
-					result = constructor.newInstance(this);
-					
-					if (!this.builders.containsKey(this.builder)) {
-						this.builders.put(this.builder, result);
-					}
+					Object result = constructor.newInstance(this);
+					this.builders.put(this.builder, result);
 					
 					return result;
 				} catch (Exception e) {
-					throw new RuntimeException("Failed to instantiate " + objectClass, e);
+					throw new RuntimeException("Failed to instantiate " + destClass, e);
 				}
 			}
 			else {
 
-				result = instantiate(objectClass);
+				Object result = instantiate(destClass);
+				if (result == null) {
+					return destClass.isPrimitive() ? defaultPrimitiveValue(destClass) : null;
+				}
 				this.builders.put(this.builder, result);
 				
-				if (result == null) {
-					return objectClass.isPrimitive() ? (T)defaultPrimitiveValue(objectClass) : null;
-				}
 				
 				for (Field field : getFields(builder.getClass())) {
-					Field friendField = getField(objectClass, field.getName());
+					Field friendField = getField(destClass, field.getName());
 					if (friendField == null)
 						continue;
 
@@ -377,38 +416,13 @@ public class Converter {
 						Object value = convertBasicType(friendField.getType(), getValue(field, builder));
 						setValue(friendField, result, value);
 					}
-					else if ( List.class.isAssignableFrom( field.getType() )) {
-						if (friendField.getType() == List.class ) {
-
-							List valueList = (List)getValue(field, builder);
-							if (valueList == null) {
-								setValue(friendField, result, null);
-							}
-							else {
-								List newList = new ArrayList();
-								setValue(friendField, result, newList);
-								
-								ParameterizedType friendSubType = (ParameterizedType)friendField.getGenericType();
-								Class<?> friendFieldSubClass = (Class<?>)friendSubType.getActualTypeArguments()[0];
-								
-								for (Object o : valueList) {
-									Object newValue = new MirrorImpl(builders, o).to(friendFieldSubClass);
-									newList.add(newValue);
-								}
-							}
-						}
-					}
-					else if (!field.getType().isInterface() && !field.getType().isInterface()) {
-						if (!friendField.getType().isInterface() && !friendField.getType().isInterface()) {
+					else {
 							
-							Object value = getValue(field, builder);
-							Object newValue = null;
-							if (value != null) {
-								newValue = new MirrorImpl(this.builders, value).to(friendField.getType());
-							}
+						Object value = getValue(field, builder);
+						if (value != null) {
+							Object newValue = new MirrorImpl(this.builders, value, option).to(friendField.getGenericType());
 							setValue(friendField, result, newValue);
 						}
-						
 					}
 				}
 				
@@ -433,7 +447,7 @@ public class Converter {
 			
 			T result = (T)builders.get(builderObject);
 			if (result == null) {
-				MirrorImpl converter = new MirrorImpl(builders, builderObject);
+				MirrorImpl converter = new MirrorImpl(builders, builderObject, option);
 				result = (T)converter.to(objectClass);
 			}
 			
@@ -451,7 +465,7 @@ public class Converter {
 				Collection<?> valueList = (Collection<?>)value;
 				for (Object o : valueList) {
 					
-					T convertedValue = new MirrorImpl(this.builders, o).to(objectClass);
+					T convertedValue = (T)new MirrorImpl(this.builders, o, option).to(objectClass);
 					result.add(convertedValue);
 				}
 				
@@ -472,7 +486,7 @@ public class Converter {
 				Collection<?> valueList = (Collection<?>)value;
 				for (Object o : valueList) {
 					
-					T convertedValue = new MirrorImpl(this.builders, o).to(objectClass);
+					T convertedValue = (T)new MirrorImpl(this.builders, o, option).to(objectClass);
 					result.add(convertedValue);
 				}
 				

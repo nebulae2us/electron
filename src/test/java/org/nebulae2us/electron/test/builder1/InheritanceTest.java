@@ -40,6 +40,35 @@ public class InheritanceTest {
 		Person person = personBuilder.toPerson();
 		
 		assertTrue(person.getParent() instanceof Teacher);
+
+		personBuilder = person$copyFrom(person);
+		
+		assertTrue(personBuilder.getParent() instanceof TeacherBuilder);
+	
+	}
+	
+	@Test
+	public void list_of_subclass() {
+		
+		PersonBuilder<?> personBuilder = person()
+				.friends(
+					teacher(),
+					student()
+				);
+
+		assertTrue(personBuilder.getFriends().get(0) instanceof TeacherBuilder);
+		assertTrue(personBuilder.getFriends().get(1) instanceof StudentBuilder);
+		
+		Person person = personBuilder.toPerson();
+		
+		assertTrue(person.getFriends().get(0) instanceof Teacher);
+		assertTrue(person.getFriends().get(1) instanceof Student);
+
+		personBuilder = person$copyFrom(person);
+		
+		assertTrue(personBuilder.getFriends().get(0) instanceof TeacherBuilder);
+		assertTrue(personBuilder.getFriends().get(1) instanceof StudentBuilder);
+		
 	}
 	
 }
