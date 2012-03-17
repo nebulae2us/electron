@@ -44,6 +44,7 @@ public class ConverterOption {
 	private void assertClassInstantiatable(Class<?> c) {
 	}
 
+	@SuppressWarnings("unchecked")
 	public <T> Class<T> findBestDestinationClass(Class<?> src, Class<T> dest) {
 		
 		Class<?> c = src;
