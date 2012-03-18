@@ -71,11 +71,12 @@ public class ClassUtils {
 	}
 	
 	public static void setValue(Field field, Object object, Object value) {
+		field.setAccessible(true);
+
 		try {
-			field.setAccessible(true);
 			field.set(object, value);
-		} catch (Exception e) {
-		}
+		} catch (Exception e) {}
+		
 	}
 
 	public static <T> T instantiate(Class<T> objectClass) {

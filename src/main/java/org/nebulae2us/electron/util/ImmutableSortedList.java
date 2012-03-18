@@ -26,25 +26,51 @@ public class ImmutableSortedList<E> extends ImmutableList<E> {
 
 	private static final long serialVersionUID = -788944480471939780L;
 
-	public ImmutableSortedList(Comparator<? super E> comparator, E ... elements) {
-        super(Arrays.asList(elements), comparator);
+	public ImmutableSortedList() {
+		super();
     }
+	
+	public ImmutableSortedList(Comparator<? super E> comparator, E ... elements) {
+        super(Arrays.asList(elements), comparator, false);
+    }
+	
+	public ImmutableSortedList(E ... elements) {
+		super(Arrays.asList(elements));
+	}
 
     public ImmutableSortedList(Collection<? extends E> c, Comparator<? super E> comparator) {
-        super(c, comparator);
+        super(c, comparator, false);
+    }
+ 
+    public ImmutableSortedList(Collection<? extends E> c, Comparator<? super E> comparator, boolean unique) {
+        super(c, comparator, unique);
+    }
+    
+    public ImmutableSortedList(Collection<? extends E> c) {
+    	super(c, new NaturalComparator<E>(), false);
     }
 
-    private ImmutableSortedList(ImmutableList<E> l) {
-        super(l);
+    public ImmutableSortedList(Collection<? extends E> c, boolean unique) {
+    	super(c, new NaturalComparator<E>(), unique);
     }
 
+    protected ImmutableSortedList(ImmutableSortedList<E> cloned, int fromIndex, int toIndex) {
+    	super(cloned, fromIndex, toIndex);
+    }
+    
+    protected ImmutableSortedList(ImmutableSortedList<E> cloned, boolean descending) {
+    	super(cloned, descending);
+    }
+
+    
     @Override
     public ImmutableSortedList<E> descendingList() {
-        return new ImmutableSortedList<E>(super.descendingList());
+        return new ImmutableSortedList<E>(this, true);
+    }
+    
+    @Override
+    public ImmutableSortedList<E> subList(int fromIndex, int toIndex) {
+    	return new ImmutableSortedList<E>(this, fromIndex, toIndex);
     }
 
-    @Override
-    public int binarySearch(Object o) {
-        return super.binarySearch(o);
-    }
 }

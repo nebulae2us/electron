@@ -36,17 +36,17 @@ public class BuilderGenerator {
 
 	private static Properties templates;
 	
-	private static Properties getTemplates() {
-		if (templates == null) {
-			try {
-				templates = new Properties();
-				templates.loadFromXML( BuilderGenerator.class.getClassLoader().getResourceAsStream("template/builder.xml") );
-			} catch (Exception e) {
-				templates = null;
-				throw new RuntimeException("Failed to load builder templates", e);
-			}
+	static {
+		try {
+			templates = new Properties();
+			templates.loadFromXML( BuilderGenerator.class.getClassLoader().getResourceAsStream("template/builder.xml") );
+		} catch (Exception e) {
+			templates = null;
+			throw new RuntimeException("Failed to load builder templates", e);
 		}
-		
+	}
+	
+	private static Properties getTemplates() {
 		return templates;
 	}
 	

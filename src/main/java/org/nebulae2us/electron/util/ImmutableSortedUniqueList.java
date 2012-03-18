@@ -21,146 +21,205 @@ import java.util.*;
 /**
  * @author Trung Phan
  */
-public class ImmutableSortedUniqueList<E> extends AbstractImmutableList<E>
+public class ImmutableSortedUniqueList<E> extends ImmutableSortedList<E>
     implements List<E>, NavigableSet<E>, RandomAccess, Cloneable, Serializable {
 
 	private static final long serialVersionUID = 1804056996695224851L;
 
-	private final ImmutableSortedList<E> keys;
-
+    public ImmutableSortedUniqueList() {
+    	super();
+    }
+	
     public ImmutableSortedUniqueList(Collection<E> c, Comparator<? super E> comparator) {
-        List<E> keyList = new ArrayList<E>();
-        for (E e : c) {
-            int i = Collections.binarySearch(keyList, e, comparator);
-            if (i < 0) {
-                keyList.add(-i-1, e);
-            }
-        }
+    	super(c, comparator, true);
+    }
+    
+    public ImmutableSortedUniqueList(Collection<E> c) {
+    	this(c, new NaturalComparator<E>());
+    }
+    
+    public ImmutableSortedUniqueList(E ... elements) {
+    	this(Arrays.asList(elements));
+    }
+    
+    public ImmutableSortedUniqueList(Comparator<? super E> comparator, E ... elements) {
+    	this(Arrays.asList(elements), comparator);
+    }
+    
 
-        keys = new ImmutableSortedList<E>(keyList, comparator);
+    protected ImmutableSortedUniqueList(ImmutableSortedUniqueList<E> cloned, boolean descending) {
+    	super(cloned, descending);
     }
 
-    private ImmutableSortedUniqueList(ImmutableSortedUniqueList<E> cloned, boolean descending) {
-        this.keys = descending ? cloned.keys.descendingList() : cloned.keys;
+    protected ImmutableSortedUniqueList(ImmutableSortedUniqueList<E> cloned, int fromIndex, int toIndex) {
+    	super(cloned, fromIndex, toIndex);
+    }
+    
+    public ImmutableSortedUniqueList<E> subList(int fromIndex, int toIndex) {
+        return new ImmutableSortedUniqueList<E>(this, fromIndex, toIndex);
     }
 
-    public int indexOf(Object o) {
-        return keys.indexOf(o);
+    private int lowerIndex(E e) {
+    	if (e == null) {
+    		return -1;
+    	}
+    	
+    	int idx = binarySearch(e);
+    	if (idx == -1 || idx == 0) {
+    		return -1;
+    	}
+    	else if (idx < - 1) {
+    		return - idx - 2;
+    	}
+    	else {
+    		return idx - 1;
+    	}
     }
-
-    public int lastIndexOf(Object o) {
-        return keys.lastIndexOf(o);
-    }
-
-    public ListIterator<E> listIterator() {
-        return keys.listIterator();
-    }
-
-    public ListIterator<E> listIterator(int index) {
-        return keys.listIterator(index);
-    }
-
-    public List<E> subList(int fromIndex, int toIndex) {
-        return keys.subList(fromIndex, toIndex);
-    }
-
+    
     public E lower(E e) {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    	int idx = lowerIndex(e);
+    	return idx < 0 ? null : get(idx);
     }
 
+    private int floorIndex(E e) {
+    	if (e == null) {
+    		return -1;
+    	}
+    	
+    	int idx = binarySearch(e);
+    	if (idx == -1) {
+    		return -1;
+    	}
+    	else if (idx < - 1) {
+    		return - idx - 2;
+    	}
+    	else {
+    		return idx;
+    	}
+    }
+    
     public E floor(E e) {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    	int idx = floorIndex(e);
+    	return idx < 0 ? null : get(idx);
     }
 
+    private int ceilingIndex(E e) {
+    	if (e == null) {
+    		return -1;
+    	}
+    	
+    	int idx = binarySearch(e);
+    	if (idx == -1 - size()) {
+    		return -1;
+    	}
+    	else if (idx < 0) {
+    		return -idx - 1;
+    	}
+    	else {
+    		return idx;
+    	}    	
+    }
+    
     public E ceiling(E e) {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    	int idx = ceilingIndex(e);
+    	return idx < 0 ? null : get(idx);
     }
 
+    private int higherIndex(E e) {
+    	if (e == null) {
+    		return -1;
+    	}
+    	
+    	int idx = binarySearch(e);
+    	if (idx == size() - 1 || idx == -1 - size()) {
+    		return -1;
+    	}
+    	else if (idx < 0) {
+    		return -idx - 1;
+    	}
+    	else {
+    		return idx + 1;
+    	}    	
+    }
+    
     public E higher(E e) {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    	int idx = higherIndex(e);
+    	return idx < 0 ? null : get(idx);
     }
 
     public E pollFirst() {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        throw new UnsupportedOperationException();
     }
 
     public E pollLast() {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    public int size() {
-        return keys.size();
-    }
-
-    public boolean isEmpty() {
-        return keys.size() == 0;
-    }
-
-    public boolean contains(Object o) {
-        return keys.contains(o);
-    }
-
-    public Iterator<E> iterator() {
-        return keys.iterator();
-    }
-
-    public Object[] toArray() {
-        return keys.toArray();
-    }
-
-    public <T> T[] toArray(T[] a) {
-        return keys.toArray(a);
-    }
-
-    public boolean containsAll(Collection<?> c) {
-        return keys.containsAll(c);
-    }
-
-    public E get(int index) {
-        return keys.get(index);
+        throw new UnsupportedOperationException();
     }
 
     public ImmutableSortedUniqueList<E> descendingSet() {
+        return descendingList();
+    }
+
+    public ImmutableSortedUniqueList<E> descendingList() {
         return new ImmutableSortedUniqueList<E>(this, true);
     }
-
-    public Iterator<E> descendingIterator() {
-        return descendingSet().iterator();
+    
+    public ImmutableSortedUniqueList<E> subSet(E fromElement, boolean fromInclusive, E toElement, boolean toInclusive) {
+    	
+    	int lowerIndex = fromInclusive ? floorIndex(fromElement) : lowerIndex(fromElement);
+    	if (lowerIndex < 0) {
+    		return new ImmutableSortedUniqueList<E>();
+    	}
+    	int higherIndex = toInclusive ? ceilingIndex(toElement) : higherIndex(toElement);
+    	if (higherIndex <= lowerIndex) {
+    		return new ImmutableSortedUniqueList<E>();
+    	}
+    	
+    	return subList(lowerIndex, higherIndex);
     }
 
-    public NavigableSet<E> subSet(E fromElement, boolean fromInclusive, E toElement, boolean toInclusive) {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    public ImmutableSortedUniqueList<E> headSet(E toElement, boolean inclusive) {
+    	if (isEmpty()) {
+    		return this;
+    	}
+    	
+    	int higherIndex = inclusive ? ceilingIndex(toElement) : higherIndex(toElement);
+    	if (higherIndex <= 0) {
+    		return new ImmutableSortedUniqueList<E>();
+    	}
+
+        return subList(0, higherIndex);
     }
 
-    public NavigableSet<E> headSet(E toElement, boolean inclusive) {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    public ImmutableSortedUniqueList<E> tailSet(E fromElement, boolean inclusive) {
+    	if (isEmpty()) {
+    		return this;
+    	}
+    	
+    	int lowerIndex = inclusive ? floorIndex(fromElement) : lowerIndex(fromElement);
+    	if (lowerIndex < 0) {
+    		return new ImmutableSortedUniqueList<E>();
+    	}
+    	return subList(lowerIndex, size());
     }
 
-    public NavigableSet<E> tailSet(E fromElement, boolean inclusive) {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    public ImmutableSortedUniqueList<E> subSet(E fromElement, E toElement) {
+    	return subSet(fromElement, true, toElement, true);
     }
 
-    public Comparator<? super E> comparator() {
-        return keys.comparator();
+    public ImmutableSortedUniqueList<E> headSet(E toElement) {
+    	return headSet(toElement, true);
     }
 
-    public SortedSet<E> subSet(E fromElement, E toElement) {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    public SortedSet<E> headSet(E toElement) {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    public SortedSet<E> tailSet(E fromElement) {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    public ImmutableSortedUniqueList<E> tailSet(E fromElement) {
+    	return tailSet(fromElement, true);
     }
 
     public E first() {
-        return keys.get(0);
+        return size() == 0 ? null : get(0);
     }
 
     public E last() {
-        return keys.get(keys.size() - 1);
+        return size() == 0 ? null : get(size() - 1);
     }
+
 }

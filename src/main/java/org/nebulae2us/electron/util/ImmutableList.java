@@ -16,6 +16,7 @@
 package org.nebulae2us.electron.util;
 
 import java.io.Serializable;
+import java.lang.reflect.Array;
 import java.util.*;
 
 /**
@@ -25,7 +26,7 @@ public class ImmutableList<E> extends AbstractImmutableList<E> implements List<E
 
 	private static final long serialVersionUID = -2955135267976316366L;
 
-	private final E[] data;
+	private final Object[] data;
 
     private final int fromIndex;
 
@@ -33,7 +34,7 @@ public class ImmutableList<E> extends AbstractImmutableList<E> implements List<E
 
     private final boolean descending;
 
-    private final Comparator<? super E> comparator;
+    private final Comparator<Object> comparator;
 
     private final EqualityComparator<E> equalityComparator;
 
@@ -57,43 +58,78 @@ public class ImmutableList<E> extends AbstractImmutableList<E> implements List<E
     }
 
     public ImmutableList(Comparator<? super E> comparator, E ... elements) {
-        this(Arrays.asList(elements), comparator);
+        this(Arrays.asList(elements), comparator, false);
     }
 
     public ImmutableList(EqualityComparator<E> equalityComparator, E ... elements) {
-        this(Arrays.asList(elements), equalityComparator);
+        this(Arrays.asList(elements), equalityComparator, false);
     }
 
     @SuppressWarnings("unchecked")
-	public ImmutableList(Collection<? extends E> c, EqualityComparator<E> equalityComparator) {
+	public ImmutableList(Collection<? extends E> c, EqualityComparator<E> equalityComparator, boolean unique) {
         this.fromIndex = 0;
-        data = (E[]) new Object[c.size()];
-        c.toArray(data);
-        this.size = c.size();
         this.descending = false;
         this.comparator = null;
         this.equalityComparator = equalityComparator;
-    }
 
+    	if (unique) {
+    		List<E> uniqueList = new ArrayList<E>(c.size());
+    		for (E e : c) {
+    			boolean dup = false;
+    			for (E elementOfUniqueList : uniqueList) {
+    				if (equalityComparator.equal(e, elementOfUniqueList)) {
+    					dup = true;
+    					break;
+    				}
+    			}
+    			if (!dup) {
+    				uniqueList.add(e);
+    			}
+    		}
+    		c = uniqueList;
+    	}
+    	
+        data = new Object[c.size()];
+        c.toArray(data);
+        this.size = c.size();
+    }
+    
     public ImmutableList(Collection<? extends E> c) {
-        this(c, new ObjectEqualityComparator<E>());
+        this(c, new ObjectEqualityComparator<E>(), false);
     }
 
-    protected ImmutableList(Collection<? extends E> c, Comparator<? super E> comparator) {
+    protected ImmutableList(Collection<? extends E> c, Comparator<? super E> comparator, boolean unique) {
         this.fromIndex = 0;
+        this.descending = false;
+        this.comparator = (Comparator<Object>)comparator;
 
-        E[] newData = (E[])new Object[c.size()];
+        if (unique) {
+    		List<E> uniqueList = new ArrayList<E>(c.size());
+    		for (E e : c) {
+    			boolean dup = false;
+    			for (E elementOfUniqueList : uniqueList) {
+    				if (comparator.compare(e, elementOfUniqueList) == 0) {
+    					dup = true;
+    					break;
+    				}
+    			}
+    			if (!dup) {
+    				uniqueList.add(e);
+    			}
+    		}
+    		c = uniqueList;
+    	}
+    	
+        Object[] newData = new Object[c.size()];
         c.toArray(newData);
-        Arrays.sort(newData, comparator);
+        Arrays.sort(newData, this.comparator);
         data = newData;
 
         this.size = c.size();
-        this.descending = false;
-        this.comparator = comparator;
         this.equalityComparator = null;
     }
 
-    private ImmutableList(ImmutableList<E> cloned, int fromIndex, int toIndex) {
+    protected ImmutableList(ImmutableList<E> cloned, int fromIndex, int toIndex) {
         if (fromIndex < 0 || fromIndex >= cloned.size ||
             toIndex < 0 || toIndex > cloned.size || toIndex < fromIndex  ) {
             throw new IllegalArgumentException("fromIndex or toIndex is not valid.");
@@ -107,7 +143,7 @@ public class ImmutableList<E> extends AbstractImmutableList<E> implements List<E
         this.equalityComparator = cloned.equalityComparator;
     }
 
-    private ImmutableList(ImmutableList<E> cloned, boolean descending) {
+    protected ImmutableList(ImmutableList<E> cloned, boolean descending) {
         this.fromIndex = cloned.fromIndex;
         this.data = cloned.data;
         this.size = cloned.size;
@@ -142,18 +178,19 @@ public class ImmutableList<E> extends AbstractImmutableList<E> implements List<E
             throw new IndexOutOfBoundsException("Index: " + index + ", Size: " + size);
         }
 
-        return data[descending ? fromIndex + size - index - 1 : fromIndex + index];
+        return (E)data[descending ? fromIndex + size - index - 1 : fromIndex + index];
     }
 
     private int indexOf(Object o, boolean descending) {
         boolean realDesc = this.descending ? !descending : descending;
 
         if (comparator != null) {
-            return Arrays.binarySearch(data, fromIndex, fromIndex + size, comparator);
+            int idx = Arrays.binarySearch(data, fromIndex, fromIndex + size, o, comparator);
+            return idx < 0 ? -1 : idx;
         }
         else if (equalityComparator != null) {
             for (int i = 0; i < size; i++) {
-                if (equalityComparator.equal((E)o, data[realDesc ? fromIndex + size - i - 1 : fromIndex + i]))
+                if (equalityComparator.equal((E)o, (E)data[realDesc ? fromIndex + size - i - 1 : fromIndex + i]))
                     return i;
             }
         }
@@ -168,7 +205,7 @@ public class ImmutableList<E> extends AbstractImmutableList<E> implements List<E
         return indexOf(o, true);
     }
 
-    public List<E> subList(int fromIndex, int toIndex) {
+    public ImmutableList<E> subList(int fromIndex, int toIndex) {
         return new ImmutableList<E>(this, fromIndex, toIndex);
     }
 
@@ -188,12 +225,38 @@ public class ImmutableList<E> extends AbstractImmutableList<E> implements List<E
     }
 
     public <T> T[] toArray(T[] a) {
-        return null;
+    	
+    	T[] result = a;
+    	
+    	if (result.length < size) {
+    		result = (T[])Array.newInstance(a.getClass(), size);
+    	}
+    	
+    	if (descending) {
+    		for (int i = size - 1; i >= 0; i--) {
+    			result[i] = (T)data[fromIndex + i];
+    		}
+    	}
+    	else {
+    		for (int i = 0; i < size; i++) {
+    			result[i] = (T)data[fromIndex + i];
+    		}
+    	}
+    	
+        if (result.length > size)
+            result[size] = null;
+
+        return result;
     }
 
     public Iterator<E> iterator() {
-        return new InternalListIterator(0);
+        return new InternalListIterator(0, false);
     }
+    
+	public Iterator<E> descendingIterator() {
+		return new InternalListIterator(0, true);
+	}
+    
 
     public Comparator<? super E> comparator() {
         return comparator;
@@ -202,31 +265,34 @@ public class ImmutableList<E> extends AbstractImmutableList<E> implements List<E
     private final class InternalListIterator extends AbstractImmutableListIterator<E> implements ListIterator<E> {
 
         private int index;
+        
+        private final boolean descending;
 
-        private InternalListIterator(int index) {
-            this.index = index;
+        private InternalListIterator(int index, boolean descending) {
+            this.descending = descending;
+            this.index = descending ? ImmutableList.this.size - 1 - index : index;
         }
 
         public boolean hasNext() {
-            return index < ImmutableList.this.size;
+            return this.descending ? index >= 0 : index < ImmutableList.this.size;
         }
 
         public E next() {
             if (!hasNext()) {
                 throw new NoSuchElementException();
             }
-            return ImmutableList.this.get(index ++);
+            return ImmutableList.this.get(this.descending ? index-- : index ++);
         }
 
         public boolean hasPrevious() {
-            return index > 0;
+            return this.descending ? index < ImmutableList.this.size - 1 : index > 0;
         }
 
         public E previous() {
             if (!hasPrevious()) {
                 throw new NoSuchElementException();
             }
-            return ImmutableList.this.get(--index);
+            return ImmutableList.this.get(this.descending ? ++index : --index);
         }
 
         public int nextIndex() {
@@ -234,21 +300,32 @@ public class ImmutableList<E> extends AbstractImmutableList<E> implements List<E
         }
 
         public int previousIndex() {
-            return index - 1;
+            return this.descending ? index + 1 : index - 1;
         }
     }
 
     public ListIterator<E> listIterator() {
-        return new InternalListIterator(0);
+        return new InternalListIterator(0, false);
     }
 
+    public ListIterator<E> descendingListIterator() {
+        return new InternalListIterator(0, true);
+    }
+    
     public ListIterator<E> listIterator(int index) {
         if (index < 0 || index > size) {
             throw new IndexOutOfBoundsException("Index: " + index + ", Size: " + size);
         }
-        return new InternalListIterator(index);
+        return new InternalListIterator(index, false);
     }
 
+    public ListIterator<E> descendingListIterator(int index) {
+        if (index < 0 || index > size) {
+            throw new IndexOutOfBoundsException("Index: " + index + ", Size: " + size);
+        }
+        return new InternalListIterator(index, true);
+    }
+    
     public ImmutableList<E> descendingList() {
         return new ImmutableList<E>(this, true);
     }
@@ -257,7 +334,12 @@ public class ImmutableList<E> extends AbstractImmutableList<E> implements List<E
         if (comparator == null) {
             throw new NullPointerException();
         }
-        return Arrays.binarySearch(this.data, this.fromIndex, this.fromIndex + this.size, comparator);
+        if (comparator.getClass() == NaturalComparator.class) {
+            return Arrays.binarySearch(this.data, this.fromIndex, this.fromIndex + this.size, o);
+        }
+        else {
+            return Arrays.binarySearch(this.data, this.fromIndex, this.fromIndex + this.size, o, comparator);
+        }
     }
 
 }

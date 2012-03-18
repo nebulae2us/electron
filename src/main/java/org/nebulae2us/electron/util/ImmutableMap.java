@@ -30,16 +30,23 @@ public class ImmutableMap<K, V> extends AbstractImmutableMap<K, V> implements Ma
 
     public ImmutableMap(Map<? extends K, ? extends V> m, EqualityComparator<K> equalityComparator) {
 
+        int capacity = 1;
+        while (capacity < m.size())
+            capacity <<= 1;
+    	
         this.equalityComparator = equalityComparator;
 
         size = m.size();
-        data = new List[16];
+        data = new List[capacity];
+        
+        
         for (Map.Entry<? extends K, ? extends V> e : m.entrySet()) {
             int h = equalityComparator.hashCode(e.getKey());
             int i = indexFor(h);
             List<InternalEntry> list = data[i];
             if (list == null) {
-                data[i] = new ArrayList<InternalEntry>();
+                list = new ArrayList<InternalEntry>();
+                data[i] = list;
             }
 
             boolean contains = false;
@@ -64,16 +71,22 @@ public class ImmutableMap<K, V> extends AbstractImmutableMap<K, V> implements Ma
         }
     }
 
-    ImmutableMap(Collection<K> c, EqualityComparator equalityComparator) {
+    ImmutableMap(Collection<K> c, EqualityComparator<K> equalityComparator) {
+
+        int capacity = 1;
+        while (capacity < c.size())
+            capacity <<= 1;
+        
         this.equalityComparator = equalityComparator;
 
-        data = new List[16];
+        data = new List[capacity];
         for (K k : c) {
             int h = equalityComparator.hashCode(k);
             int i = indexFor(h);
             List<InternalEntry> list = data[i];
             if (list == null) {
                 data[i] = new ArrayList<InternalEntry>();
+                list = data[i];
             }
             InternalEntry entry = new InternalEntry(k, null);
             list.add(entry);

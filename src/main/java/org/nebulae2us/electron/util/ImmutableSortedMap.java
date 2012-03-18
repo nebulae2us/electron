@@ -29,21 +29,23 @@ public class ImmutableSortedMap<K, V> extends AbstractImmutableMap<K, V> impleme
     public ImmutableSortedMap(Map<K, V> data, Comparator<? super K> comparator) {
         keys = new ImmutableSortedUniqueList<K>(data.keySet(), comparator);
 
-        this.data = new ArrayList<ImmutableSortedMap<K,V>.InternalEntry>(keys.size());
+        ArrayList<InternalEntry> _data = new ArrayList<ImmutableSortedMap<K,V>.InternalEntry>(keys.size());
         
         for (Entry<K, V> entry : data.entrySet()) {
             InternalEntry newEntry = new InternalEntry(entry.getKey(), entry.getValue());
-            this.data.set(keys.indexOf(entry.getKey()), newEntry);
+            _data.set(keys.indexOf(entry.getKey()), newEntry);
         }
+        
+        this.data = new ImmutableList<ImmutableSortedMap<K,V>.InternalEntry>(_data);
     }
 
     public ImmutableSortedMap(SortedMap<K, V> map) {
         this(map, map.comparator());
     }
 
-    public ImmutableSortedMap(ImmutableSortedMap<K, V> cloned) {
+    public ImmutableSortedMap(ImmutableSortedMap<K, V> cloned, boolean descending) {
         this.data = cloned.data;
-        this.keys = cloned.keys;
+        this.keys = descending ? cloned.keys.descendingList() : cloned.keys;
     }
 
     public Entry<K, V> lowerEntry(K key) {
@@ -79,11 +81,11 @@ public class ImmutableSortedMap<K, V> extends AbstractImmutableMap<K, V> impleme
     }
 
     public Entry<K, V> firstEntry() {
-        return data.get(0);
+        return data.size() == 0 ? null : data.get(0);
     }
 
     public Entry<K, V> lastEntry() {
-        return data.get(keys.size() - 1);
+        return data.size() == 0 ? null : data.get(keys.size() - 1);
     }
 
     public final Entry<K, V> pollFirstEntry() {
@@ -95,7 +97,7 @@ public class ImmutableSortedMap<K, V> extends AbstractImmutableMap<K, V> impleme
     }
 
     public NavigableMap<K, V> descendingMap() {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    	return new ImmutableSortedMap<K, V>(this, true);
     }
 
     public NavigableSet<K> navigableKeySet() {

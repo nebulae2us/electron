@@ -144,7 +144,7 @@ public class TestCreatedBuilders {
 					// a different way to define child
 					person().name("Hannah Deere").storeTo(repo, 4)
 				)
-				.friend$restoreFrom(repo, 1);
+				.friend$restoreFrom(repo, 1)
 				;
 		
 		tom.friend$restoreFrom(repo, 2);
@@ -191,7 +191,7 @@ public class TestCreatedBuilders {
 		PersonBuilder<?> john = person()
 				.storeTo(repo, 2)
 				.name("John Deere")
-				.friend$restoreFrom(repo, 1);
+				.friend$restoreFrom(repo, 1)
 				;
 		
 		assertTrue(tom == john.getFriends().get(0));

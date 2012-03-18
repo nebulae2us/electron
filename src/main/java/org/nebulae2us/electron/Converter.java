@@ -19,7 +19,6 @@ import static org.nebulae2us.electron.Constants.SCALAR_TYPES;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
-import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.math.BigDecimal;
 import java.math.BigInteger;
