@@ -32,6 +32,11 @@ public class ImmutableSortedMap<K, V> extends AbstractImmutableMap<K, V> impleme
         ArrayList<InternalEntry> _data = new ArrayList<ImmutableSortedMap<K,V>.InternalEntry>(keys.size());
         
         for (Entry<K, V> entry : data.entrySet()) {
+        	
+        	if (entry.getKey() == null) {
+        		continue;
+        	}
+        	
             InternalEntry newEntry = new InternalEntry(entry.getKey(), entry.getValue());
             _data.set(keys.indexOf(entry.getKey()), newEntry);
         }
@@ -49,7 +54,8 @@ public class ImmutableSortedMap<K, V> extends AbstractImmutableMap<K, V> impleme
     }
 
     public Entry<K, V> lowerEntry(K key) {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    	K lowerKey = keys.lower(key);
+    	return lowerKey == null ? null : this.data.get(this.keys.indexOf(lowerKey));
     }
 
     public K lowerKey(K key) {
@@ -57,7 +63,8 @@ public class ImmutableSortedMap<K, V> extends AbstractImmutableMap<K, V> impleme
     }
 
     public Entry<K, V> floorEntry(K key) {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    	K floorKey = keys.floor(key);
+    	return floorKey == null ? null : this.data.get(this.keys.indexOf(floorKey));
     }
 
     public K floorKey(K key) {
@@ -65,7 +72,8 @@ public class ImmutableSortedMap<K, V> extends AbstractImmutableMap<K, V> impleme
     }
 
     public Entry<K, V> ceilingEntry(K key) {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    	K ceilingKey = keys.ceiling(key);
+    	return ceilingKey == null ? null : this.data.get(this.keys.indexOf(ceilingKey));
     }
 
     public K ceilingKey(K key) {
@@ -73,11 +81,12 @@ public class ImmutableSortedMap<K, V> extends AbstractImmutableMap<K, V> impleme
     }
 
     public Entry<K, V> higherEntry(K key) {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    	K higherKey = keys.higher(key);
+    	return higherKey == null ? null : this.data.get(this.keys.indexOf(higherKey));
     }
 
     public K higherKey(K key) {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    	return keys.higher(key);
     }
 
     public Entry<K, V> firstEntry() {
@@ -109,6 +118,10 @@ public class ImmutableSortedMap<K, V> extends AbstractImmutableMap<K, V> impleme
     }
 
     public NavigableMap<K, V> subMap(K fromKey, boolean fromInclusive, K toKey, boolean toInclusive) {
+    	
+    	
+    	
+    	
         return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
 
@@ -137,11 +150,11 @@ public class ImmutableSortedMap<K, V> extends AbstractImmutableMap<K, V> impleme
     }
 
     public K firstKey() {
-        return keys.get(0);
+        return keys.size() == 0 ? null : keys.get(0);
     }
 
     public K lastKey() {
-        return keys.get(keys.size() - 1);
+        return keys.size() == 0 ? null : keys.get(keys.size() - 1);
     }
 
     public int size() {
@@ -161,9 +174,8 @@ public class ImmutableSortedMap<K, V> extends AbstractImmutableMap<K, V> impleme
     }
 
     public V get(Object key) {
-//        int i = Collections.binarySearch(keys, (K)key, comparator);
-//        return i >= 0 ? this.data[i].getValue() : null;
-        return null;
+    	int idx = keys.indexOf(key);
+    	return idx < 0 ? null : this.data.get(idx).getValue();
     }
 
     public Set<K> keySet() {
@@ -185,6 +197,10 @@ public class ImmutableSortedMap<K, V> extends AbstractImmutableMap<K, V> impleme
         private final V value;
 
         private InternalEntry(K key, V value) {
+        	if (key == null) {
+        		throw new NullPointerException();
+        	}
+        	
             this.key = key;
             this.value = value;
         }

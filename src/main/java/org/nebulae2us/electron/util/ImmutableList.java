@@ -28,6 +28,9 @@ public class ImmutableList<E> extends AbstractImmutableList<E> implements List<E
 
 	private final Object[] data;
 
+	/**
+	 * fromIndex corresponding to the index of data;
+	 */
     private final int fromIndex;
 
     private final int size;
@@ -36,7 +39,7 @@ public class ImmutableList<E> extends AbstractImmutableList<E> implements List<E
 
     private final Comparator<Object> comparator;
 
-    private final EqualityComparator<E> equalityComparator;
+    private final EqualityComparator<Object> equalityComparator;
 
 
     public ImmutableList(ImmutableList<E> c) {
@@ -65,12 +68,11 @@ public class ImmutableList<E> extends AbstractImmutableList<E> implements List<E
         this(Arrays.asList(elements), equalityComparator, false);
     }
 
-    @SuppressWarnings("unchecked")
 	public ImmutableList(Collection<? extends E> c, EqualityComparator<E> equalityComparator, boolean unique) {
         this.fromIndex = 0;
         this.descending = false;
         this.comparator = null;
-        this.equalityComparator = equalityComparator;
+        this.equalityComparator = (EqualityComparator<Object>)equalityComparator;
 
     	if (unique) {
     		List<E> uniqueList = new ArrayList<E>(c.size());
@@ -135,9 +137,9 @@ public class ImmutableList<E> extends AbstractImmutableList<E> implements List<E
             throw new IllegalArgumentException("fromIndex or toIndex is not valid.");
         }
 
-        this.fromIndex = cloned.fromIndex + fromIndex;
+        this.size = toIndex - fromIndex;
+        this.fromIndex = cloned.descending ? cloned.fromIndex + cloned.size - toIndex : cloned.fromIndex + fromIndex;
         this.data = cloned.data;
-        this.size = cloned.fromIndex + toIndex - this.fromIndex;
         this.descending = cloned.descending;
         this.comparator = cloned.comparator;
         this.equalityComparator = cloned.equalityComparator;
@@ -173,7 +175,8 @@ public class ImmutableList<E> extends AbstractImmutableList<E> implements List<E
         return true;
     }
 
-    public E get(int index) {
+    @SuppressWarnings("unchecked")
+	public E get(int index) {
         if (index < 0 || index >= size) {
             throw new IndexOutOfBoundsException("Index: " + index + ", Size: " + size);
         }
@@ -186,12 +189,14 @@ public class ImmutableList<E> extends AbstractImmutableList<E> implements List<E
 
         if (comparator != null) {
             int idx = Arrays.binarySearch(data, fromIndex, fromIndex + size, o, comparator);
-            return idx < 0 ? -1 : idx;
+            if (idx >= 0) {
+                return this.descending ? fromIndex + this.size - idx - 1 : idx - fromIndex;
+            }
         }
         else if (equalityComparator != null) {
             for (int i = 0; i < size; i++) {
-                if (equalityComparator.equal((E)o, (E)data[realDesc ? fromIndex + size - i - 1 : fromIndex + i]))
-                    return i;
+                if (equalityComparator.equal(o, data[realDesc ? fromIndex + size - i - 1 : fromIndex + i]))
+                    return descending ? this.size - i - 1 : i;
             }
         }
         return -1;
@@ -212,8 +217,8 @@ public class ImmutableList<E> extends AbstractImmutableList<E> implements List<E
     public Object[] toArray() {
         Object[] result = new Object[size];
         if (descending) {
-            for (int i = size - 1; i >= 0; i--) {
-                result[i] = data[fromIndex + i];
+            for (int i = 0; i < size; i++) {
+                result[i] = data[fromIndex + size - i - 1];
             }
         }
         else {
@@ -229,12 +234,12 @@ public class ImmutableList<E> extends AbstractImmutableList<E> implements List<E
     	T[] result = a;
     	
     	if (result.length < size) {
-    		result = (T[])Array.newInstance(a.getClass(), size);
+    		result = (T[])Array.newInstance(a.getClass().getComponentType(), size);
     	}
     	
     	if (descending) {
-    		for (int i = size - 1; i >= 0; i--) {
-    			result[i] = (T)data[fromIndex + i];
+    		for (int i = 0; i < size; i++) {
+    			result[i] = (T)data[fromIndex + size - i - 1];
     		}
     	}
     	else {
@@ -267,10 +272,10 @@ public class ImmutableList<E> extends AbstractImmutableList<E> implements List<E
         private int index;
         
         private final boolean descending;
-
+        
         private InternalListIterator(int index, boolean descending) {
             this.descending = descending;
-            this.index = descending ? ImmutableList.this.size - 1 - index : index;
+            this.index = this.descending ? ImmutableList.this.size - 1 - index : index;
         }
 
         public boolean hasNext() {
@@ -334,12 +339,16 @@ public class ImmutableList<E> extends AbstractImmutableList<E> implements List<E
         if (comparator == null) {
             throw new NullPointerException();
         }
+        
+        int idx = 0;
         if (comparator.getClass() == NaturalComparator.class) {
-            return Arrays.binarySearch(this.data, this.fromIndex, this.fromIndex + this.size, o);
+            idx = Arrays.binarySearch(this.data, this.fromIndex, this.fromIndex + this.size, o);
         }
         else {
-            return Arrays.binarySearch(this.data, this.fromIndex, this.fromIndex + this.size, o, comparator);
+            idx = Arrays.binarySearch(this.data, this.fromIndex, this.fromIndex + this.size, o, comparator);
         }
+        
+        return this.descending ? this.size - idx - 1 : idx;
     }
 
 }

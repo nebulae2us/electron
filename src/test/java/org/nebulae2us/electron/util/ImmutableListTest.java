@@ -70,7 +70,11 @@ public class ImmutableListTest {
     	
     	ImmutableList<Integer> fixture =
     			new ImmutableList<Integer>(source)
-    			.subList(1, 8).descendingList().subList(1, 7);
+    			.subList(1, 8).descendingList().subList(0, 6);
+    	
+    	for (int i = 0; i < fixture.size(); i++) {
+    		System.out.println(fixture.get(i));
+    	}
     	
     	assertEquals(Arrays.asList(8, 7, 6, 5, 4, 3), fixture);
     	
@@ -244,7 +248,7 @@ public class ImmutableListTest {
     	
     	ImmutableList<Integer> fixture =
     			new ImmutableList<Integer>(source)
-    			.subList(1, 8).descendingList().subList(1, 7);
+    			.subList(1, 8).descendingList().subList(0, 6);
     	
     	assertEquals(Arrays.asList(8, 7, 6, 5, 4, 3), fixture);
     	
