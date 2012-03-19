@@ -1,6 +1,5 @@
 package org.nebulae2us.electron.util;
 
-import java.util.Collection;
 import java.util.Iterator;
 import java.util.Set;
 

@@ -68,6 +68,7 @@ public class ImmutableList<E> extends AbstractImmutableList<E> implements List<E
         this(Arrays.asList(elements), equalityComparator, false);
     }
 
+	@SuppressWarnings("unchecked")
 	public ImmutableList(Collection<? extends E> c, EqualityComparator<E> equalityComparator, boolean unique) {
         this.fromIndex = 0;
         this.descending = false;

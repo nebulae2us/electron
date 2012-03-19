@@ -336,11 +336,11 @@ public class Converter {
 		private static Collection<?> createMutableCollection(Class<?> c) {
 			if (List.class.isAssignableFrom(c)) {
 				
-				return new ArrayList();
+				return new ArrayList<Object>();
 					
 			}
 			
-			return new HashSet();
+			return new HashSet<Object>();
 		}
 		
 		private Collection convertCollectionType(Type type, Object builder) {
@@ -361,7 +361,6 @@ public class Converter {
 			return null;
 		}
 		
-		@SuppressWarnings("rawtypes")
 		private Object to(Type type) {
 
 			if (SCALAR_TYPES.contains(builder.getClass()) || SCALAR_TYPES.contains(type)) {

@@ -44,6 +44,7 @@ public abstract class AbstractImmutableList<E> extends AbstractImmutableCollecti
         throw new UnsupportedOperationException();
     }
 
+    @Override
     public boolean equals(Object o) {
     	if (o == this) {
     		return true;

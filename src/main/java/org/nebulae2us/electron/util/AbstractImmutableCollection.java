@@ -42,7 +42,8 @@ public abstract class AbstractImmutableCollection<E> implements Collection<E> {
         return result;
     }
 
-    public <T> T[] toArray(T[] a) {
+    @SuppressWarnings("unchecked")
+	public <T> T[] toArray(T[] a) {
     	T[] result = a;
 
     	int size = size();
