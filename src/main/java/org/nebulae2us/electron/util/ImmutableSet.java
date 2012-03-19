@@ -23,7 +23,7 @@ import java.util.Set;
 /**
  * @author Trung Phan
  */
-public class ImmutableSet<E> extends AbstractImmutableCollection<E> implements Set<E> {
+public class ImmutableSet<E> extends AbstractImmutableSet<E> implements Set<E> {
 
     private final ImmutableMap<E, ?> hashes;
 
@@ -41,10 +41,6 @@ public class ImmutableSet<E> extends AbstractImmutableCollection<E> implements S
 
     public int size() {
         return hashes.size();
-    }
-
-    public boolean isEmpty() {
-        return hashes.isEmpty();
     }
 
     public boolean contains(Object o) {

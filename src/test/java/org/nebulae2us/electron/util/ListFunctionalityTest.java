@@ -5,9 +5,9 @@ import java.util.List;
 
 import org.junit.Test;
 
-import static org.nebulae2us.electron.util.CollectionTestUtils.*;
+import static org.nebulae2us.electron.util.ListTestUtils.*;
 
-public class FunctionalityTest {
+public class ListFunctionalityTest {
 
 	
 	
@@ -75,5 +75,7 @@ public class FunctionalityTest {
 	}
 	
 
+	
+	
 	
 }

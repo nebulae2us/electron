@@ -158,21 +158,8 @@ public class ImmutableList<E> extends AbstractImmutableList<E> implements List<E
         return size;
     }
 
-    public boolean isEmpty() {
-        return size == 0;
-    }
-
     public boolean contains(Object o) {
         return indexOf(o) >= 0;
-    }
-
-    public boolean containsAll(Collection<?> c) {
-        for (Object o : c) {
-            if (!contains(o)) {
-                return false;
-            }
-        }
-        return true;
     }
 
     @SuppressWarnings("unchecked")
@@ -212,46 +199,6 @@ public class ImmutableList<E> extends AbstractImmutableList<E> implements List<E
 
     public ImmutableList<E> subList(int fromIndex, int toIndex) {
         return new ImmutableList<E>(this, fromIndex, toIndex);
-    }
-
-    public Object[] toArray() {
-        Object[] result = new Object[size];
-        if (descending) {
-            for (int i = 0; i < size; i++) {
-                result[i] = data[fromIndex + size - i - 1];
-            }
-        }
-        else {
-            for (int i = 0; i < size; i++) {
-                result[i] = data[fromIndex + i];
-            }
-        }
-        return result;
-    }
-
-    public <T> T[] toArray(T[] a) {
-    	
-    	T[] result = a;
-    	
-    	if (result.length < size) {
-    		result = (T[])Array.newInstance(a.getClass().getComponentType(), size);
-    	}
-    	
-    	if (descending) {
-    		for (int i = 0; i < size; i++) {
-    			result[i] = (T)data[fromIndex + size - i - 1];
-    		}
-    	}
-    	else {
-    		for (int i = 0; i < size; i++) {
-    			result[i] = (T)data[fromIndex + i];
-    		}
-    	}
-    	
-        if (result.length > size)
-            result[size] = null;
-
-        return result;
     }
 
     public Iterator<E> iterator() {

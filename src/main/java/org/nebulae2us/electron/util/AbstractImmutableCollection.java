@@ -15,6 +15,7 @@
  */
 package org.nebulae2us.electron.util;
 
+import java.lang.reflect.Array;
 import java.util.Collection;
 import java.util.Iterator;
 
@@ -27,12 +28,38 @@ public abstract class AbstractImmutableCollection<E> implements Collection<E> {
 
     }
 
+    public boolean isEmpty() {
+    	return size() == 0;
+    }
+    
     public Object[] toArray() {
-        return new Object[0];  //To change body of implemented methods use File | Settings | File Templates.
+        Object[] result = new Object[size()];
+        Iterator<E> iterator = iterator();
+        int i = 0;
+        while (iterator.hasNext()) {
+        	result[i++] = iterator.next();
+        }
+        return result;
     }
 
     public <T> T[] toArray(T[] a) {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    	T[] result = a;
+
+    	int size = size();
+    	if (result.length < size) {
+    		result = (T[])Array.newInstance(a.getClass().getComponentType(), size);
+    	}
+    	
+        Iterator<E> iterator = iterator();
+    	int i = 0;
+        while (iterator.hasNext()) {
+        	result[i++] = (T)iterator.next();
+        }
+    	
+        if (result.length > size)
+            result[size] = null;
+
+        return result;
     }
 
     public boolean add(E e) {
@@ -44,7 +71,12 @@ public abstract class AbstractImmutableCollection<E> implements Collection<E> {
     }
 
     public boolean containsAll(Collection<?> c) {
-        return false;  //To change body of implemented methods use File | Settings | File Templates.
+        for (Object o : c) {
+            if (!contains(o)) {
+                return false;
+            }
+        }
+        return true;
     }
 
     public final boolean addAll(Collection<? extends E> c) {
