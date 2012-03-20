@@ -16,6 +16,7 @@
 package org.nebulae2us.electron.util;
 
 import org.junit.Test;
+import org.nebulae2us.electron.util.apitest.ListImmutantScanTest;
 
 import java.util.Arrays;
 import java.util.Iterator;
@@ -326,6 +327,72 @@ public class ImmutableListTest {
     }
     
     
+	@Test
+	public void immutable_sorted_unique_list_of_integer() {
+		
+		List<Integer> control = Arrays.asList(3, 5, 7, 9);
+		ImmutableSortedSet<Integer> test = new ImmutableSortedSet<Integer>(control);
+		
+		new ListImmutantScanTest<Integer>(Integer.class,
+				control,
+				new ReverseListFunction<Integer>(),
+				test,
+				new ReverseImmutableListFunction<Integer>(),
+				true).runTests();
+		
+	}
+	
+	
+	@Test
+	public void immutable_sorted_unique_list_of_string() {
+		
+		List<String> control = Arrays.asList("s3", "s5", "s7", "s9");
+		ImmutableSortedSet<String> test = new ImmutableSortedSet<String>(control);
+		
+		new ListImmutantScanTest<String>(String.class,
+				control,
+				new ReverseListFunction<String>(),
+				test,
+				new ReverseImmutableListFunction<String>(),
+				true).runTests();
+		
+		
+	}
+	
+	@Test
+	public void immutable_list_of_integer() {
+		
+		List<Integer> control = Arrays.asList(3, 7, 5, 5, 7, 9);
+		ImmutableList<Integer> test = new ImmutableList<Integer>(control);
+		
+		new ListImmutantScanTest<Integer>(Integer.class,
+				control,
+				new ReverseListFunction<Integer>(),
+				test,
+				new ReverseImmutableListFunction<Integer>(),
+				true).runTests();
+		
+		
+	}
+	
+	
+	@Test
+	public void immutable_list_of_string() {
+		
+		List<String> control = Arrays.asList("s3", "s7", "s5", "s5", "s7", "s9");
+		ImmutableList<String> test = new ImmutableList<String>(control);
+		
+		new ListImmutantScanTest<String>(String.class,
+				control,
+				new ReverseListFunction<String>(),
+				test,
+				new ReverseImmutableListFunction<String>(),
+				true).runTests();
+		
+		
+	}
+	
+
 
 
 }

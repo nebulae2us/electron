@@ -6,12 +6,12 @@ import org.junit.Test;
 
 import static org.junit.Assert.*;
 
-public class ImmutableSortedUniqueListTest {
+public class ImmutableSortedSetTest {
 
 	@Test
 	public void must_remove_dup_value() {
 		
-		ImmutableSortedUniqueList<Integer> fixture = new ImmutableSortedUniqueList<Integer>(1, 3, 3, 5);
+		ImmutableSortedSet<Integer> fixture = new ImmutableSortedSet<Integer>(1, 3, 3, 5);
 		
 		assertEquals(3, fixture.size());
 		assertEquals(Arrays.asList(1, 3, 5), fixture);
@@ -20,7 +20,7 @@ public class ImmutableSortedUniqueListTest {
 	@Test
 	public void floor() {
 		
-		ImmutableSortedUniqueList<Integer> fixture = new ImmutableSortedUniqueList<Integer>(1, 3, 5);
+		ImmutableSortedSet<Integer> fixture = new ImmutableSortedSet<Integer>(1, 3, 5);
 		
 		assertEquals(Integer.valueOf(3), fixture.floor(3));
 		assertEquals(Integer.valueOf(3), fixture.floor(4));
@@ -35,7 +35,7 @@ public class ImmutableSortedUniqueListTest {
 	@Test
 	public void lower() {
 		
-		ImmutableSortedUniqueList<Integer> fixture = new ImmutableSortedUniqueList<Integer>(1, 3, 5);
+		ImmutableSortedSet<Integer> fixture = new ImmutableSortedSet<Integer>(1, 3, 5);
 		
 		assertNull(fixture.lower(0));
 		assertNull(fixture.lower(1));
@@ -50,7 +50,7 @@ public class ImmutableSortedUniqueListTest {
 	@Test
 	public void higher() {
 		
-		ImmutableSortedUniqueList<Integer> fixture = new ImmutableSortedUniqueList<Integer>(1, 3, 5);
+		ImmutableSortedSet<Integer> fixture = new ImmutableSortedSet<Integer>(1, 3, 5);
 		
 		assertEquals(Integer.valueOf(1), fixture.higher(0));
 		assertEquals(Integer.valueOf(3), fixture.higher(1));
@@ -65,7 +65,7 @@ public class ImmutableSortedUniqueListTest {
 	@Test
 	public void ceiling() {
 		
-		ImmutableSortedUniqueList<Integer> fixture = new ImmutableSortedUniqueList<Integer>(1, 3, 5);
+		ImmutableSortedSet<Integer> fixture = new ImmutableSortedSet<Integer>(1, 3, 5);
 		
 		assertEquals(Integer.valueOf(1), fixture.ceiling(0));
 		assertEquals(Integer.valueOf(1), fixture.ceiling(1));

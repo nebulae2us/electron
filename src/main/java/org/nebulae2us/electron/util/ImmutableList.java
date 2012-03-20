@@ -16,7 +16,6 @@
 package org.nebulae2us.electron.util;
 
 import java.io.Serializable;
-import java.lang.reflect.Array;
 import java.util.*;
 
 /**
@@ -44,8 +43,8 @@ public class ImmutableList<E> extends AbstractImmutableList<E> implements List<E
 
     public ImmutableList(ImmutableList<E> c) {
         this.fromIndex = c.fromIndex;
-        data = c.data;
-        this.size = c.size();
+        this.data = c.data;
+        this.size = c.size;
         this.descending = c.descending;
         this.comparator = c.comparator;
         this.equalityComparator = c.equalityComparator;
@@ -76,20 +75,7 @@ public class ImmutableList<E> extends AbstractImmutableList<E> implements List<E
         this.equalityComparator = (EqualityComparator<Object>)equalityComparator;
 
     	if (unique) {
-    		List<E> uniqueList = new ArrayList<E>(c.size());
-    		for (E e : c) {
-    			boolean dup = false;
-    			for (E elementOfUniqueList : uniqueList) {
-    				if (equalityComparator.equal(e, elementOfUniqueList)) {
-    					dup = true;
-    					break;
-    				}
-    			}
-    			if (!dup) {
-    				uniqueList.add(e);
-    			}
-    		}
-    		c = uniqueList;
+    		c = new LinkedHashSet<E>(c);
     	}
     	
         data = new Object[c.size()];
@@ -101,26 +87,14 @@ public class ImmutableList<E> extends AbstractImmutableList<E> implements List<E
         this(c, new ObjectEqualityComparator<E>(), false);
     }
 
-    protected ImmutableList(Collection<? extends E> c, Comparator<? super E> comparator, boolean unique) {
+    @SuppressWarnings("unchecked")
+	protected ImmutableList(Collection<? extends E> c, Comparator<? super E> comparator, boolean unique) {
         this.fromIndex = 0;
         this.descending = false;
         this.comparator = (Comparator<Object>)comparator;
 
         if (unique) {
-    		List<E> uniqueList = new ArrayList<E>(c.size());
-    		for (E e : c) {
-    			boolean dup = false;
-    			for (E elementOfUniqueList : uniqueList) {
-    				if (comparator.compare(e, elementOfUniqueList) == 0) {
-    					dup = true;
-    					break;
-    				}
-    			}
-    			if (!dup) {
-    				uniqueList.add(e);
-    			}
-    		}
-    		c = uniqueList;
+        	c = new LinkedHashSet<E>(c);
     	}
     	
         Object[] newData = new Object[c.size()];
@@ -199,6 +173,11 @@ public class ImmutableList<E> extends AbstractImmutableList<E> implements List<E
     }
 
     public ImmutableList<E> subList(int fromIndex, int toIndex) {
+    	
+    	if (fromIndex == 0 && toIndex == size) {
+    		return this;
+    	}
+    	
         return new ImmutableList<E>(this, fromIndex, toIndex);
     }
 
@@ -212,7 +191,7 @@ public class ImmutableList<E> extends AbstractImmutableList<E> implements List<E
     
 
     public Comparator<? super E> comparator() {
-        return comparator;
+        return comparator != null && descending ? Collections.reverseOrder(comparator) : comparator;
     }
 
     private final class InternalListIterator extends AbstractImmutableListIterator<E> implements ListIterator<E> {

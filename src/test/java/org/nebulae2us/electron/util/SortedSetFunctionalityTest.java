@@ -5,8 +5,7 @@ import java.util.NavigableSet;
 import java.util.TreeSet;
 
 import org.junit.Test;
-
-import static org.nebulae2us.electron.util.SortedSetTestUtils.*;
+import org.nebulae2us.electron.util.apitest.SortedSetImmutantScanTest;
 
 public class SortedSetFunctionalityTest {
 
@@ -14,11 +13,11 @@ public class SortedSetFunctionalityTest {
 	public void immutable_sorted_set_of_integer() {
 		
 		NavigableSet<Integer> control = new TreeSet<Integer>(Arrays.asList(3, 7, 5, 9));
-		ImmutableSortedUniqueList<Integer> test = new ImmutableSortedUniqueList<Integer>(Arrays.asList(3, 7, 5, 5, 7, 9));
+		ImmutableSortedSet<Integer> test = new ImmutableSortedSet<Integer>(Arrays.asList(3, 7, 5, 5, 7, 9));
 		
-		assertSortedSetFunctionality(Integer.class,
+		new SortedSetImmutantScanTest<Integer>(Integer.class,
 				control,
-				test);		
+				test).runTests();
 	}
 	
 	

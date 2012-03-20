@@ -21,42 +21,42 @@ import java.util.*;
 /**
  * @author Trung Phan
  */
-public class ImmutableSortedUniqueList<E> extends ImmutableSortedList<E>
+public class ImmutableSortedSet<E> extends ImmutableSortedList<E>
     implements List<E>, NavigableSet<E>, RandomAccess, Cloneable, Serializable {
 
 	private static final long serialVersionUID = 1804056996695224851L;
 
-    public ImmutableSortedUniqueList() {
+    public ImmutableSortedSet() {
     	super();
     }
 	
-    public ImmutableSortedUniqueList(Collection<E> c, Comparator<? super E> comparator) {
+    public ImmutableSortedSet(Collection<E> c, Comparator<? super E> comparator) {
     	super(c, comparator, true);
     }
     
-    public ImmutableSortedUniqueList(Collection<E> c) {
+    public ImmutableSortedSet(Collection<E> c) {
     	this(c, new NaturalComparator<E>());
     }
     
-    public ImmutableSortedUniqueList(E ... elements) {
+    public ImmutableSortedSet(E ... elements) {
     	this(Arrays.asList(elements));
     }
     
-    public ImmutableSortedUniqueList(Comparator<? super E> comparator, E ... elements) {
+    public ImmutableSortedSet(Comparator<? super E> comparator, E ... elements) {
     	this(Arrays.asList(elements), comparator);
     }
     
 
-    protected ImmutableSortedUniqueList(ImmutableSortedUniqueList<E> cloned, boolean descending) {
+    protected ImmutableSortedSet(ImmutableSortedSet<E> cloned, boolean descending) {
     	super(cloned, descending);
     }
 
-    protected ImmutableSortedUniqueList(ImmutableSortedUniqueList<E> cloned, int fromIndex, int toIndex) {
+    protected ImmutableSortedSet(ImmutableSortedSet<E> cloned, int fromIndex, int toIndex) {
     	super(cloned, fromIndex, toIndex);
     }
     
-    public ImmutableSortedUniqueList<E> subList(int fromIndex, int toIndex) {
-        return new ImmutableSortedUniqueList<E>(this, fromIndex, toIndex);
+    public ImmutableSortedSet<E> subList(int fromIndex, int toIndex) {
+        return new ImmutableSortedSet<E>(this, fromIndex, toIndex);
     }
 
     private int lowerIndex(E e) {
@@ -155,62 +155,62 @@ public class ImmutableSortedUniqueList<E> extends ImmutableSortedList<E>
         throw new UnsupportedOperationException();
     }
 
-    public ImmutableSortedUniqueList<E> descendingSet() {
+    public ImmutableSortedSet<E> descendingSet() {
         return descendingList();
     }
 
-    public ImmutableSortedUniqueList<E> descendingList() {
-        return new ImmutableSortedUniqueList<E>(this, true);
+    public ImmutableSortedSet<E> descendingList() {
+        return new ImmutableSortedSet<E>(this, true);
     }
     
-    public ImmutableSortedUniqueList<E> subSet(E fromElement, boolean fromInclusive, E toElement, boolean toInclusive) {
+    public ImmutableSortedSet<E> subSet(E fromElement, boolean fromInclusive, E toElement, boolean toInclusive) {
     	
     	int lowerIndex = fromInclusive ? floorIndex(fromElement) : lowerIndex(fromElement);
     	if (lowerIndex < 0) {
-    		return new ImmutableSortedUniqueList<E>();
+    		return new ImmutableSortedSet<E>();
     	}
     	int higherIndex = toInclusive ? ceilingIndex(toElement) : higherIndex(toElement);
     	if (higherIndex <= lowerIndex) {
-    		return new ImmutableSortedUniqueList<E>();
+    		return new ImmutableSortedSet<E>();
     	}
     	
     	return subList(lowerIndex, higherIndex);
     }
 
-    public ImmutableSortedUniqueList<E> headSet(E toElement, boolean inclusive) {
+    public ImmutableSortedSet<E> headSet(E toElement, boolean inclusive) {
     	if (isEmpty()) {
     		return this;
     	}
     	
     	int higherIndex = inclusive ? ceilingIndex(toElement) : higherIndex(toElement);
     	if (higherIndex <= 0) {
-    		return new ImmutableSortedUniqueList<E>();
+    		return new ImmutableSortedSet<E>();
     	}
 
         return subList(0, higherIndex);
     }
 
-    public ImmutableSortedUniqueList<E> tailSet(E fromElement, boolean inclusive) {
+    public ImmutableSortedSet<E> tailSet(E fromElement, boolean inclusive) {
     	if (isEmpty()) {
     		return this;
     	}
     	
     	int lowerIndex = inclusive ? floorIndex(fromElement) : lowerIndex(fromElement);
     	if (lowerIndex < 0) {
-    		return new ImmutableSortedUniqueList<E>();
+    		return new ImmutableSortedSet<E>();
     	}
     	return subList(lowerIndex, size());
     }
 
-    public ImmutableSortedUniqueList<E> subSet(E fromElement, E toElement) {
+    public ImmutableSortedSet<E> subSet(E fromElement, E toElement) {
     	return subSet(fromElement, true, toElement, true);
     }
 
-    public ImmutableSortedUniqueList<E> headSet(E toElement) {
+    public ImmutableSortedSet<E> headSet(E toElement) {
     	return headSet(toElement, true);
     }
 
-    public ImmutableSortedUniqueList<E> tailSet(E fromElement) {
+    public ImmutableSortedSet<E> tailSet(E fromElement) {
     	return tailSet(fromElement, true);
     }
 
@@ -222,4 +222,39 @@ public class ImmutableSortedUniqueList<E> extends ImmutableSortedList<E>
         return size() == 0 ? null : get(size() - 1);
     }
 
+	@Override
+	public boolean equals(Object o) {
+		if (o == this)
+		    return true;
+
+		if (!(o instanceof Set))
+		    return false;
+		
+		Set<?> set = (Set<?>) o;
+
+		if (set.size() != size())
+		    return false;
+
+		try {
+            return containsAll(set);
+        } catch (ClassCastException unused)   {
+            return false;
+        } catch (NullPointerException unused) {
+            return false;
+        }
+		
+	}
+	
+	@Override
+	public int hashCode() {
+		int h = 0;
+		Iterator<E> i = iterator();
+		while (i.hasNext()) {
+		    E obj = i.next();
+	            if (obj != null)
+	                h += obj.hashCode();
+	        }
+		return h;
+	}    
+    
 }

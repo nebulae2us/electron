@@ -24,10 +24,10 @@ public class ImmutableSortedMap<K, V> extends AbstractImmutableMap<K, V> impleme
 
     private final List<InternalEntry>  data;
 
-    private final ImmutableSortedUniqueList<K> keys;
+    private final ImmutableSortedSet<K> keys;
 
     public ImmutableSortedMap(Map<K, V> data, Comparator<? super K> comparator) {
-        keys = new ImmutableSortedUniqueList<K>(data.keySet(), comparator);
+        keys = new ImmutableSortedSet<K>(data.keySet(), comparator);
 
         ArrayList<InternalEntry> _data = new ArrayList<ImmutableSortedMap<K,V>.InternalEntry>(keys.size());
         

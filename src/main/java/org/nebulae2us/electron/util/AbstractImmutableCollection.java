@@ -28,6 +28,11 @@ public abstract class AbstractImmutableCollection<E> implements Collection<E> {
 
     }
 
+    @Override
+    protected Object clone() throws CloneNotSupportedException {
+    	return this;
+    };
+    
     public boolean isEmpty() {
     	return size() == 0;
     }
