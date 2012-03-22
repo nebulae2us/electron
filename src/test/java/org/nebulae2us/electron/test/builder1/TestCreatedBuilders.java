@@ -104,6 +104,26 @@ public class TestCreatedBuilders {
 		assertEquals(4, speech.getKeywords().size());
 		assertEquals(Arrays.asList("free", "skin", "slave", "color"), speech.getKeywords());
 	}
+	
+	@Test
+	public void scalar_enum() {
+		
+		PersonBuilder<?> personBuilder =
+		person()
+			.name("George Washington")
+			.gender(Gender.MALE);
+		
+		assertEquals(Gender.MALE, personBuilder.getGender());
+		
+		Person person = personBuilder.toPerson();
+		
+		assertEquals(Gender.MALE, person.getGender());
+
+		personBuilder = person$copyFrom(person);
+		
+		assertEquals(Gender.MALE, personBuilder.getGender());
+		
+	}
 
 	@Test
 	public void reuse_objects() {

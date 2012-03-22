@@ -131,7 +131,7 @@ public class BuilderGenerator {
 			String fieldBuilderClassName = fieldClassName + "Builder";
 			String fieldClassCamelCase = toCamelCase(fieldClassName);
 			
-			if (SCALAR_TYPES.contains(fieldClass)) {
+			if (SCALAR_TYPES.contains(fieldClass) || fieldClass.isEnum()) {
 
 				builder.append(genFieldNameAndGetterSetter(fieldClassName, fieldName));
 				
@@ -159,7 +159,7 @@ public class BuilderGenerator {
 						);
 				
 			}
-			else if (fieldClassName.equals("List")) {
+			else if (List.class.isAssignableFrom(fieldClass)) {
 				
 				ParameterizedType subType = (ParameterizedType)field.getGenericType();
 				Class<?> fieldSubClass = (Class<?>)subType.getActualTypeArguments()[0];

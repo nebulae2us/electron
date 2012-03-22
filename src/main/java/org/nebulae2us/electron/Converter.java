@@ -367,6 +367,15 @@ public class Converter {
 				return convertBasicType((Class<?>)type, builder);
 			}
 			
+			if (type instanceof Class && ((Class)type).isEnum() ) {
+				if (builder.getClass() == type) {
+					return builder;
+				}
+				else {
+					return null;
+				}
+			}
+			
 			if (this.builders.containsKey(this.builder)) {
 				return this.builders.get(this.builder);
 			}

@@ -29,6 +29,8 @@ public class Person {
 	
 	private final int age;
 	
+	private final Gender gender;
+	
 	private final Person parent;
 	
 	private final List<Person> children;
@@ -50,6 +52,7 @@ public class Person {
 		this.hobbies = converter.toListOf(Hobby.class, "hobbies");
 		this.speeches = converter.toListOf(Speech.class, "speeches");
 		this.friends = converter.toListOf(Person.class, "friends");
+		this.gender = converter.to(Gender.class, "gender");
 	}
 
 	/**
@@ -99,6 +102,10 @@ public class Person {
 	 */
 	public List<Hobby> getHobbies() {
 		return hobbies;
+	}
+
+	public Gender getGender() {
+		return gender;
 	}
 	
 }
