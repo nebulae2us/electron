@@ -15,7 +15,7 @@
  */
 package org.nebulae2us.electron;
 
-import static org.nebulae2us.electron.Constants.SCALAR_TYPES;
+import static org.nebulae2us.electron.Constants.*;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
@@ -74,6 +74,14 @@ public class Converter {
 		return new ConvertBuilder(object);
 	}
 	
+	
+	public ConvertListBuilder convert(Object ... objects) {
+		return new ConvertListBuilder(objects);
+	}
+	
+	public ConvertListBuilder convert(Collection<?> objects) {
+		return new ConvertListBuilder(objects);
+	}
 	
 	public class ConvertListBuilder {
 		
@@ -367,7 +375,8 @@ public class Converter {
 				return convertBasicType((Class<?>)type, builder);
 			}
 			
-			if (type instanceof Class && ((Class)type).isEnum() ) {
+			if ((type instanceof Class && ((Class)type).isEnum())
+					|| IMMUTABLE_TYPES.contains(type) ) {
 				if (builder.getClass() == type) {
 					return builder;
 				}

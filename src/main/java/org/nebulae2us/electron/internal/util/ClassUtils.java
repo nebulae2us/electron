@@ -22,6 +22,8 @@ import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import org.nebulae2us.electron.Mirror;
@@ -31,6 +33,25 @@ import org.nebulae2us.electron.Mirror;
  *
  */
 public class ClassUtils {
+	
+	public static List<Class<?>> sortClassesByLevelOfInheritance(Collection<Class<?>> classes) {
+		List<Class<?>> result = new ArrayList<Class<?>>(classes);
+		Collections.sort(result, new Comparator<Class<?>>() {
+			public int compare(Class<?> c1, Class<?> c2) {
+				if (c1.isAssignableFrom(c2)) {
+					return -1;
+				}
+				else if (c2.isAssignableFrom(c1)) {
+					return 1;
+				}
+				else {
+					return c1.getName().compareTo(c2.getName());
+				}
+			}
+		});
+		
+		return result;
+	}
 	
 	public static List<Field> getFields(Class<?> c) {
 		List<Field> result = new ArrayList<Field>();

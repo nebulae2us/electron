@@ -76,6 +76,13 @@ public class Builders {
     }
 ]]></entry>
 
+<entry key="super_class_scalar_field"><![CDATA[
+	@Override
+    public StudentBuilder<B> name(String name) {
+        return (StudentBuilder<B>)super.name(name);
+    }
+]]></entry>
+
 <entry key="scalar_field"><![CDATA[
     public PersonBuilder<B> name(String name) {
         this.name = name;
@@ -84,7 +91,7 @@ public class Builders {
 ]]></entry>
 
 <entry key="builder_field"><![CDATA[
-    public PersonBuilder<SpeechBuilder<B>> owner() {
+    public PersonBuilder<? extends SpeechBuilder<B>> owner() {
         return new PersonBuilder<SpeechBuilder<B>>(option, this,
             new Procedure() {
                 public void execute(Object ... arguments) {
@@ -116,6 +123,13 @@ public class Builders {
             this.owner = (PersonBuilder<?>)person;
         }
         return this;
+    }
+]]></entry>
+
+<entry key="super_class_builder_field"><![CDATA[
+    @Override
+    public StudentBuilder<? extends SpeechBuilder<B>> owner() {
+        return (StudentBuilder<SpeechBuilder<B>>)super.owner();
     }
 ]]></entry>
 

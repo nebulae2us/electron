@@ -33,4 +33,9 @@ public interface Constants {
 					BigDecimal.class, BigInteger.class,
 					String.class, Date.class});
 
+	public static final List<Class<?>> IMMUTABLE_TYPES =
+			Arrays.asList(new Class<?>[] {
+					Class.class
+			});
+	
 }

@@ -26,6 +26,8 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Properties;
 
+import org.nebulae2us.electron.internal.util.ClassUtils;
+
 import static org.nebulae2us.electron.Constants.*;
 
 /**
@@ -52,20 +54,7 @@ public class BuilderGenerator {
 	
 	public static void generateBuilders(File genFolder, String packageName, List<Class<?>> _modelClasses) {
 
-		List<Class<?>> modelClasses = new ArrayList<Class<?>>(_modelClasses);
-		Collections.sort(modelClasses, new Comparator<Class<?>>() {
-			public int compare(Class<?> c1, Class<?> c2) {
-				if (c1.isAssignableFrom(c2)) {
-					return -1;
-				}
-				else if (c2.isAssignableFrom(c1)) {
-					return 1;
-				}
-				else {
-					return c1.getName().compareTo(c2.getName());
-				}
-			}
-		});
+		List<Class<?>> modelClasses = ClassUtils.sortClassesByLevelOfInheritance(_modelClasses);
 		
 		File folder = new File(genFolder, packageName.replaceAll("\\.", "/"));
 		if (!folder.exists()) {
@@ -123,75 +112,104 @@ public class BuilderGenerator {
 				.replaceAll("Person", className)
 				);
 		
-		Field[] fields = modelClass.getDeclaredFields();
-		for (Field field : fields) {
+		
+		for (Field field : ClassUtils.getFields(modelClass)) {
+			
+			Class<?> declaringClass = field.getDeclaringClass();
 			String fieldName = field.getName();
 			Class<?> fieldClass = field.getType();
 			String fieldClassName = fieldClass.getSimpleName();
 			String fieldBuilderClassName = fieldClassName + "Builder";
 			String fieldClassCamelCase = toCamelCase(fieldClassName);
 			
-			if (SCALAR_TYPES.contains(fieldClass) || fieldClass.isEnum()) {
+			if (SCALAR_TYPES.contains(fieldClass) || fieldClass.isEnum() || IMMUTABLE_TYPES.contains(fieldClass)) {
+				if (declaringClass == modelClass) {
+					builder.append(genFieldNameAndGetterSetter(fieldClassName, fieldName));
+					
+					String template = getTemplates().getProperty("scalar_field");
 
-				builder.append(genFieldNameAndGetterSetter(fieldClassName, fieldName));
-				
-				String template = getTemplates().getProperty("scalar_field");
+					builder.append(template
+							.replaceAll("PersonBuilder", builderClassName)
+							.replaceAll("String", fieldClassName)
+							.replaceAll("name", fieldName)
+							);
+				}
+				else if (modelClasses.contains(declaringClass)) {
+					String template = getTemplates().getProperty("super_class_scalar_field");
 
-				builder.append(template
-						.replaceAll("PersonBuilder", builderClassName)
-						.replaceAll("String", fieldClassName)
-						.replaceAll("name", fieldName)
-						);
-
+					builder.append(template
+							.replaceAll("StudentBuilder", builderClassName)
+							.replaceAll("String", fieldClassName)
+							.replaceAll("name", fieldName)
+							);
+					
+				}
 			}
 			else if (modelClasses.contains(fieldClass)) {
+				if (declaringClass == modelClass) {
+					builder.append(genFieldNameAndGetterSetter(fieldClassName + "Builder<?>", fieldName));
+					
+					String template = getTemplates().getProperty("builder_field");
+					
+					builder.append(template
+							.replaceAll("SpeechBuilder", "```builderClassName```")
+							.replaceAll("PersonBuilder", fieldBuilderClassName)
+							.replaceAll("```builderClassName```", builderClassName)
+							.replaceAll("owner", fieldName)
+							.replaceAll("person", fieldClassCamelCase)
+							);
+				}
+				else if (modelClasses.contains(declaringClass)) {
+					String template = getTemplates().getProperty("super_class_builder_field");
+					
+					builder.append(template
+							.replaceAll("SpeechBuilder", "```builderClassName```")
+							.replaceAll("StudentBuilder", fieldBuilderClassName)
+							.replaceAll("```builderClassName```", builderClassName)
+							.replaceAll("owner", fieldName)
+							.replaceAll("person", fieldClassCamelCase)
+							);
+					
+				}
 
-				builder.append(genFieldNameAndGetterSetter(fieldClassName + "Builder<?>", fieldName));
-				
-				String template = getTemplates().getProperty("builder_field");
-				
-				builder.append(template
-						.replaceAll("SpeechBuilder", "```builderClassName```")
-						.replaceAll("PersonBuilder", fieldBuilderClassName)
-						.replaceAll("```builderClassName```", builderClassName)
-						.replaceAll("owner", fieldName)
-						.replaceAll("person", fieldClassCamelCase)
-						);
 				
 			}
 			else if (List.class.isAssignableFrom(fieldClass)) {
 				
-				ParameterizedType subType = (ParameterizedType)field.getGenericType();
-				Class<?> fieldSubClass = (Class<?>)subType.getActualTypeArguments()[0];
-				String fieldSubClassName = fieldSubClass.getSimpleName();
-				String fieldSubBuilderClassName = fieldSubClassName + "Builder";
-				String singularFieldName = singularize(fieldName);
+				if (declaringClass == modelClass) {
+					ParameterizedType subType = (ParameterizedType)field.getGenericType();
+					Class<?> fieldSubClass = (Class<?>)subType.getActualTypeArguments()[0];
+					String fieldSubClassName = fieldSubClass.getSimpleName();
+					String fieldSubBuilderClassName = fieldSubClassName + "Builder";
+					String singularFieldName = singularize(fieldName);
 
-				if (modelClasses.contains(fieldSubClass)) {
-					builder.append(genFieldNameAndGetterSetter(fieldClassName + "<" + fieldSubClassName + "Builder<?>>", fieldName));
+					if (modelClasses.contains(fieldSubClass)) {
+						builder.append(genFieldNameAndGetterSetter(fieldClassName + "<" + fieldSubClassName + "Builder<?>>", fieldName));
 
-					String template = getTemplates().getProperty("list_field");
-					
-					builder.append(template
-							.replaceAll("HobbyBuilder", "```builderClassName```")
-							.replaceAll("PersonBuilder", fieldSubBuilderClassName)
-							.replaceAll("```builderClassName```", builderClassName)
-							.replaceAll("people", fieldName)
-							.replaceAll("person", singularFieldName)
-							);
-					
-				}
-				else if (SCALAR_TYPES.contains(fieldSubClass)) {
-					builder.append(genFieldNameAndGetterSetter(fieldClassName + "<" + fieldSubClassName + ">", fieldName));
+						String template = getTemplates().getProperty("list_field");
+						
+						builder.append(template
+								.replaceAll("HobbyBuilder", "```builderClassName```")
+								.replaceAll("PersonBuilder", fieldSubBuilderClassName)
+								.replaceAll("```builderClassName```", builderClassName)
+								.replaceAll("people", fieldName)
+								.replaceAll("person", singularFieldName)
+								);
+						
+					}
+					else if (SCALAR_TYPES.contains(fieldSubClass)) {
+						builder.append(genFieldNameAndGetterSetter(fieldClassName + "<" + fieldSubClassName + ">", fieldName));
 
-					String template = getTemplates().getProperty("list_scalar_field");
-					
-					builder.append(template
-							.replaceAll("SpeechBuilder", builderClassName)
-							.replaceAll("keywords", fieldName)
-							.replaceAll("keyword", singularFieldName)
-							.replaceAll("String", fieldSubClassName)
-							);
+						String template = getTemplates().getProperty("list_scalar_field");
+						
+						builder.append(template
+								.replaceAll("SpeechBuilder", builderClassName)
+								.replaceAll("keywords", fieldName)
+								.replaceAll("keyword", singularFieldName)
+								.replaceAll("String", fieldSubClassName)
+								);
+						
+					}
 					
 				}
 			}
@@ -299,7 +317,7 @@ public class BuilderGenerator {
 		else if (expression.endsWith("ies")) {
 			return expression.substring(0, expression.length() - 3) + "y";
 		}
-		else if (expression.endsWith("es")) {
+		else if (expression.endsWith("es") && !expression.endsWith("tes")) {
 			return expression.substring(0, expression.length() - 2);
 		}
 		else if (expression.endsWith("s")) {
