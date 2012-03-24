@@ -26,7 +26,7 @@ public class ImmutableMap<K, V> extends AbstractImmutableMap<K, V> implements Ma
 
     private final List<InternalEntry>[] data;
 
-    private final EqualityComparator<K> equalityComparator;
+    private final EqualityComparator<Object> equalityComparator;
 
     public ImmutableMap(Map<? extends K, ? extends V> m, EqualityComparator<K> equalityComparator) {
 
@@ -34,13 +34,14 @@ public class ImmutableMap<K, V> extends AbstractImmutableMap<K, V> implements Ma
         while (capacity < m.size())
             capacity <<= 1;
     	
-        this.equalityComparator = equalityComparator;
+        this.equalityComparator = (EqualityComparator<Object>)equalityComparator;
 
         int calcSize = 0;
         data = new List[capacity];
         
         
         for (Map.Entry<? extends K, ? extends V> e : m.entrySet()) {
+        	
             int h = equalityComparator.hashCode(e.getKey());
             int i = indexFor(h);
             List<InternalEntry> list = data[i];
@@ -57,7 +58,7 @@ public class ImmutableMap<K, V> extends AbstractImmutableMap<K, V> implements Ma
                 }
             }
             if (!contains) {
-                InternalEntry entry = new InternalEntry(e.getKey(), e.getValue());
+            	InternalEntry entry = new InternalEntry(e.getKey(), e.getValue());
                 list.add(entry);
                 calcSize++;
             }
@@ -66,12 +67,13 @@ public class ImmutableMap<K, V> extends AbstractImmutableMap<K, V> implements Ma
         size = calcSize;
 
         for (int i = 0; i < data.length; i++) {
-            List list = data[i];
+            List<InternalEntry> list = data[i];
             if (list != null) {
-                Collections.sort(list);
                 data[i] = new ImmutableList<InternalEntry>(list);
             }
         }
+        
+        
     }
 
     ImmutableMap(Collection<K> c, EqualityComparator<K> equalityComparator) {
@@ -80,7 +82,7 @@ public class ImmutableMap<K, V> extends AbstractImmutableMap<K, V> implements Ma
         while (capacity < c.size())
             capacity <<= 1;
         
-        this.equalityComparator = equalityComparator;
+        this.equalityComparator = (EqualityComparator<Object>)equalityComparator;
 
         int calcSize = 0;
         
@@ -108,9 +110,8 @@ public class ImmutableMap<K, V> extends AbstractImmutableMap<K, V> implements Ma
         }
 
         for (int i = 0; i < data.length; i++) {
-            List list = data[i];
+            List<InternalEntry> list = data[i];
             if (list != null) {
-                Collections.sort(list);
                 data[i] = new ImmutableList<InternalEntry>(list);
             }
         }
@@ -162,7 +163,8 @@ public class ImmutableMap<K, V> extends AbstractImmutableMap<K, V> implements Ma
         return new ValueIterator();
     }
 
-    private class InternalEntry implements Map.Entry<K, V>, Comparable<K> {
+    
+    private class InternalEntry implements Map.Entry<K, V> {
 
         private final K key;
         private final V value;
@@ -184,9 +186,6 @@ public class ImmutableMap<K, V> extends AbstractImmutableMap<K, V> implements Ma
             throw new UnsupportedOperationException();
         }
 
-        public int compareTo(K o) {
-            return equalityComparator.hashCode(key) - equalityComparator.hashCode(o);
-        }
     }
 
     public int size() {
@@ -202,36 +201,20 @@ public class ImmutableMap<K, V> extends AbstractImmutableMap<K, V> implements Ma
     }
 
     protected InternalEntry getEntry(Object key) {
-        int h = equalityComparator.hashCode((K)key);
+        int h = equalityComparator.hashCode(key);
         int tableIndex = indexFor(h);
         List<InternalEntry> list = data[tableIndex];
+        
         if (list == null) {
             return null;
         }
         else {
-            int index = Collections.binarySearch(list, (K)key);
-            if (index == -1) {
-                return null;
-            }
-            int length = list.size();
-            for (int i = index; i < length; i++) {
+        	int length = list.size();
+            for (int i = 0; i < length; i++) {
                 InternalEntry entry = list.get(i);
                 K k = entry.getKey();
 
-                if (equalityComparator.hashCode(k) != h) {
-                    break;
-                }
-                if (equalityComparator.equal(k, (K)key)) {
-                    return entry;
-                }
-            }
-            for (int i = index - 1; i >= 0; i--) {
-                InternalEntry entry = list.get(i);
-                K k = entry.getKey();
-                if (equalityComparator.hashCode(k) != h) {
-                    break;
-                }
-                if (equalityComparator.equal(k, (K)key)) {
+                if (equalityComparator.hashCode(k) == h && equalityComparator.equal(k, key)) {
                     return entry;
                 }
             }
@@ -330,7 +313,7 @@ public class ImmutableMap<K, V> extends AbstractImmutableMap<K, V> implements Ma
             if (!(o instanceof Entry)) {
                 return false;
             }
-            Entry e = (Entry)o;
+            Entry<?, ?> e = (Entry<?, ?>)o;
 
 
             Entry<K, V> entry = getEntry(e.getKey());
