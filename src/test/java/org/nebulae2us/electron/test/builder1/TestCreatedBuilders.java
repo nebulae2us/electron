@@ -391,4 +391,31 @@ public class TestCreatedBuilders {
 		
 	}
 	
+	@Test
+	public void assign_mutable_to_builder() {
+
+		PersonBuilder<?> personBuilder = student()
+				.name("John Deere")
+				.age(30)
+				.child()
+					.name("Joe Deere").age(12)
+				.end()
+				.child()
+					.name("Hannah Deere").age(3)
+				.end()
+				;
+		
+		Person person = personBuilder.toPerson();
+		
+		assertTrue(person instanceof Student);
+		
+		PersonBuilder<?> personBuilder2 = person()
+				.parent(person);
+		
+		Person person2 = personBuilder2.toPerson();
+		
+		assertTrue(person2.getParent() == person);
+		
+	}
+	
 }

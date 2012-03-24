@@ -27,6 +27,16 @@ import static org.nebulae2us.electron.test.builder1.Builders.*;
  */
 public class InheritanceTest {
 
+	
+	@Test
+	public void super_class_builder() {
+		PersonBuilder<?> personBuilder = student();
+		
+		Person person = personBuilder.toPerson();
+		
+		assertTrue(person instanceof Student);
+	}
+	
 	@Test
 	public void object_to_immutable() {
 		

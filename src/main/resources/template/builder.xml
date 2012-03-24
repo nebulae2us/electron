@@ -29,42 +29,62 @@ public class Builders {
 ]]></entry>
 
 <entry key="builder_constructors_methods"><![CDATA[
-	private final ConverterOption option;
+	private Person $$$savedTarget;
 
-	private final B parentBuilder;
+	private final ConverterOption $$$option;
 
-	private final Procedure procedure;
+	private final B $$$parentBuilder;
 
-	public PersonBuilder(ConverterOption option, B parentBuilder, Procedure procedure) {
-		this(option, parentBuilder, procedure, null);
-	}
-
-	public PersonBuilder(ConverterOption option, B parentBuilder, Procedure procedure, PersonBuilder<?> copy) {
-		this.option = option != null ? option : new ConverterOption();
-		this.parentBuilder = parentBuilder;
-		this.procedure = procedure;
-		
-		if (copy != null) {
-			copyAttributes(copy);
+	public PersonBuilder(Person person) {
+		// super(person);
+		if (person == null) {
+			throw new NullPointerException();
 		}
-		
-	}
 	
-    protected void copyAttributes(PersonBuilder<?> copy) {
-    	// COPY ATTRIBUTES
-    }
+		this.$$$option = null;
+		this.$$$parentBuilder = null;
+		this.$$$savedTarget = person;
+	}
+
+	public PersonBuilder(ConverterOption option, B parentBuilder) {
+		// super(option, parentBuilder);
+		this.$$$option = option != null ? option : new ConverterOption();
+		this.$$$parentBuilder = parentBuilder;
+		this.$$$savedTarget = null;
+	}
 
 	public PersonBuilder() {
-		this(null, null, null);	
+		this.$$$option = null;
+		this.$$$parentBuilder = null;
+		this.$$$savedTarget = null;
 	}
 	
 	public PersonBuilder(ConverterOption option) {
-		this(option, null, null);
+		// super(option);
+		this.$$$option = option;
+		this.$$$parentBuilder = null;
+		this.$$$savedTarget = null;
 	}
 
+	public boolean convertableTo(Class<?> c) {
+		return this.$$$savedTarget != null && c.isAssignableFrom(this.$$$savedTarget.getClass());
+	}
+
+	@SuppressWarnings("unchecked")
+	public <T> T convertTo(Class<T> c) {
+		if (!convertableTo(c)) {
+			throw new IllegalArgumentException();
+		}
+		return (T)this.$$$savedTarget;
+	}
+
+    protected void copyAttributes(PersonBuilder<?> copy) {
+		// super.copyAttributes(copy);
+    	// COPY ATTRIBUTES
+    }
+
     public B end() {
-        procedure.execute(this);
-        return parentBuilder;
+        return this.$$$parentBuilder;
     }
 
     public PersonBuilder<B> storeTo(BuilderRepository repo, int builderId) {
@@ -73,7 +93,7 @@ public class Builders {
     }
     
     public Person toPerson() {
-    	return new Converter(this.option).convert(this).to(Person.class);
+    	return new Converter(this.$$$option).convert(this).to(Person.class);
     }
 ]]></entry>
 
@@ -105,26 +125,26 @@ public class Builders {
 
 <entry key="builder_field"><![CDATA[
     public PersonBuilder<? extends SpeechBuilder<B>> owner() {
-        return new PersonBuilder<SpeechBuilder<B>>(option, this,
-            new Procedure() {
-                public void execute(Object ... arguments) {
-                    SpeechBuilder.this.owner = (PersonBuilder<?>)arguments[0];
-                }
-            },
-            this.owner);
+        PersonBuilder<SpeechBuilder<B>> owner = new PersonBuilder<SpeechBuilder<B>>(this.$$$option, this);
+        this.owner = owner;
+        
+        return owner;
     }
 
     public PersonBuilder<? extends SpeechBuilder<B>> owner$new() {
-        return new PersonBuilder<SpeechBuilder<B>>(option, this,
-            new Procedure() {
-                public void execute(Object ... arguments) {
-                    SpeechBuilder.this.owner = (PersonBuilder<?>)arguments[0];
-                }
-            });
+        PersonBuilder<SpeechBuilder<B>> owner = new PersonBuilder<SpeechBuilder<B>>(this.$$$option, this);
+        this.owner = owner;
+        
+        return owner;
     }
 
     public SpeechBuilder<B> owner(PersonBuilder<?> owner) {
         this.owner = owner;
+        return this;
+    }
+
+    public SpeechBuilder<B> owner(Person owner) {
+        this.owner = new PersonBuilder<Object>(owner);
         return this;
     }
 
@@ -150,6 +170,7 @@ public class Builders {
 ]]></entry>
 
 <entry key="super_class_builder_field"><![CDATA[
+    @SuppressWarnings("unchecked")
     @Override
     public StudentBuilder<? extends SpeechBuilder<B>> owner() {
         return (StudentBuilder<SpeechBuilder<B>>)super.owner();
@@ -185,12 +206,11 @@ public class Builders {
             this.people = new ArrayList<PersonBuilder<?>>();
         }
 
-        return new PersonBuilder<HobbyBuilder<B>>(option, this,
-            new Procedure() {
-                public void execute(Object ... arguments) {
-                    HobbyBuilder.this.people.add((PersonBuilder<?>)arguments[0]);
-                }
-            });
+        PersonBuilder<HobbyBuilder<B>> person = new PersonBuilder<HobbyBuilder<B>>(this.$$$option, this);
+        
+        this.people.add(person);
+        
+        return person;
     }
 
     public HobbyBuilder<B> person(PersonBuilder<?> person) {
@@ -201,12 +221,30 @@ public class Builders {
         return this;
     }
 
+    public HobbyBuilder<B> person(Person person) {
+        if (this.people == null) {
+            this.people = new ArrayList<PersonBuilder<?>>();
+        }
+        this.people.add(new PersonBuilder<Object>(person));
+        return this;
+    }
+
     public HobbyBuilder<B> people(PersonBuilder<?> ... people) {
         if (this.people == null) {
             this.people = new ArrayList<PersonBuilder<?>>();
         }
         for (PersonBuilder<?> o : people) {
             this.people.add(o);
+        }
+        return this;
+    }
+
+    public HobbyBuilder<B> people(Person ... people) {
+        if (this.people == null) {
+            this.people = new ArrayList<PersonBuilder<?>>();
+        }
+        for (Person o : people) {
+            this.people.add(new PersonBuilder<Object>(o));
         }
         return this;
     }

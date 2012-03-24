@@ -32,7 +32,7 @@ public class Student extends Person {
 	public Student(Mirror converter) {
 		super(converter);
 		
-		this.partTime = converter.toBooleanValue("converter");
+		this.partTime = converter.toBooleanValue("partTime");
 		this.teachers = converter.toListOf(Teacher.class, "teachers");
 	}
 

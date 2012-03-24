@@ -376,7 +376,7 @@ public class Converter {
 				return convertBasicType((Class<?>)type, builder);
 			}
 			
-			if ((type instanceof Class && ((Class)type).isEnum())
+			if ((type instanceof Class && ((Class<?>)type).isEnum())
 					|| IMMUTABLE_TYPES.contains(type) ) {
 				if (builder.getClass() == type) {
 					return builder;
@@ -397,7 +397,12 @@ public class Converter {
 				return null;
 			}
 			
-			Class<?> destClass = this.option.findBestDestinationClass(builder.getClass(), ClassUtils.getClass(type));
+			Class<?> requestedClass = ClassUtils.getClass(type);
+			if (builder instanceof Convertable && ((Convertable) builder).convertableTo(requestedClass)) {
+				return ((Convertable)builder).convertTo(requestedClass);
+			}
+			
+			Class<?> destClass = this.option.findBestDestinationClass(builder.getClass(), requestedClass);
 			
 			Constructor<?> constructor = ClassUtils.getConverterConstructor(destClass);
 

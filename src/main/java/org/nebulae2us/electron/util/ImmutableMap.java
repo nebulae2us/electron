@@ -48,15 +48,14 @@ public class ImmutableMap<K, V> extends AbstractImmutableMap<K, V> implements Ma
             boolean contains = false;
             InternalEntry<K, V> entry = data[i];
             while (entry != null) {
-            	if (equalityComparator.equal(entry.getKey(), e.getKey())) {
+            	if (equalityComparator.hashCode(entry.getKey()) == h && equalityComparator.equal(entry.getKey(), e.getKey())) {
             		contains = true;
             		break;
             	}
             	entry = entry.next;
             }
             if (!contains) {
-            	entry = new InternalEntry<K, V>(e.getKey(), e.getValue(), data[i]);
-            	data[i] = entry;
+            	data[i] = new InternalEntry<K, V>(e.getKey(), e.getValue(), data[i]);
                 calcSize++;
             }
         }
@@ -82,15 +81,14 @@ public class ImmutableMap<K, V> extends AbstractImmutableMap<K, V> implements Ma
             boolean contains = false;
             InternalEntry<K, V> entry = data[i];
             while (entry != null) {
-            	if (equalityComparator.equal(entry.getKey(), k)) {
+            	if (equalityComparator.hashCode(entry.getKey()) == h && equalityComparator.equal(entry.getKey(), k)) {
             		contains = true;
             		break;
             	}
             	entry = entry.next;
             }
             if (!contains) {
-            	entry = new InternalEntry<K, V>(k, null, data[i]);
-            	data[i] = entry;
+            	data[i] = new InternalEntry<K, V>(k, null, data[i]);
                 calcSize++;
             }
         }

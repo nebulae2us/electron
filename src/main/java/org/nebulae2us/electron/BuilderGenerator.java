@@ -95,23 +95,25 @@ public class BuilderGenerator {
 
 		StringBuilder attributesCopy = new StringBuilder();
 		
+		boolean hasSuperClass = false;
 		Class<?> c = modelClass;
 		while ((c = c.getSuperclass()) != null) {
 			if (modelClasses.contains(c)) {
 				builder.append(" extends ").append(c.getSimpleName()).append("Builder<B>");
-				attributesCopy.append("super.copyAttributes(copy);\n\t\t");
+				hasSuperClass = true;
 				break;
 			}
 		}
 		
-		builder.append(" {\n")
+		builder.append(" implements Convertable {\n")
 		;
 		
 		builder.append(getTemplates().getProperty("builder_constructors_methods")
 				.replaceAll("PersonBuilder", builderClassName)
 				.replaceAll("Person", className)
+				.replaceAll("person", toCamelCase(className))
+				.replaceAll(hasSuperClass ? "// super" : "\\t\\t// super.*\\n", hasSuperClass ? "super" : "")
 				);
-		
 		
 		for (Field field : ClassUtils.getFields(modelClass)) {
 			
@@ -193,7 +195,9 @@ public class BuilderGenerator {
 						
 						builder.append(template
 								.replaceAll("HobbyBuilder", "```builderClassName```")
-								.replaceAll("PersonBuilder", fieldSubBuilderClassName)
+								.replaceAll("PersonBuilder", "```fieldSubBuilderClassName```")
+								.replaceAll("Person", fieldSubClassName)
+								.replaceAll("```fieldSubBuilderClassName```", fieldSubBuilderClassName)
 								.replaceAll("```builderClassName```", builderClassName)
 								.replaceAll("people", fieldName)
 								.replaceAll("person", singularFieldName)
@@ -220,14 +224,14 @@ public class BuilderGenerator {
 		}
 
 		builder.append("}\n");
-
+		
 		if (attributesCopy.length() > 3) {
 			attributesCopy.replace(attributesCopy.length() - 3, attributesCopy.length(), "");
 			int idx = builder.indexOf("// COPY ATTRIBUTES");
 			if (idx >= 0) {
 				builder.replace(idx, idx + 18, attributesCopy.toString());
 			}
-		}
+		}		
 		
 		File folder = new File(genFolder, packageName.replaceAll("\\.", "/"));
 		if (!folder.exists()) {
