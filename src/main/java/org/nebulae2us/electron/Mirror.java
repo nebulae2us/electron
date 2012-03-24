@@ -24,6 +24,8 @@ import java.util.Set;
  */
 public interface Mirror {
 	
+	public boolean exists(String fieldName);
+	
 	public <T> T to(Class<T> objectClass, String fieldName);
 	
 	public <T> List<T> toListOf(Class<T> objectClass, String fieldName);

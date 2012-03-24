@@ -36,10 +36,23 @@ public class Builders {
 	private final Procedure procedure;
 
 	public PersonBuilder(ConverterOption option, B parentBuilder, Procedure procedure) {
+		this(option, parentBuilder, procedure, null);
+	}
+
+	public PersonBuilder(ConverterOption option, B parentBuilder, Procedure procedure, PersonBuilder<?> copy) {
 		this.option = option != null ? option : new ConverterOption();
 		this.parentBuilder = parentBuilder;
 		this.procedure = procedure;
+		
+		if (copy != null) {
+			copyAttributes(copy);
+		}
+		
 	}
+	
+    protected void copyAttributes(PersonBuilder<?> copy) {
+    	// COPY ATTRIBUTES
+    }
 
 	public PersonBuilder() {
 		this(null, null, null);	
@@ -92,6 +105,16 @@ public class Builders {
 
 <entry key="builder_field"><![CDATA[
     public PersonBuilder<? extends SpeechBuilder<B>> owner() {
+        return new PersonBuilder<SpeechBuilder<B>>(option, this,
+            new Procedure() {
+                public void execute(Object ... arguments) {
+                    SpeechBuilder.this.owner = (PersonBuilder<?>)arguments[0];
+                }
+            },
+            this.owner);
+    }
+
+    public PersonBuilder<? extends SpeechBuilder<B>> owner$new() {
         return new PersonBuilder<SpeechBuilder<B>>(option, this,
             new Procedure() {
                 public void execute(Object ... arguments) {

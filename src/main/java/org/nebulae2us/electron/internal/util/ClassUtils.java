@@ -34,14 +34,24 @@ import org.nebulae2us.electron.Mirror;
  */
 public class ClassUtils {
 	
+	private static int getLevelOfInheritance(Class<?> c) {
+		if (c.getSuperclass() == null) {
+			return 1;
+		}
+		return 1 + getLevelOfInheritance(c.getSuperclass());
+	}
+	
 	public static List<Class<?>> sortClassesByLevelOfInheritance(Collection<Class<?>> classes) {
 		List<Class<?>> result = new ArrayList<Class<?>>(classes);
 		Collections.sort(result, new Comparator<Class<?>>() {
 			public int compare(Class<?> c1, Class<?> c2) {
-				if (c1.isAssignableFrom(c2)) {
+				int l1 = getLevelOfInheritance(c1);
+				int l2 = getLevelOfInheritance(c2);
+				
+				if (l1 < l2) {
 					return -1;
 				}
-				else if (c2.isAssignableFrom(c1)) {
+				else if (l1 > l2) {
 					return 1;
 				}
 				else {

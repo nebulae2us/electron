@@ -20,9 +20,6 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.lang.reflect.ParameterizedType;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Properties;
 
@@ -95,11 +92,14 @@ public class BuilderGenerator {
 			.append("import org.nebulae2us.electron.*;\n")
 			.append("\n\n")
 			.append("public class ").append(builderClassName).append("<B>");
+
+		StringBuilder attributesCopy = new StringBuilder();
 		
 		Class<?> c = modelClass;
 		while ((c = c.getSuperclass()) != null) {
 			if (modelClasses.contains(c)) {
 				builder.append(" extends ").append(c.getSimpleName()).append("Builder<B>");
+				attributesCopy.append("super.copyAttributes(copy);\n\t\t");
 				break;
 			}
 		}
@@ -125,6 +125,7 @@ public class BuilderGenerator {
 			if (SCALAR_TYPES.contains(fieldClass) || fieldClass.isEnum() || IMMUTABLE_TYPES.contains(fieldClass)) {
 				if (declaringClass == modelClass) {
 					builder.append(genFieldNameAndGetterSetter(fieldClassName, fieldName));
+					attributesCopy.append("this.").append(fieldName).append(" = copy.").append(fieldName).append(";\n\t\t");
 					
 					String template = getTemplates().getProperty("scalar_field");
 
@@ -148,6 +149,7 @@ public class BuilderGenerator {
 			else if (modelClasses.contains(fieldClass)) {
 				if (declaringClass == modelClass) {
 					builder.append(genFieldNameAndGetterSetter(fieldClassName + "Builder<?>", fieldName));
+					attributesCopy.append("this.").append(fieldName).append(" = copy.").append(fieldName).append(";\n\t\t");
 					
 					String template = getTemplates().getProperty("builder_field");
 					
@@ -185,6 +187,7 @@ public class BuilderGenerator {
 
 					if (modelClasses.contains(fieldSubClass)) {
 						builder.append(genFieldNameAndGetterSetter(fieldClassName + "<" + fieldSubClassName + "Builder<?>>", fieldName));
+						attributesCopy.append("this.").append(fieldName).append(" = copy.").append(fieldName).append(";\n\t\t");
 
 						String template = getTemplates().getProperty("list_field");
 						
@@ -199,6 +202,7 @@ public class BuilderGenerator {
 					}
 					else if (SCALAR_TYPES.contains(fieldSubClass)) {
 						builder.append(genFieldNameAndGetterSetter(fieldClassName + "<" + fieldSubClassName + ">", fieldName));
+						attributesCopy.append("this.").append(fieldName).append(" = copy.").append(fieldName).append(";\n\t\t");
 
 						String template = getTemplates().getProperty("list_scalar_field");
 						
@@ -217,6 +221,14 @@ public class BuilderGenerator {
 
 		builder.append("}\n");
 
+		if (attributesCopy.length() > 3) {
+			attributesCopy.replace(attributesCopy.length() - 3, attributesCopy.length(), "");
+			int idx = builder.indexOf("// COPY ATTRIBUTES");
+			if (idx >= 0) {
+				builder.replace(idx, idx + 18, attributesCopy.toString());
+			}
+		}
+		
 		File folder = new File(genFolder, packageName.replaceAll("\\.", "/"));
 		if (!folder.exists()) {
 			folder.mkdirs();

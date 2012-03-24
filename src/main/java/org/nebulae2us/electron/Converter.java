@@ -19,6 +19,7 @@ import static org.nebulae2us.electron.Constants.*;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Type;
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -406,6 +407,14 @@ public class Converter {
 					this.builders.put(this.builder, result);
 					
 					return result;
+				} catch (RuntimeException e) {
+					throw e;
+				} catch (InvocationTargetException e) {
+					Throwable t = e.getTargetException();
+					if (t instanceof RuntimeException) {
+						throw (RuntimeException)t;
+					}
+					throw new RuntimeException("Failed to instantiate " + destClass, t);
 				} catch (Exception e) {
 					throw new RuntimeException("Failed to instantiate " + destClass, e);
 				}
@@ -470,9 +479,17 @@ public class Converter {
 			return result;
 		}
 		
+		private void verifyFieldExist(String fieldName, Field field) {
+			if (field == null) {
+				throw new IllegalArgumentException("Field " + fieldName + " does not exist for " + builder.getClass());
+			}
+		}
+		
 		public <T> List<T> toListOf(Class<T> objectClass, String fieldName) {
 			
 			Field field = getField(builder.getClass(), fieldName);
+			verifyFieldExist(fieldName, field);
+			
 			Object value = getValue(field, builder);
 			
 	        if (value instanceof Collection) {
@@ -494,6 +511,8 @@ public class Converter {
 		public <T> Set<T> toSetOf(Class<T> objectClass, String fieldName) {
 			
 			Field field = getField(builder.getClass(), fieldName);
+			verifyFieldExist(fieldName, field);
+
 			Object value = getValue(field, builder);
 			
 	        if (value instanceof Collection) {
@@ -512,10 +531,15 @@ public class Converter {
 			return null;
 		}
 		
+		public boolean exists(String fieldName) {
+			return getField(builder.getClass(), fieldName) != null;
+		}
 		
 		public Object toObject(String fieldName) {
 			Field field = getField(builder.getClass(), fieldName);
-			return field == null ? null : getValue(field, builder);
+			verifyFieldExist(fieldName, field);
+			
+			return getValue(field, builder);
 		}
 
 		public String toString(String fieldName) {
