@@ -157,7 +157,9 @@ public class BuilderGenerator {
 					
 					builder.append(template
 							.replaceAll("SpeechBuilder", "```builderClassName```")
-							.replaceAll("PersonBuilder", fieldBuilderClassName)
+							.replaceAll("PersonBuilder", "```fieldBuilderClassName```")
+							.replaceAll("Person", fieldClassName)
+							.replaceAll("```fieldBuilderClassName```", fieldBuilderClassName)
 							.replaceAll("```builderClassName```", builderClassName)
 							.replaceAll("owner", fieldName)
 							.replaceAll("person", fieldClassCamelCase)

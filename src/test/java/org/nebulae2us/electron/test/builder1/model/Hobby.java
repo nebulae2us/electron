@@ -30,7 +30,7 @@ public class Hobby {
 	private final List<Person> people;
 	
 	public Hobby(Mirror converter) {
-		converter.register(this);
+		converter.bind(this);
 		
 		this.name = converter.toString("name");
 		this.people = converter.toListOf(Person.class, "people");

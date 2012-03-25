@@ -616,7 +616,7 @@ public class Converter {
 		}
 
 
-		public void register(Object object) {
+		public void bind(Object object) {
 			this.builders.put(builder, object);
 		}
 		

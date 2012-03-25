@@ -40,7 +40,7 @@ public class Person1 {
 	private final List<Person1> friends;
 	
 	public Person1(Mirror converter) {
-		converter.register(this);
+		converter.bind(this);
 		
 		this.name = converter.toString("name");
 		this.age = converter.toIntValue("age");

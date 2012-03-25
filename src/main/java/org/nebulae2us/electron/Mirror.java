@@ -68,6 +68,6 @@ public interface Mirror {
 	
 	public char toCharValue(String fieldName);
 
-	public void register(Object object);	
+	public void bind(Object object);	
 	
 }

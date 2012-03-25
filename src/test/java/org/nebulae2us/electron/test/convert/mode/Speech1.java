@@ -32,7 +32,7 @@ public class Speech1 {
 	private final List<String> keywords;
 	
 	public Speech1(Mirror converter) {
-		converter.register(this);
+		converter.bind(this);
 		
 		this.name = converter.toString("name");
 		this.owner = converter.to(Person1.class, "owner");
