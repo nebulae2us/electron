@@ -80,18 +80,18 @@ public class BuilderGenerator {
 	
 	
 	private static void buildClassBuilder(File genFolder, Class<?> modelClass, List<Class<?>> modelClasses) {
-		StringBuilder builder = new StringBuilder();
+		StringBuilder classBuilder = new StringBuilder();
 
 		String packageName = modelClass.getPackage().getName();
 		
 		String className = modelClass.getSimpleName();
 		String builderClassName = className + "Builder";
 		
-		builder.append("package ").append(packageName).append(";\n\n")
-			.append("import java.util.*;\n")
-			.append("import org.nebulae2us.electron.*;\n")
-			.append("\n\n")
-			.append("public class ").append(builderClassName).append("<B>");
+		ImportStatementGenerator importGenerator = new ImportStatementGenerator(packageName);
+		importGenerator.importPackage("org.nebulae2us.electron");
+		importGenerator.importClass(modelClass);
+		
+		classBuilder.append("public class ").append(builderClassName).append("<B>");
 
 		StringBuilder attributesCopy = new StringBuilder();
 		
@@ -99,21 +99,37 @@ public class BuilderGenerator {
 		Class<?> c = modelClass;
 		while ((c = c.getSuperclass()) != null) {
 			if (modelClasses.contains(c)) {
-				builder.append(" extends ").append(c.getSimpleName()).append("Builder<B>");
+				classBuilder.append(" extends ").append(c.getSimpleName()).append("Builder<B>");
 				hasSuperClass = true;
+				importGenerator.importClass(c);
 				break;
 			}
 		}
 		
-		builder.append(" implements Convertable {\n")
+		classBuilder.append(" implements Convertable {\n")
 		;
 		
-		builder.append(getTemplates().getProperty("builder_constructors_methods")
+		classBuilder.append(getTemplates().getProperty("builder_constructors_methods")
 				.replaceAll("PersonBuilder", builderClassName)
 				.replaceAll("Person", className)
 				.replaceAll("person", toCamelCase(className))
 				.replaceAll(hasSuperClass ? "// super" : "\\t\\t// super.*\\n", hasSuperClass ? "super" : "")
 				);
+
+
+		if (hasSuperClass) {
+			Class<?> c1 = modelClass;
+			while ((c1 = c1.getSuperclass()) != null) {
+				if (modelClasses.contains(c1)) {
+					String superClassName = c.getSimpleName();
+					classBuilder.append(getTemplates().getProperty("super_class_build_methods")
+							.replaceAll("Student", className)
+							.replaceAll("Person", superClassName)
+							);
+				}
+			}
+		}
+		
 		
 		for (Field field : ClassUtils.getFields(modelClass)) {
 			
@@ -125,22 +141,26 @@ public class BuilderGenerator {
 			String fieldClassCamelCase = toCamelCase(fieldClassName);
 			
 			if (SCALAR_TYPES.contains(fieldClass) || fieldClass.isEnum() || IMMUTABLE_TYPES.contains(fieldClass)) {
+				importGenerator.importClass(fieldClass);
+				
 				if (declaringClass == modelClass) {
-					builder.append(genFieldNameAndGetterSetter(fieldClassName, fieldName));
+					classBuilder.append(genFieldNameAndGetterSetter(fieldClassName, fieldName));
 					attributesCopy.append("this.").append(fieldName).append(" = copy.").append(fieldName).append(";\n\t\t");
 					
 					String template = getTemplates().getProperty("scalar_field");
 
-					builder.append(template
+					classBuilder.append(template
 							.replaceAll("PersonBuilder", builderClassName)
 							.replaceAll("String", fieldClassName)
 							.replaceAll("name", fieldName)
 							);
+					
+					
 				}
 				else if (modelClasses.contains(declaringClass)) {
 					String template = getTemplates().getProperty("super_class_scalar_field");
 
-					builder.append(template
+					classBuilder.append(template
 							.replaceAll("StudentBuilder", builderClassName)
 							.replaceAll("String", fieldClassName)
 							.replaceAll("name", fieldName)
@@ -149,13 +169,15 @@ public class BuilderGenerator {
 				}
 			}
 			else if (modelClasses.contains(fieldClass)) {
+				importGenerator.importClass(fieldClass);
+				
 				if (declaringClass == modelClass) {
-					builder.append(genFieldNameAndGetterSetter(fieldClassName + "Builder<?>", fieldName));
+					classBuilder.append(genFieldNameAndGetterSetter(fieldClassName + "Builder<?>", fieldName));
 					attributesCopy.append("this.").append(fieldName).append(" = copy.").append(fieldName).append(";\n\t\t");
 					
 					String template = getTemplates().getProperty("builder_field");
 					
-					builder.append(template
+					classBuilder.append(template
 							.replaceAll("SpeechBuilder", "```builderClassName```")
 							.replaceAll("PersonBuilder", "```fieldBuilderClassName```")
 							.replaceAll("Person", fieldClassName)
@@ -168,9 +190,11 @@ public class BuilderGenerator {
 				else if (modelClasses.contains(declaringClass)) {
 					String template = getTemplates().getProperty("super_class_builder_field");
 					
-					builder.append(template
+					classBuilder.append(template
 							.replaceAll("SpeechBuilder", "```builderClassName```")
-							.replaceAll("StudentBuilder", fieldBuilderClassName)
+							.replaceAll("StudentBuilder", "```fieldBuilderClassName```")
+							.replaceAll("Person", fieldClassName)
+							.replaceAll("```fieldBuilderClassName```", fieldBuilderClassName)
 							.replaceAll("```builderClassName```", builderClassName)
 							.replaceAll("owner", fieldName)
 							.replaceAll("person", fieldClassCamelCase)
@@ -182,6 +206,9 @@ public class BuilderGenerator {
 			}
 			else if (List.class.isAssignableFrom(fieldClass)) {
 				
+				importGenerator.importPackage("java.util");
+				importGenerator.importClass(fieldClass);
+				
 				if (declaringClass == modelClass) {
 					ParameterizedType subType = (ParameterizedType)field.getGenericType();
 					Class<?> fieldSubClass = (Class<?>)subType.getActualTypeArguments()[0];
@@ -190,12 +217,14 @@ public class BuilderGenerator {
 					String singularFieldName = singularize(fieldName);
 
 					if (modelClasses.contains(fieldSubClass)) {
-						builder.append(genFieldNameAndGetterSetter(fieldClassName + "<" + fieldSubClassName + "Builder<?>>", fieldName));
+						importGenerator.importClass(fieldSubClass);
+						
+						classBuilder.append(genFieldNameAndGetterSetter(fieldClassName + "<" + fieldSubClassName + "Builder<?>>", fieldName));
 						attributesCopy.append("this.").append(fieldName).append(" = copy.").append(fieldName).append(";\n\t\t");
 
 						String template = getTemplates().getProperty("list_field");
 						
-						builder.append(template
+						classBuilder.append(template
 								.replaceAll("HobbyBuilder", "```builderClassName```")
 								.replaceAll("PersonBuilder", "```fieldSubBuilderClassName```")
 								.replaceAll("Person", fieldSubClassName)
@@ -207,12 +236,14 @@ public class BuilderGenerator {
 						
 					}
 					else if (SCALAR_TYPES.contains(fieldSubClass)) {
-						builder.append(genFieldNameAndGetterSetter(fieldClassName + "<" + fieldSubClassName + ">", fieldName));
+						importGenerator.importClass(fieldSubClass);
+
+						classBuilder.append(genFieldNameAndGetterSetter(fieldClassName + "<" + fieldSubClassName + ">", fieldName));
 						attributesCopy.append("this.").append(fieldName).append(" = copy.").append(fieldName).append(";\n\t\t");
 
 						String template = getTemplates().getProperty("list_scalar_field");
 						
-						builder.append(template
+						classBuilder.append(template
 								.replaceAll("SpeechBuilder", builderClassName)
 								.replaceAll("keywords", fieldName)
 								.replaceAll("keyword", singularFieldName)
@@ -225,15 +256,20 @@ public class BuilderGenerator {
 			}
 		}
 
-		builder.append("}\n");
+		classBuilder.append("}\n");
 		
 		if (attributesCopy.length() > 3) {
 			attributesCopy.replace(attributesCopy.length() - 3, attributesCopy.length(), "");
-			int idx = builder.indexOf("// COPY ATTRIBUTES");
+			int idx = classBuilder.indexOf("// COPY ATTRIBUTES");
 			if (idx >= 0) {
-				builder.replace(idx, idx + 18, attributesCopy.toString());
+				classBuilder.replace(idx, idx + 18, attributesCopy.toString());
 			}
 		}		
+		
+		StringBuilder javaFileBuilder = new StringBuilder();
+		javaFileBuilder.append("package ").append(packageName).append(";\n\n")
+			.append(importGenerator.generate()).append("\n\n")
+			.append(classBuilder.toString());
 		
 		File folder = new File(genFolder, packageName.replaceAll("\\.", "/"));
 		if (!folder.exists()) {
@@ -243,7 +279,7 @@ public class BuilderGenerator {
 		File javaFile = new File(folder, builderClassName + ".java");
 		try {
 			FileWriter fw = new FileWriter(javaFile);
-			fw.write(builder.toString());
+			fw.write(javaFileBuilder.toString());
 			fw.close();
 		} catch (IOException e) {
 			e.printStackTrace();

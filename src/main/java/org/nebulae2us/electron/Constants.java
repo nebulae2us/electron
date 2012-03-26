@@ -15,6 +15,7 @@
  */
 package org.nebulae2us.electron;
 
+import java.lang.reflect.Field;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.Arrays;
@@ -35,7 +36,8 @@ public interface Constants {
 
 	public static final List<Class<?>> IMMUTABLE_TYPES =
 			Arrays.asList(new Class<?>[] {
-					Class.class
+					Class.class,
+					Field.class
 			});
 	
 }
