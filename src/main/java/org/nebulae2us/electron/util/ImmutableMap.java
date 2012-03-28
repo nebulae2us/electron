@@ -28,6 +28,13 @@ public class ImmutableMap<K, V> extends AbstractImmutableMap<K, V> implements Ma
 
     private final EqualityComparator<Object> equalityComparator;
 
+    @SuppressWarnings("unchecked")
+	public ImmutableMap() {
+    	this.size = 0;
+    	data = new InternalEntry[0];
+    	this.equalityComparator = new ObjectEqualityComparator<Object>();
+    }
+    
     public ImmutableMap(Map<? extends K, ? extends V> m, EqualityComparator<K> equalityComparator) {
 
         int capacity = 1;

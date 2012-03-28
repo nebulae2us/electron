@@ -29,13 +29,13 @@ public class Builders {
 ]]></entry>
 
 <entry key="builder_constructors_methods"><![CDATA[
-	private Person $$$savedTarget;
+	private final Person $$$savedTarget;
 
 	private final ConverterOption $$$option;
 
 	private final B $$$parentBuilder;
 
-	public PersonBuilder(Person person) {
+	protected PersonBuilder(Person person) {
 		// super(person);
 		if (person == null) {
 			throw new NullPointerException();
@@ -65,6 +65,10 @@ public class Builders {
 		this.$$$parentBuilder = null;
 		this.$$$savedTarget = null;
 	}
+	
+	public Person getSavedTarget() {
+		return this.$$$savedTarget;
+	}
 
 	public boolean convertableTo(Class<?> c) {
 		return this.$$$savedTarget != null && c.isAssignableFrom(this.$$$savedTarget.getClass());
@@ -91,9 +95,22 @@ public class Builders {
     	repo.put(builderId, this);
     	return this;
     }
-    
+]]></entry>
+
+<entry key="build_methods"><![CDATA[
     public Person toPerson() {
     	return new Converter(this.$$$option).convert(this).to(Person.class);
+    }
+]]></entry>
+
+<entry key="build_abstract_methods"><![CDATA[
+    public abstract Person toPerson();
+]]></entry>
+
+<entry key="super_class_build_methods"><![CDATA[
+    @Override
+    public Student toPerson() {
+    	return new Converter(this.$$$option).convert(this).to(Student.class);
     }
 ]]></entry>
 
@@ -105,6 +122,9 @@ public class Builders {
     }
 
     public void setName(String name) {
+    	if (this.$$$savedTarget != null) {
+    		throw new IllegalStateException("Cannot mutate fields of immutable objects");
+    	}
         this.name = name;
     }
 ]]></entry>
@@ -131,20 +151,13 @@ public class Builders {
         return owner;
     }
 
-    public PersonBuilder<? extends SpeechBuilder<B>> owner$new() {
-        PersonBuilder<SpeechBuilder<B>> owner = new PersonBuilder<SpeechBuilder<B>>(this.$$$option, this);
-        this.owner = owner;
-        
-        return owner;
-    }
-
     public SpeechBuilder<B> owner(PersonBuilder<?> owner) {
         this.owner = owner;
         return this;
     }
 
     public SpeechBuilder<B> owner(Person owner) {
-        this.owner = new PersonBuilder<Object>(owner);
+    	this.owner = new WrapConverter(this.$$$option).convert(owner).to(PersonBuilder.class);
         return this;
     }
 
@@ -175,6 +188,18 @@ public class Builders {
     public StudentBuilder<? extends SpeechBuilder<B>> owner() {
         return (StudentBuilder<SpeechBuilder<B>>)super.owner();
     }
+    
+    public SpeechBuilder<B> owner(PersonBuilder<?> owner) {
+		return (SpeechBuilder<B>)super.owner(owner);
+    }
+
+    public SpeechBuilder<B> owner(Person owner) {
+		return (SpeechBuilder<B>)super.owner(owner);
+    }
+
+    public SpeechBuilder<B> owner$restoreFrom(BuilderRepository repo, int builderId) {
+		return (SpeechBuilder<B>)super.owner$restoreFrom(repo, builderId);
+    }    
 ]]></entry>
 
 <!-- Copy from SpeechBuilder.java -->
@@ -225,7 +250,8 @@ public class Builders {
         if (this.people == null) {
             this.people = new ArrayList<PersonBuilder<?>>();
         }
-        this.people.add(new PersonBuilder<Object>(person));
+    	PersonBuilder<?> wrap = new WrapConverter(this.$$$option).convert(person).to(PersonBuilder.class);
+        this.people.add(wrap);
         return this;
     }
 
@@ -244,7 +270,8 @@ public class Builders {
             this.people = new ArrayList<PersonBuilder<?>>();
         }
         for (Person o : people) {
-            this.people.add(new PersonBuilder<Object>(o));
+	    	PersonBuilder<?> wrap = new WrapConverter(this.$$$option).convert(o).to(PersonBuilder.class);
+            this.people.add(wrap);
         }
         return this;
     }

@@ -75,7 +75,24 @@ public class ImmutableList<E> extends AbstractImmutableList<E> implements List<E
         this.equalityComparator = (EqualityComparator<Object>)equalityComparator;
 
     	if (unique) {
-    		c = new LinkedHashSet<E>(c);
+    		List<E> newList = new ArrayList<E>();
+    		for (E e : c) {
+    			
+    			boolean contains = false;
+    			for (E ie : newList) {
+    				if (equalityComparator.equal(ie, e)) {
+    					contains = true;
+    					break;
+    				}
+    			}
+    			
+    			if (!contains) {
+    				newList.add(e);
+    			}
+    			
+    		}
+    		
+    		c = newList;
     	}
     	
         data = new Object[c.size()];
@@ -93,8 +110,25 @@ public class ImmutableList<E> extends AbstractImmutableList<E> implements List<E
         this.descending = false;
         this.comparator = (Comparator<Object>)comparator;
 
-        if (unique) {
-        	c = new LinkedHashSet<E>(c);
+    	if (unique) {
+    		List<E> newList = new ArrayList<E>();
+    		for (E e : c) {
+    			
+    			boolean contains = false;
+    			for (E ie : newList) {
+    				if (comparator.compare(ie, e) == 0) {
+    					contains = true;
+    					break;
+    				}
+    			}
+    			
+    			if (!contains) {
+    				newList.add(e);
+    			}
+    			
+    		}
+    		
+    		c = newList;
     	}
     	
         Object[] newData = new Object[c.size()];

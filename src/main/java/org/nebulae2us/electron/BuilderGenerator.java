@@ -70,18 +70,23 @@ public class BuilderGenerator {
 		
 		String fieldNameCamelCap = Character.toUpperCase(fieldName.charAt(0)) + fieldName.substring(1);
 		
+		String getterMethodName = (fieldType.equals("boolean") ? "is" : "get") + fieldNameCamelCap;
+		
 		String template = getTemplates().getProperty("fieldname_getter_setter");
 		
-		return template.replaceAll("Name", fieldNameCamelCap)
+		return template
+				.replaceAll("getName", getterMethodName)
+				.replaceAll("Name", fieldNameCamelCap)
 				.replaceAll("name", fieldName)
 				.replaceAll("String", fieldType);
 		
 	}
 	
-	
 	private static void buildClassBuilder(File genFolder, Class<?> modelClass, List<Class<?>> modelClasses) {
 		StringBuilder classBuilder = new StringBuilder();
 
+//		boolean isAbstract = (modelClass.getModifiers() & Modifier.ABSTRACT) != 0;
+		
 		String packageName = modelClass.getPackage().getName();
 		
 		String className = modelClass.getSimpleName();
@@ -91,7 +96,8 @@ public class BuilderGenerator {
 		importGenerator.importPackage("org.nebulae2us.electron");
 		importGenerator.importClass(modelClass);
 		
-		classBuilder.append("public class ").append(builderClassName).append("<B>");
+		classBuilder.append("public ")
+			.append("class ").append(builderClassName).append("<B>");
 
 		StringBuilder attributesCopy = new StringBuilder();
 		
@@ -116,6 +122,11 @@ public class BuilderGenerator {
 				.replaceAll(hasSuperClass ? "// super" : "\\t\\t// super.*\\n", hasSuperClass ? "super" : "")
 				);
 
+		classBuilder.append(getTemplates().getProperty("build_methods")
+				.replaceAll("PersonBuilder", builderClassName)
+				.replaceAll("Person", className)
+				.replaceAll("person", toCamelCase(className))
+				);
 
 		if (hasSuperClass) {
 			Class<?> c1 = modelClass;

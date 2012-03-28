@@ -46,12 +46,12 @@ public class ConvertTest {
 		Hobby1 hobby1 = converter.convert(hobby2).to(Hobby1.class);
 		
 		assertEquals("Walking", hobby1.getName());
-		assertNull(hobby1.getPeople());
+		assertTrue(hobby1.getPeople().size() == 0);
 		
 		hobby2 = converter.convert(hobby1).to(Hobby2.class);
 		
 		assertEquals("Walking", hobby2.getName());
-		assertNull(hobby2.getPeople());
+		assertTrue(hobby2.getPeople().size() == 0);
 		
 	}
 	

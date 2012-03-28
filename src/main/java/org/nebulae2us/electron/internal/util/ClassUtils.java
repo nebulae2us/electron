@@ -20,6 +20,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+import java.lang.reflect.WildcardType;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -126,11 +127,18 @@ public class ClassUtils {
 		
 		if (type instanceof ParameterizedType) {
 			ParameterizedType paramType = (ParameterizedType)type;
-			if (paramType.getRawType() instanceof Class) {
-				return (Class<?>)paramType.getRawType();
+			return getClass(paramType.getRawType());
+		}
+		else if (type instanceof WildcardType) {
+			WildcardType wildcardType = (WildcardType)type;
+			if (wildcardType.getLowerBounds() != null && wildcardType.getLowerBounds().length > 0) {
+				return getClass(wildcardType.getLowerBounds()[0]);
+			}
+			
+			if (wildcardType.getUpperBounds() != null && wildcardType.getUpperBounds().length > 0) {
+				return getClass(wildcardType.getUpperBounds()[0]);
 			}
 		}
-		
 
 		return null;
 	}

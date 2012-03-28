@@ -38,6 +38,16 @@ public class InheritanceTest {
 	}
 	
 	@Test
+	public void morph() {
+		StudentBuilder<?> studentBuilder = student();
+		
+		Student student = studentBuilder.toPerson();
+		
+		assertTrue(student instanceof Student);
+		
+	}
+	
+	@Test
 	public void object_to_immutable() {
 		
 		PersonBuilder<?> personBuilder = person()

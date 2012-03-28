@@ -16,6 +16,7 @@
 package org.nebulae2us.electron.test.builder1.model;
 
 import java.util.List;
+import java.util.Map;
 
 import org.nebulae2us.electron.Mirror;
 
