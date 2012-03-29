@@ -47,11 +47,11 @@ public class Converter {
 	private final ConverterOption option;
 	
 	public Converter() {
-		this( new ConverterOption() );
+		this( ConverterOptions.EMPTY_MUTABLE_OPTION );
 	}
 
 	public Converter(ConverterOption option) {
-		this.option = option != null ? option : new ConverterOption();
+		this.option = option != null ? option : ConverterOptions.EMPTY_MUTABLE_OPTION;
 	}
 	
 
@@ -113,7 +113,12 @@ public class Converter {
 				result.add((T)convertedObjects.get(object));
 			}
 			
-			return result;
+			if (option.isImmutable()) {
+				return new ImmutableList<T>(result);
+			}
+			else {
+				return result;
+			}
 		}
 
 		@SuppressWarnings("unchecked")
@@ -129,7 +134,7 @@ public class Converter {
 				result.add((T)convertedObjects.get(object));
 			}
 			
-			return result;
+			return option.isImmutable() ? new ImmutableSet<T>(result) : result;
 		}
 		
 	}
@@ -409,14 +414,24 @@ public class Converter {
 
 				Class<?> subClass = classHolder.getArgumentClasses().size() > 0 ? classHolder.getArgumentClasses().get(0).getRawClass() : Object.class;
 				
-//				Type subType = ClassUtils.getGenericSubType(type);
-//				Class<?> subClass = subType != null ? ClassUtils.getClass(subType) : Object.class;
-
 				Collection result = createMutableCollection(destClass);
 				for (Object o : (Collection<?>)srcObject) {
 					Object newValue = new MirrorImpl(this.converter, convertedObjects, o, option).to(ClassHolder.newInstance(subClass));
 					result.add(newValue);
 				}
+				
+				if (option.isImmutable()) {
+					if (List.class.isAssignableFrom(result.getClass())) {
+						return new ImmutableList<Object>(result);
+					}
+					else if (Set.class.isAssignableFrom(result.getClass())) {
+						return new ImmutableSet<Object>(result);
+					}
+					else {
+						return new ImmutableList<Object>(result);
+					}
+				}
+				
 				return result;
 			}
 
@@ -523,60 +538,30 @@ public class Converter {
 		}
 		
 		public <T> List<T> toListOf(Class<T> objectClass, String fieldName) {
-			
-			
 			Field field = getField(srcObject.getClass(), fieldName);
 			verifyFieldExist(fieldName, field);
 			
 			Object value = getValue(field, srcObject);
 
 			if (value == null) {
-				return new ImmutableList<T>();
+				return this.option.isImmutable() ? new ImmutableList<T>() : new ArrayList<T>();
 			}
 			
 			return (List<T>)new MirrorImpl(this.converter, this.convertedObjects, value, option).to(ClassHolder.newInstance(List.class, objectClass));
-			
-			
-			
-			
-			
-//	        if (value instanceof Collection) {
-//				List<T> result = new ArrayList<T>();
-//				
-//				Collection<?> valueList = (Collection<?>)value;
-//				for (Object o : valueList) {
-//					
-//					T convertedValue = (T)new MirrorImpl(this.converter, this.convertedObjects, o, option).to(ClassHolder.newInstance(objectClass));
-//					result.add(convertedValue);
-//				}
-//				
-//				return new ImmutableList<T>(result);
-//			}
-//			
-//			return new ImmutableList<T>();
 		}
 
 		public <T> Set<T> toSetOf(Class<T> objectClass, String fieldName) {
-			
 			Field field = getField(srcObject.getClass(), fieldName);
 			verifyFieldExist(fieldName, field);
-
-			Object value = getValue(field, srcObject);
 			
-	        if (value instanceof Collection) {
-				List<T> result = new ArrayList<T>();
-				
-				Collection<?> valueList = (Collection<?>)value;
-				for (Object o : valueList) {
-					
-					T convertedValue = (T)new MirrorImpl(this.converter, this.convertedObjects, o, option).to(ClassHolder.newInstance(objectClass));
-					result.add(convertedValue);
-				}
-				
-				return new ImmutableSet<T>(result);
+			Object value = getValue(field, srcObject);
+
+			if (value == null) {
+				return this.option.isImmutable() ? new ImmutableSet<T>() : new HashSet<T>();
 			}
 			
-			return new ImmutableSet<T>();
+			return (Set<T>)new MirrorImpl(this.converter, this.convertedObjects, value, option).to(ClassHolder.newInstance(Set.class, objectClass));
+			
 		}
 		
 		public boolean exists(String fieldName) {

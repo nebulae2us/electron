@@ -15,8 +15,13 @@
  */
 package org.nebulae2us.electron;
 
+import java.util.Collections;
 import java.util.IdentityHashMap;
 import java.util.Map;
+import java.util.Map.Entry;
+
+import org.nebulae2us.electron.util.IdentityEqualityComparator;
+import org.nebulae2us.electron.util.ImmutableMap;
 
 /**
  * @author Trung Phan
@@ -24,23 +29,60 @@ import java.util.Map;
  */
 public class ConverterOption {
 
-	private final Map<Class<?>, Class<?>> associates = new IdentityHashMap<Class<?>, Class<?>>();
+	//TODO change the structure to support the override concept, i.e. latter option will override earlier options
 	
-	
-	public ConverterOption associate(Class<?> class1, Class<?> class2) {
-		if (class1 == null || class2 == null) {
-			throw new NullPointerException();
-		}
+	private final Map<Class<?>, Class<?>> associates;
+	private final Map<Class<?>, Class<?>> inverseAssociates;
 
-		assertClassInstantiatable(class1);
-		assertClassInstantiatable(class2);
-		
-		associates.put(class1, class2);
-		associates.put(class2, class1);
-		
-		return this;
+	/**
+	 * Immutable flag determines what Collection is used (ImmutableList vs ArrayList)
+	 */
+	private final boolean immutable;
+	
+	@SuppressWarnings("unchecked")
+	public ConverterOption() {
+		this(Collections.EMPTY_MAP);
 	}
 	
+	public ConverterOption(Map<Class<?>, Class<?>> associates) {
+		this(associates, false);
+	}
+
+	public ConverterOption(Map<Class<?>, Class<?>> associates, boolean immutable) {
+		this.associates = new ImmutableMap<Class<?>, Class<?>>(associates, new IdentityEqualityComparator<Class<?>>());
+		this.immutable = immutable;
+		
+		Map<Class<?>, Class<?>> inverseAssociates = new IdentityHashMap<Class<?>, Class<?>>();
+		for (Entry<Class<?>, Class<?>> entry : associates.entrySet()) {
+			inverseAssociates.put(entry.getValue(), entry.getKey());
+		}
+		this.inverseAssociates = new ImmutableMap<Class<?>, Class<?>>(inverseAssociates, new IdentityEqualityComparator<Class<?>>());
+	}
+
+	public Map<Class<?>, Class<?>> getAssociates() {
+		return associates;
+	}
+
+	public boolean isImmutable() {
+		return immutable;
+	}
+	
+	public ConverterOption merge(ConverterOption otherOption) {
+
+		Map<Class<?>, Class<?>> associates;
+		if (this.associates.size() == 0) {
+			associates = otherOption.associates;
+		}
+		else if (otherOption.associates.size() == 0) {
+			associates = this.associates;
+		}
+		else {
+			associates = new IdentityHashMap<Class<?>, Class<?>>(this.associates);
+			associates.putAll(otherOption.associates);
+		}
+		return new ConverterOption(associates, otherOption.immutable);
+	}
+
 	private void assertClassInstantiatable(Class<?> c) {
 	}
 
@@ -50,6 +92,10 @@ public class ConverterOption {
 		Class<?> c = src;
 		while (c != null && c != Object.class) {
 			Class<?> candidateDest = associates.get(c);
+			if (candidateDest == null) {
+				candidateDest = inverseAssociates.get(c);
+			}
+			
 			if (candidateDest != null && dest.isAssignableFrom(candidateDest)) {
 				return (Class<T>)candidateDest;
 			}

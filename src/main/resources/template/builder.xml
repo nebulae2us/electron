@@ -6,17 +6,27 @@
 package packageName;
 
 import org.nebulae2us.electron.*;
+import org.nebulae2us.electron.util.*;
 import Person;
 public class Builders {
 
-	public static final ConverterOption CONVERTER_OPTIONS = new ConverterOption()
-		.associate(Person.class, PersonBuilder.class)
-		;
+	public static final ConverterOption CONVERTER_OPTIONS_IMMUTABLE = new ConverterOption(
+			new MapBuilder<Class<?>, Class<?>> ()
+				.put(Person.class, PersonBuilder.class)
+			.toMap(),
+			true
+			);
+
+	public static final ConverterOption CONVERTER_OPTIONS_MUTABLE = new ConverterOption(
+			CONVERTER_OPTIONS_IMMUTABLE.getAssociates(),
+			false
+			);
+
 ]]></entry>
 
 <entry key="builders_each_model_class"><![CDATA[
     public static PersonBuilder<?> person() {
-        return new PersonBuilder<Object>(CONVERTER_OPTIONS);
+        return new PersonBuilder<Object>(CONVERTER_OPTIONS_IMMUTABLE);
     }
 
     public static PersonBuilder<?> person$restoreFrom(BuilderRepository repo, int builderId) {
@@ -24,14 +34,16 @@ public class Builders {
     }
 
     public static PersonBuilder<?> person$copyFrom(Person person) {
-    	return new Converter(CONVERTER_OPTIONS).convert(person).to(PersonBuilder.class);
+    	PersonBuilder<?> result = new Converter(CONVERTER_OPTIONS_MUTABLE).convert(person).to(PersonBuilder.class);
+    	result.setConverterOption(CONVERTER_OPTIONS_IMMUTABLE);
+    	return result;
     }
 ]]></entry>
 
 <entry key="builder_constructors_methods"><![CDATA[
 	private final Person $$$savedTarget;
 
-	private final ConverterOption $$$option;
+	private ConverterOption $$$option;
 
 	private final B $$$parentBuilder;
 
@@ -41,29 +53,37 @@ public class Builders {
 			throw new NullPointerException();
 		}
 	
-		this.$$$option = null;
+		this.$$$option = ConverterOptions.EMPTY_IMMUTABLE_OPTION;
 		this.$$$parentBuilder = null;
 		this.$$$savedTarget = person;
 	}
 
 	public PersonBuilder(ConverterOption option, B parentBuilder) {
 		// super(option, parentBuilder);
-		this.$$$option = option != null ? option : new ConverterOption();
+		this.$$$option = option != null ? option : ConverterOptions.EMPTY_IMMUTABLE_OPTION;
 		this.$$$parentBuilder = parentBuilder;
 		this.$$$savedTarget = null;
 	}
 
 	public PersonBuilder() {
-		this.$$$option = null;
+		this.$$$option = ConverterOptions.EMPTY_IMMUTABLE_OPTION;
 		this.$$$parentBuilder = null;
 		this.$$$savedTarget = null;
 	}
 	
 	public PersonBuilder(ConverterOption option) {
 		// super(option);
-		this.$$$option = option;
+		this.$$$option = option != null ? option : ConverterOptions.EMPTY_IMMUTABLE_OPTION;
 		this.$$$parentBuilder = null;
 		this.$$$savedTarget = null;
+	}
+	
+	public ConverterOption getConverterOption() {
+		return this.$$$option;
+	}
+	
+	public void setConverterOption(ConverterOption option) {
+		this.$$$option = option;
 	}
 	
 	public Person getSavedTarget() {

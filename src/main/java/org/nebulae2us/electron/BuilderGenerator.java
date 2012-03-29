@@ -314,14 +314,14 @@ public class BuilderGenerator {
 				.append(modelClass.getName())
 				.append("Builder;\n");
 			
-			hint.append(".associate(")
+			hint.append(".put(")
 				.append(modelClass.getSimpleName())
 				.append(".class, ")
 				.append(modelClass.getSimpleName())
-				.append("Builder.class)\n\t\t");
+				.append("Builder.class)\n\t\t\t\t");
 		}
-		if (hint.length() >= 3)
-			hint.delete(hint.length() - 3, hint.length());
+		if (hint.length() >= 5)
+			hint.delete(hint.length() - 5, hint.length());
 		
 		
 		StringBuilder builder = new StringBuilder();
@@ -329,7 +329,7 @@ public class BuilderGenerator {
 		builder.append(declareTemplate
 				.replaceAll("packageName", packageName)
 				.replaceAll("import Person;", importBuilder.toString())
-				.replaceAll("\\.associate\\(Person\\.class, PersonBuilder\\.class\\)", hint.toString())
+				.replaceAll("\\.put\\(Person\\.class, PersonBuilder\\.class\\)", hint.toString())
 				);
 		
 		String template = getTemplates().getProperty("builders_each_model_class");

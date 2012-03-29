@@ -40,7 +40,7 @@ public class WrapConverterTest {
 			.name("Person 1")
 			.toPerson();
 		
-		PersonBuilder<?> personWrap = new WrapConverter(CONVERTER_OPTIONS).convert(person).to(PersonBuilder.class);
+		PersonBuilder<?> personWrap = new WrapConverter(CONVERTER_OPTIONS_MUTABLE).convert(person).to(PersonBuilder.class);
 		assertTrue(personWrap.getSavedTarget() == person);
 		assertEquals(person.getName(), personWrap.getName());
 	}
@@ -52,7 +52,7 @@ public class WrapConverterTest {
 			.name("Person 1")
 			.toPerson();
 		
-		StudentBuilder<?> studentWrap = new WrapConverter(CONVERTER_OPTIONS).convert(student).to(StudentBuilder.class);
+		StudentBuilder<?> studentWrap = new WrapConverter(CONVERTER_OPTIONS_MUTABLE).convert(student).to(StudentBuilder.class);
 		assertTrue(studentWrap.getSavedTarget() == student);
 		assertEquals(student.getName(), studentWrap.getName());
 		
@@ -73,7 +73,7 @@ public class WrapConverterTest {
 					)
 					.toPerson();
 		
-		PersonBuilder<?> personWrap = new WrapConverter(CONVERTER_OPTIONS).convert(person).to(PersonBuilder.class);
+		PersonBuilder<?> personWrap = new WrapConverter(CONVERTER_OPTIONS_MUTABLE).convert(person).to(PersonBuilder.class);
 
 		assertTrue(personWrap.getSavedTarget() == person);
 		assertTrue(personWrap.getSpeeches().get(0).getSavedTarget() == person.getSpeeches().get(0));
