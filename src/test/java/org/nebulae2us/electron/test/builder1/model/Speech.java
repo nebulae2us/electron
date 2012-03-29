@@ -32,17 +32,17 @@ public class Speech {
 	
 	private final List<String> keywords;
 	
+	private final Map<Hobby, List<String>> hobbyKeywords;
+	
 	public Speech(Mirror converter) {
 		converter.bind(this);
 		
 		this.name = converter.toString("name");
 		this.owner = converter.to(Person.class, "owner");
 		this.keywords = converter.toListOf(String.class, "keywords");
+		this.hobbyKeywords = converter.toMultiValueMapOf(Hobby.class, String.class, "hobbyKeywords");
 	}
 
-	/**
-	 * @return the keywords
-	 */
 	public List<String> getKeywords() {
 		return keywords;
 	}
@@ -55,4 +55,9 @@ public class Speech {
 		return owner;
 	}
 
+	public Map<Hobby, List<String>> getHobbyKeywords() {
+		return hobbyKeywords;
+	}
+
+	
 }

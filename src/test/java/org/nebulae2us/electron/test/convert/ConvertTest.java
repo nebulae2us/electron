@@ -38,6 +38,14 @@ public class ConvertTest {
 	private Converter converter = new Converter();
 	
 	@Test
+	public void convert_scalar() {
+		Integer src = Integer.valueOf(1);
+		Object result = converter.convert(src).to(Object.class);
+		
+		assertTrue(result instanceof Integer);
+	}
+	
+	@Test
 	public void convert_one_object() {
 		
 		Hobby2 hobby2 = new Hobby2();

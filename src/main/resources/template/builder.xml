@@ -335,4 +335,13 @@ public class Builders {
     }
 ]]></entry>
 
+<entry key="map_field"><![CDATA[
+    private Map<KeyType, ValueType> hobbyKeywords;
+    
+    public SpeechBuilder<B> hobbyKeyword(KeyType key, ValueType value) {
+    	hobbyKeywords.put(key, value);
+    	return this;
+    }
+]]></entry>
+
 </properties>

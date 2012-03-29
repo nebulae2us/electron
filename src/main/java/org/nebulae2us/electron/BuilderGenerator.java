@@ -21,6 +21,7 @@ import java.io.IOException;
 import java.lang.reflect.Field;
 import java.lang.reflect.ParameterizedType;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 
 import org.nebulae2us.electron.internal.util.ClassUtils;
@@ -265,6 +266,15 @@ public class BuilderGenerator {
 					
 				}
 			}
+			else if (Map.class.isAssignableFrom(fieldClass)) {
+				importGenerator.importPackage("java.util");
+				
+				if (declaringClass == modelClass) {
+					
+				}
+				
+			}
+
 		}
 
 		classBuilder.append("}\n");

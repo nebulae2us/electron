@@ -15,8 +15,7 @@
  */
 package org.nebulae2us.electron;
 
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 /**
  * @author Trung Phan
@@ -31,6 +30,14 @@ public interface Mirror {
 	public <T> List<T> toListOf(Class<T> objectClass, String fieldName);
 
 	public <T> Set<T> toSetOf(Class<T> objectClass, String fieldName);
+	
+	public <K, V> Map<K, V> toMapOf(Class<K> keyClass, Class<V> valueClass, String fieldName);
+	
+	public <K, V> Map<K, V> toIdentityMapOf(Class<K> keyClass, Class<V> valueClass, String fieldName);
+	
+	public <K, V> Map<K, List<V>> toMultiValueMapOf(Class<K> keyClass, Class<V> valueClass, String fieldName);
+
+	public <K, V> Map<K, List<V>> toMultiValueIdentityMapOf(Class<K> keyClass, Class<V> valueClass, String fieldName);
 	
 	public Object toObject(String fieldName);
 

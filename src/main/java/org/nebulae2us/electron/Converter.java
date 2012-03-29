@@ -20,21 +20,21 @@ import static org.nebulae2us.electron.Constants.*;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
-import java.math.BigDecimal;
-import java.math.BigInteger;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.IdentityHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.math.*;
+import java.util.*;
+import java.util.Map.Entry;
 
 import org.nebulae2us.electron.internal.util.ClassHolder;
 import org.nebulae2us.electron.internal.util.ClassUtils;
+import org.nebulae2us.electron.util.IdentityEqualityComparator;
+import org.nebulae2us.electron.util.ImmutableIdentityMap;
 import org.nebulae2us.electron.util.ImmutableList;
+import org.nebulae2us.electron.util.ImmutableMap;
 import org.nebulae2us.electron.util.ImmutableSet;
+import org.nebulae2us.electron.util.ImmutableSortedMap;
+import org.nebulae2us.electron.util.ImmutableSortedSet;
+import org.nebulae2us.electron.util.NaturalComparator;
+import org.nebulae2us.electron.util.ObjectEqualityComparator;
 
 import static org.nebulae2us.electron.internal.util.ClassUtils.*;
 
@@ -45,6 +45,10 @@ import static org.nebulae2us.electron.internal.util.ClassUtils.*;
 public class Converter {
 
 	private final ConverterOption option;
+	
+	public ConverterOption getConverterOption() {
+		return option;
+	}
 	
 	public Converter() {
 		this( ConverterOptions.EMPTY_MUTABLE_OPTION );
@@ -226,62 +230,62 @@ public class Converter {
 		return (T)result;
 	}
 	
-	private static <T> T convertBasicType(Class<T> objectClass, Object srcObject) {
+	private static <T> T convertBasicType(Class<T> destClass, Object srcObject) {
 		if (srcObject == null) {
-			return defaultPrimitiveValue(objectClass);
+			return defaultPrimitiveValue(destClass);
 		}
-		if (srcObject.getClass() == objectClass) {
+		if (destClass.isInstance(srcObject)) {
 			return (T)srcObject;
 		}
 		
 		Object result = null;
 
 		if (srcObject instanceof String) {
-			if (objectClass == String.class) {
+			if (destClass == String.class) {
 				result = srcObject;
 			}
 		}
 		else if (srcObject instanceof Character ) {
-			if (objectClass == Character.class || objectClass == char.class) {
+			if (destClass == Character.class || destClass == char.class) {
 				result = srcObject;
 			}
-			else if (objectClass == int.class || objectClass == Integer.class) {
+			else if (destClass == int.class || destClass == Integer.class) {
 				result = (int)((Character)srcObject).charValue();
 			}
-			else if (objectClass == short.class || objectClass == Short.class) {
+			else if (destClass == short.class || destClass == Short.class) {
 				result = (short)((Character)srcObject).charValue();
 			}
-			else if (objectClass == byte.class || objectClass == Byte.class) {
+			else if (destClass == byte.class || destClass == Byte.class) {
 				result = (byte)((Character)srcObject).charValue();
 			}
-			else if (objectClass == long.class || objectClass == Long.class) {
+			else if (destClass == long.class || destClass == Long.class) {
 				result = (long)((Character)srcObject).charValue();
 			}
 		}
 		else if (srcObject instanceof Number) {
 			Number n = (Number)srcObject;
-			if (objectClass == char.class || objectClass == Character.class) {
+			if (destClass == char.class || destClass == Character.class) {
 				result = (char)n.intValue();
 			}
-			else if (objectClass == int.class || objectClass == Integer.class) {
+			else if (destClass == int.class || destClass == Integer.class) {
 				result = n.intValue();
 			}
-			else if (objectClass == short.class || objectClass == Short.class) {
+			else if (destClass == short.class || destClass == Short.class) {
 				result = n.shortValue();
 			}
-			else if (objectClass == byte.class || objectClass == Byte.class) {
+			else if (destClass == byte.class || destClass == Byte.class) {
 				result = n.byteValue();
 			}
-			else if (objectClass == long.class || objectClass == Long.class) {
+			else if (destClass == long.class || destClass == Long.class) {
 				result = n.longValue();
 			}
-			else if (objectClass == double.class || objectClass == Double.class) {
+			else if (destClass == double.class || destClass == Double.class) {
 				result = n.doubleValue();
 			}
-			else if (objectClass == float.class || objectClass == Float.class) {
+			else if (destClass == float.class || destClass == Float.class) {
 				result = n.floatValue();
 			}
-			else if (objectClass == BigInteger.class) {
+			else if (destClass == BigInteger.class) {
 				if (srcObject instanceof BigInteger) {
 					result = srcObject;
 				}
@@ -292,7 +296,7 @@ public class Converter {
 					result = BigInteger.valueOf(n.longValue());
 				}
 			}
-			else if (objectClass == BigDecimal.class) {
+			else if (destClass == BigDecimal.class) {
 				if (srcObject instanceof BigDecimal) {
 					result = srcObject;
 				}
@@ -306,18 +310,18 @@ public class Converter {
 			
 		}
 		else if (srcObject instanceof Boolean) {
-			if (objectClass == Boolean.class || objectClass == boolean.class ) {
+			if (destClass == Boolean.class || destClass == boolean.class ) {
 				result = srcObject;
 			}
 		}
 		else if (srcObject instanceof Date) {
-			if (objectClass == Date.class) {
+			if (destClass == Date.class) {
 				result = new Date(((Date)srcObject).getTime());
 			}
 		}
 		
 		if (result == null) {
-			result = defaultPrimitiveValue(objectClass);
+			result = defaultPrimitiveValue(destClass);
 		}
 		
 		return (T)result;
@@ -408,46 +412,17 @@ public class Converter {
 			return new HashSet<Object>();
 		}
 		
-		private Collection convertCollectionType(ClassHolder classHolder, Object srcObject) {
-			Class<?> destClass = classHolder.getRawClass();
-			if (Collection.class.isAssignableFrom(destClass) && srcObject instanceof Collection) {
-
-				Class<?> subClass = classHolder.getArgumentClasses().size() > 0 ? classHolder.getArgumentClasses().get(0).getRawClass() : Object.class;
-				
-				Collection result = createMutableCollection(destClass);
-				for (Object o : (Collection<?>)srcObject) {
-					Object newValue = new MirrorImpl(this.converter, convertedObjects, o, option).to(ClassHolder.newInstance(subClass));
-					result.add(newValue);
-				}
-				
-				if (option.isImmutable()) {
-					if (List.class.isAssignableFrom(result.getClass())) {
-						return new ImmutableList<Object>(result);
-					}
-					else if (Set.class.isAssignableFrom(result.getClass())) {
-						return new ImmutableSet<Object>(result);
-					}
-					else {
-						return new ImmutableList<Object>(result);
-					}
-				}
-				
-				return result;
-			}
-
-			return null;
-		}
-		
 		private Object to(ClassHolder classHolder) {
 
+			Class<?> srcClass = srcObject.getClass();
 			Class<?> requestedClass = classHolder.getRawClass();
-
-			if (SCALAR_TYPES.contains(srcObject.getClass()) || SCALAR_TYPES.contains(requestedClass)) {
+			
+			if (SCALAR_TYPES.contains(srcClass) || SCALAR_TYPES.contains(requestedClass)) {
 				return convertBasicType(requestedClass, srcObject);
 			}
 			
-			if (requestedClass.isEnum()	|| IMMUTABLE_TYPES.contains(requestedClass) ) {
-				if (srcObject.getClass() == requestedClass) {
+			if (srcClass.isEnum() || IMMUTABLE_TYPES.contains(srcClass)) {
+				if (requestedClass.isInstance(srcObject)) {
 					return srcObject;
 				}
 				else {
@@ -458,21 +433,154 @@ public class Converter {
 			if (this.convertedObjects.containsKey(this.srcObject)) {
 				return this.convertedObjects.get(this.srcObject);
 			}
-
-			if (Collection.class.isAssignableFrom(requestedClass)) {
-				if (ClassUtils.isCollectionType(srcObject.getClass())) {
-					return convertCollectionType(classHolder, srcObject);
+			
+			if (Collection.class.isAssignableFrom(srcClass)) {
+				Collection result = null;
+				
+				if (option.isImmutable() && MUTABLE_COLLECTION_TYPES.contains(requestedClass)) {
+					throw new IllegalStateException("Option IMMUTABLE is not appropriate for " + requestedClass.getSimpleName());
 				}
-				return null;
+				
+				if (requestedClass.isAssignableFrom(Collection.class)) {
+					if (!(srcObject instanceof List) && srcObject instanceof SortedSet) {
+						result = new TreeSet();
+					}
+					else if (!(srcObject instanceof List) && srcObject instanceof Set) {
+						result = new HashSet();
+					}
+					else {
+						result = new ArrayList();
+					}
+				}
+				else if (requestedClass.isAssignableFrom(List.class) || requestedClass.isAssignableFrom(ArrayList.class)) {
+					result = new ArrayList();
+				}
+				else if (requestedClass.isAssignableFrom(Set.class) || requestedClass.isAssignableFrom(HashSet.class)) {
+					result = new HashSet();
+				}
+				else if (requestedClass.isAssignableFrom(NavigableSet.class) || requestedClass.isAssignableFrom(TreeSet.class)) {
+					// TODO think of option to convert comparator
+					result = new TreeSet();
+				}
+				else if (requestedClass.isAssignableFrom(LinkedList.class)) {
+					result = new LinkedList();
+				}
+				else if (requestedClass.isAssignableFrom(LinkedHashSet.class)) {
+					result = new LinkedHashSet();
+				}
+				else {
+					throw new IllegalStateException("Unsupported collection type: " + requestedClass.getName());
+				}
+
+				for (Object o : (Collection)srcObject) {
+					Object newValue = new MirrorImpl(this.converter, convertedObjects, o, option).to(
+							classHolder.getArgumentClasses().size() > 0 ? classHolder.getArgumentClasses().get(0) : ClassHolder.newInstance(Object.class)
+							);
+					result.add(newValue);
+				}
+
+				if (option.isImmutable()) {
+					if (result instanceof List) {
+						result = new ImmutableList<Object>(result);
+					}
+					else if (result instanceof SortedSet) {
+						result = new ImmutableSortedSet<Object>(result);
+					}
+					else {
+						result = new ImmutableSet<Object>(result);
+					}
+				}
+				
+				this.convertedObjects.put(srcObject, result);
+				
+				return result;
 			}
+
+			if (Map.class.isAssignableFrom(srcClass)) {
+				Map result = null;
+				
+				if (option.isImmutable() && MUTABLE_COLLECTION_TYPES.contains(requestedClass)) {
+					throw new IllegalStateException("Option IMMUTABLE is not appropriate for " + requestedClass.getSimpleName());
+				}
+				
+				if (requestedClass.isAssignableFrom(Map.class)) {
+					if (srcObject instanceof SortedMap) {
+						result = new TreeMap();
+					}
+					else if (srcObject instanceof IdentityHashMap) {
+						result = new IdentityHashMap();
+					}
+					else {
+						result = new HashMap();
+					}
+				}
+				else if (requestedClass.isAssignableFrom(NavigableMap.class) || requestedClass.isAssignableFrom(TreeMap.class)) {
+					result = new TreeMap();
+				}
+				else if (requestedClass.isAssignableFrom(HashMap.class)) {
+					result = new HashMap();
+				}
+				else if (requestedClass.isAssignableFrom(LinkedHashMap.class)) {
+					result = new LinkedHashMap();
+				}
+				else if (requestedClass.isAssignableFrom(Hashtable.class)) {
+					result = new Hashtable();
+				}
+				else if (requestedClass.isAssignableFrom(IdentityHashMap.class)) {
+					result = new IdentityHashMap();
+				}
+				else if (requestedClass.isAssignableFrom(WeakHashMap.class)) {
+					result = new WeakHashMap();
+				}
+				else if (requestedClass.isAssignableFrom(ImmutableMap.class)) {
+					result = new HashMap();
+				}
+				else if (requestedClass.isAssignableFrom(ImmutableIdentityMap.class)) {
+					result = new IdentityHashMap();
+				}
+				else if (requestedClass.isAssignableFrom(ImmutableSortedMap.class)) {
+					result = new TreeMap();
+				}
+				else {
+					throw new IllegalStateException("Unsupported map type: " + requestedClass.getName());
+				}
+				
+				for (Entry<?, ?> entry : ((Map<?, ?>)srcObject).entrySet()) {
+					Object newKey = entry.getKey() == null ? null : new MirrorImpl(this.converter, convertedObjects, entry.getKey(), option).to(
+							classHolder.getArgumentClasses().size() > 1 ? classHolder.getArgumentClasses().get(0) : ClassHolder.newInstance(Object.class)
+							);
+					
+					Object newValue = entry.getValue() == null ? null : new MirrorImpl(this.converter, convertedObjects, entry.getValue(), option).to(
+							classHolder.getArgumentClasses().size() > 0 ? classHolder.getArgumentClasses().get(1) : ClassHolder.newInstance(Object.class)
+							);
+					result.put(newKey, newValue);
+				}
+
+				if (option.isImmutable()) {
+					if (result instanceof SortedMap) {
+						result = new ImmutableSortedMap<Object, Object>(result, new NaturalComparator<Object>());
+					}
+					else if (result instanceof IdentityHashMap) {
+						result = new ImmutableMap<Object, Object>(result, new IdentityEqualityComparator<Object>());
+					}
+					else {
+						result = new ImmutableMap<Object, Object>(result, new ObjectEqualityComparator<Object>());
+					}
+				}
+				
+				this.convertedObjects.put(srcObject, result);
+				
+				return result;
+			}
+			
 			
 			if (srcObject instanceof Convertable && ((Convertable) srcObject).convertableTo(requestedClass)) {
 				return ((Convertable)srcObject).convertTo(requestedClass);
 			}
 			
-			Class<?> destClass = this.option.findBestDestinationClass(srcObject.getClass(), requestedClass);
+			Class<?> destClass = this.option.findBestDestinationClass(srcClass, requestedClass);
 			
-			Pair<?, Boolean> pair = this.converter.instantiateDestObject(destClass, srcObject.getClass(), srcObject, this);
+			Pair<?, Boolean> pair = this.converter.instantiateDestObject(destClass, srcClass, srcObject, this);
 			Object result = pair.getItem1();
 			if (destClass.isPrimitive()) {
 				return result == null ? defaultPrimitiveValue(destClass) : null;
@@ -480,7 +588,7 @@ public class Converter {
 			this.convertedObjects.put(this.srcObject, result);
 
 			if (pair.getItem2() == Boolean.FALSE) {
-				for (Field field : getFields(srcObject.getClass())) {
+				for (Field field : getFields(srcClass)) {
 					Field friendField = getField(destClass, field.getName());
 					if (friendField == null)
 						continue;
@@ -547,7 +655,8 @@ public class Converter {
 				return this.option.isImmutable() ? new ImmutableList<T>() : new ArrayList<T>();
 			}
 			
-			return (List<T>)new MirrorImpl(this.converter, this.convertedObjects, value, option).to(ClassHolder.newInstance(List.class, objectClass));
+			List<T> result = (List<T>)new MirrorImpl(this.converter, this.convertedObjects, value, option).to(ClassHolder.newInstance(List.class, objectClass));
+			return result;
 		}
 
 		public <T> Set<T> toSetOf(Class<T> objectClass, String fieldName) {
@@ -564,6 +673,68 @@ public class Converter {
 			
 		}
 		
+		public <K, V> Map<K, V> toMapOf(Class<K> keyClass, Class<V> valueClass, String fieldName) {
+			Field field = getField(srcObject.getClass(), fieldName);
+			verifyFieldExist(fieldName, field);
+			
+			Object value = getValue(field, srcObject);
+
+			if (value == null) {
+				return this.option.isImmutable() ? new ImmutableMap<K, V>() : new HashMap<K, V>();
+			}
+			
+			Map<K, V> result = (Map<K, V>)new MirrorImpl(this.converter, this.convertedObjects, value, option).to(ClassHolder.newInstance(Map.class, keyClass, valueClass));
+			return result;
+		}
+
+		public <K, V> Map<K, V> toIdentityMapOf(Class<K> keyClass, Class<V> valueClass, String fieldName) {
+			Field field = getField(srcObject.getClass(), fieldName);
+			verifyFieldExist(fieldName, field);
+			
+			Object value = getValue(field, srcObject);
+
+			if (value == null) {
+				return this.option.isImmutable() ? new ImmutableMap<K, V>() : new IdentityHashMap<K, V>();
+			}
+			
+			Map<K, V> result = (Map<K, V>)new MirrorImpl(this.converter, this.convertedObjects, value, option).to(
+					ClassHolder.newInstance(this.option.isImmutable() ? ImmutableIdentityMap.class : IdentityHashMap.class, keyClass, valueClass));
+			return result;
+		}
+
+		public <K, V> Map<K, List<V>> toMultiValueMapOf(Class<K> keyClass, Class<V> valueClass, String fieldName) {
+			Field field = getField(srcObject.getClass(), fieldName);
+			verifyFieldExist(fieldName, field);
+			
+			Object value = getValue(field, srcObject);
+
+			if (value == null) {
+				return this.option.isImmutable() ? new ImmutableMap<K, List<V>>() : new HashMap<K, List<V>>();
+			}
+			
+			Map<K, List<V>> result = (Map<K, List<V>>)new MirrorImpl(this.converter, this.convertedObjects, value, option).to(
+					ClassHolder.newInstance(Map.class,
+					ClassHolder.newInstance(keyClass),
+					ClassHolder.newInstance(List.class, valueClass)));
+			return result;
+		}
+
+		public <K, V> Map<K, List<V>> toMultiValueIdentityMapOf(Class<K> keyClass, Class<V> valueClass, String fieldName) {
+			Field field = getField(srcObject.getClass(), fieldName);
+			verifyFieldExist(fieldName, field);
+			
+			Object value = getValue(field, srcObject);
+
+			if (value == null) {
+				return this.option.isImmutable() ? new ImmutableMap<K, List<V>>() : new HashMap<K, List<V>>();
+			}
+			
+			Map<K, List<V>> result = (Map<K, List<V>>)new MirrorImpl(this.converter, this.convertedObjects, value, option).to(
+					ClassHolder.newInstance(this.option.isImmutable() ? ImmutableIdentityMap.class : IdentityHashMap.class,
+					ClassHolder.newInstance(keyClass),
+					ClassHolder.newInstance(List.class, valueClass)));
+			return result;
+		}		
 		public boolean exists(String fieldName) {
 			return getField(srcObject.getClass(), fieldName) != null;
 		}
@@ -647,6 +818,8 @@ public class Converter {
 		public void bind(Object object) {
 			this.convertedObjects.put(srcObject, object);
 		}
+
+
 
 		
 		

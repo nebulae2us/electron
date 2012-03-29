@@ -18,9 +18,7 @@ package org.nebulae2us.electron;
 import java.lang.reflect.Field;
 import java.math.BigDecimal;
 import java.math.BigInteger;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 /**
  * @author Trung Phan
@@ -39,5 +37,10 @@ public interface Constants {
 					Class.class,
 					Field.class
 			});
+	
+	public static final List<Class<?>> MUTABLE_COLLECTION_TYPES =
+			Arrays.asList(new Class<?>[]{ArrayList.class, LinkedList.class, Vector.class, 
+					HashSet.class, LinkedHashSet.class, HashMap.class, LinkedHashMap.class, IdentityHashMap.class,
+					Hashtable.class, WeakHashMap.class, TreeMap.class });
 	
 }

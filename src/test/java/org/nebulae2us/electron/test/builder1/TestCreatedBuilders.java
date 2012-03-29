@@ -418,4 +418,11 @@ public class TestCreatedBuilders {
 		
 	}
 	
+	@Test
+	public void test_multi_value_map() {
+		
+		SpeechBuilder<?> speechBuilder = speech();
+		
+	}
+	
 }

@@ -38,7 +38,7 @@ public class ImmutableSortedMap<K, V> extends AbstractImmutableMap<K, V> impleme
         	}
         	
             InternalEntry newEntry = new InternalEntry(entry.getKey(), entry.getValue());
-            _data.set(keys.indexOf(entry.getKey()), newEntry);
+            _data.add(keys.indexOf(entry.getKey()), newEntry);
         }
         
         this.data = new ImmutableList<ImmutableSortedMap<K,V>.InternalEntry>(_data);

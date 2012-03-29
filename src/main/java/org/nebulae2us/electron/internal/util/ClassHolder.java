@@ -83,6 +83,9 @@ public class ClassHolder {
 		return rawClass;
 	}
 	
-	
+	@Override
+	public String toString() {
+		return rawClass.getSimpleName();
+	}
 	
 }
