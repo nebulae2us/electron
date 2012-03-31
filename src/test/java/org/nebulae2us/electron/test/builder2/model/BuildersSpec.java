@@ -13,22 +13,28 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.nebulae2us.electron;
+package org.nebulae2us.electron.test.builder2.model;
 
-import java.util.Collections;
+import org.nebulae2us.electron.*;
 
 /**
  * @author Trung Phan
  *
  */
-public class ConverterOptions {
+public class BuildersSpec {
 
-//	@SuppressWarnings("unchecked")
-//	public static final ConverterOption EMPTY_MUTABLE_OPTION = new ConverterOption(Collections.EMPTY_MAP, false);
-//	
-//	@SuppressWarnings("unchecked")
-//	public static final ConverterOption EMPTY_IMMUTABLE_OPTION = new ConverterOption(Collections.EMPTY_MAP, true);
-	
+    public static SampleBuilderSpec sample() {
+    	return new SampleBuilderSpec();
+    }
+
+    public static SampleBuilderSpec hobby$restoreFrom(BuilderRepository repo, int builderId) {
+        return (SampleBuilderSpec)repo.get(builderId);
+    }
+
+    public static SampleBuilderSpec hobby$copyFrom(Sample sample) {
+    	SampleBuilderSpec result = new Converter().convert(sample).to(SampleBuilderSpec.class);
+    	return result;
+    }
 	
 	
 }

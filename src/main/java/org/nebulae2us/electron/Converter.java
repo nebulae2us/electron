@@ -44,18 +44,25 @@ import static org.nebulae2us.electron.internal.util.ClassUtils.*;
  */
 public class Converter {
 
-	private final ConverterOption option;
+	private ConverterOption option;
+	
+	private boolean immutable;
 	
 	public ConverterOption getConverterOption() {
 		return option;
 	}
 	
+	public boolean isImmutable() {
+		return this.immutable;
+	}
+	
 	public Converter() {
-		this( ConverterOptions.EMPTY_MUTABLE_OPTION );
+		this( new ConverterOption(), false );
 	}
 
-	public Converter(ConverterOption option) {
-		this.option = option != null ? option : ConverterOptions.EMPTY_MUTABLE_OPTION;
+	public Converter(ConverterOption option, boolean immutable) {
+		this.option = option != null ? option : new ConverterOption();
+		this.immutable = immutable;
 	}
 	
 
@@ -71,7 +78,7 @@ public class Converter {
 				return defaultPrimitiveValue(destClass);
 			}
 			
-			return (T)new MirrorImpl(Converter.this, this.object, option).to(ClassHolder.newInstance(destClass));
+			return (T)new MirrorImpl(Converter.this, this.object, option, immutable).to(ClassHolder.newInstance(destClass));
 		}
 	}
 	
@@ -108,7 +115,7 @@ public class Converter {
 		public <T> List<T> toListOf(Class<T> destClass) {
 			IdentityHashMap<Object, Object> convertedObjects = new IdentityHashMap<Object, Object>();
 			for (int i = 0; i < objects.size(); i++) {
-				MirrorImpl converter = new MirrorImpl(Converter.this, convertedObjects, objects.get(i), option);
+				MirrorImpl converter = new MirrorImpl(Converter.this, convertedObjects, objects.get(i), option, immutable);
 				converter.to(ClassHolder.newInstance(destClass));
 			}
 
@@ -117,7 +124,7 @@ public class Converter {
 				result.add((T)convertedObjects.get(object));
 			}
 			
-			if (option.isImmutable()) {
+			if (immutable) {
 				return new ImmutableList<T>(result);
 			}
 			else {
@@ -129,7 +136,7 @@ public class Converter {
 		public <T> Set<T> toSetOf(Class<T> destClass) {
 			IdentityHashMap<Object, Object> convertedObjects = new IdentityHashMap<Object, Object>();
 			for (int i = 0; i < objects.size(); i++) {
-				MirrorImpl converter = new MirrorImpl(Converter.this, convertedObjects, objects.get(i), option);
+				MirrorImpl converter = new MirrorImpl(Converter.this, convertedObjects, objects.get(i), option, immutable);
 				converter.to(ClassHolder.newInstance(destClass));
 			}
 
@@ -138,7 +145,7 @@ public class Converter {
 				result.add((T)convertedObjects.get(object));
 			}
 			
-			return option.isImmutable() ? new ImmutableSet<T>(result) : result;
+			return immutable ? new ImmutableSet<T>(result) : result;
 		}
 		
 	}
@@ -187,7 +194,7 @@ public class Converter {
 			
 			IdentityHashMap<Object, Object> convertedObjects = new IdentityHashMap<Object, Object>();
 			for (int i = 0; i < objects.size(); i++) {
-				MirrorImpl converter = new MirrorImpl(Converter.this, convertedObjects, objects.get(i), option);
+				MirrorImpl converter = new MirrorImpl(Converter.this, convertedObjects, objects.get(i), option, immutable);
 				converter.to(ClassHolder.newInstance(destClasses.get(i)));
 			}
 			
@@ -386,11 +393,13 @@ public class Converter {
 		
 		private final Converter converter;
 		
-		private MirrorImpl(Converter converter, Object srcObject, ConverterOption option) {
-			this(converter, new IdentityHashMap<Object, Object>(), srcObject, option);
+		private final boolean immutable;
+		
+		private MirrorImpl(Converter converter, Object srcObject, ConverterOption option, boolean immutable) {
+			this(converter, new IdentityHashMap<Object, Object>(), srcObject, option, immutable);
 		}
 		
-		private MirrorImpl(Converter converter, Map<Object, Object> convertedObjects, Object srcObject, ConverterOption option) {
+		private MirrorImpl(Converter converter, Map<Object, Object> convertedObjects, Object srcObject, ConverterOption option, boolean immutable) {
 			if (srcObject == null) {
 				throw new NullPointerException();
 			}
@@ -399,6 +408,7 @@ public class Converter {
 			this.srcObject = srcObject;
 			this.convertedObjects = convertedObjects;
 			this.option = option;
+			this.immutable = immutable;
 		}
 		
 		
@@ -437,7 +447,7 @@ public class Converter {
 			if (Collection.class.isAssignableFrom(srcClass)) {
 				Collection result = null;
 				
-				if (option.isImmutable() && MUTABLE_COLLECTION_TYPES.contains(requestedClass)) {
+				if (immutable && MUTABLE_COLLECTION_TYPES.contains(requestedClass)) {
 					throw new IllegalStateException("Option IMMUTABLE is not appropriate for " + requestedClass.getSimpleName());
 				}
 				
@@ -473,13 +483,13 @@ public class Converter {
 				}
 
 				for (Object o : (Collection)srcObject) {
-					Object newValue = new MirrorImpl(this.converter, convertedObjects, o, option).to(
+					Object newValue = new MirrorImpl(this.converter, convertedObjects, o, option, immutable).to(
 							classHolder.getArgumentClasses().size() > 0 ? classHolder.getArgumentClasses().get(0) : ClassHolder.newInstance(Object.class)
 							);
 					result.add(newValue);
 				}
 
-				if (option.isImmutable()) {
+				if (immutable) {
 					if (result instanceof List) {
 						result = new ImmutableList<Object>(result);
 					}
@@ -499,7 +509,7 @@ public class Converter {
 			if (Map.class.isAssignableFrom(srcClass)) {
 				Map result = null;
 				
-				if (option.isImmutable() && MUTABLE_COLLECTION_TYPES.contains(requestedClass)) {
+				if (immutable && MUTABLE_COLLECTION_TYPES.contains(requestedClass)) {
 					throw new IllegalStateException("Option IMMUTABLE is not appropriate for " + requestedClass.getSimpleName());
 				}
 				
@@ -546,17 +556,17 @@ public class Converter {
 				}
 				
 				for (Entry<?, ?> entry : ((Map<?, ?>)srcObject).entrySet()) {
-					Object newKey = entry.getKey() == null ? null : new MirrorImpl(this.converter, convertedObjects, entry.getKey(), option).to(
+					Object newKey = entry.getKey() == null ? null : new MirrorImpl(this.converter, convertedObjects, entry.getKey(), option, immutable).to(
 							classHolder.getArgumentClasses().size() > 1 ? classHolder.getArgumentClasses().get(0) : ClassHolder.newInstance(Object.class)
 							);
 					
-					Object newValue = entry.getValue() == null ? null : new MirrorImpl(this.converter, convertedObjects, entry.getValue(), option).to(
+					Object newValue = entry.getValue() == null ? null : new MirrorImpl(this.converter, convertedObjects, entry.getValue(), option, immutable).to(
 							classHolder.getArgumentClasses().size() > 0 ? classHolder.getArgumentClasses().get(1) : ClassHolder.newInstance(Object.class)
 							);
 					result.put(newKey, newValue);
 				}
 
-				if (option.isImmutable()) {
+				if (immutable) {
 					if (result instanceof SortedMap) {
 						result = new ImmutableSortedMap<Object, Object>(result, new NaturalComparator<Object>());
 					}
@@ -573,9 +583,8 @@ public class Converter {
 				return result;
 			}
 			
-			
-			if (srcObject instanceof Convertable && ((Convertable) srcObject).convertableTo(requestedClass)) {
-				return ((Convertable)srcObject).convertTo(requestedClass);
+			if (srcObject instanceof Wrappable && ((Wrappable)srcObject).getWrappedObject() != null ) {
+				return ((Wrappable)srcObject).getWrappedObject();
 			}
 			
 			Class<?> destClass = this.option.findBestDestinationClass(srcClass, requestedClass);
@@ -605,7 +614,7 @@ public class Converter {
 							
 						Object value = getValue(field, srcObject);
 						if (value != null) {
-							Object newValue = new MirrorImpl(this.converter, this.convertedObjects, value, option).to(ClassHolder.newInstance(friendField.getGenericType()));
+							Object newValue = new MirrorImpl(this.converter, this.convertedObjects, value, option, immutable).to(ClassHolder.newInstance(friendField.getGenericType()));
 							setValue(friendField, result, newValue);
 						}
 					}
@@ -632,7 +641,7 @@ public class Converter {
 			
 			T destObject = (T)convertedObjects.get(srcObject);
 			if (destObject == null) {
-				MirrorImpl converter = new MirrorImpl(this.converter, convertedObjects, srcObject, option);
+				MirrorImpl converter = new MirrorImpl(this.converter, convertedObjects, srcObject, option, immutable);
 				destObject = (T)converter.to(ClassHolder.newInstance(objectClass));
 			}
 			
@@ -652,10 +661,10 @@ public class Converter {
 			Object value = getValue(field, srcObject);
 
 			if (value == null) {
-				return this.option.isImmutable() ? new ImmutableList<T>() : new ArrayList<T>();
+				return immutable ? new ImmutableList<T>() : new ArrayList<T>();
 			}
 			
-			List<T> result = (List<T>)new MirrorImpl(this.converter, this.convertedObjects, value, option).to(ClassHolder.newInstance(List.class, objectClass));
+			List<T> result = (List<T>)new MirrorImpl(this.converter, this.convertedObjects, value, option, immutable).to(ClassHolder.newInstance(List.class, objectClass));
 			return result;
 		}
 
@@ -666,11 +675,15 @@ public class Converter {
 			Object value = getValue(field, srcObject);
 
 			if (value == null) {
-				return this.option.isImmutable() ? new ImmutableSet<T>() : new HashSet<T>();
+				return immutable ? new ImmutableSet<T>() : new HashSet<T>();
 			}
 			
-			return (Set<T>)new MirrorImpl(this.converter, this.convertedObjects, value, option).to(ClassHolder.newInstance(Set.class, objectClass));
+			return (Set<T>)new MirrorImpl(this.converter, this.convertedObjects, value, option, immutable).to(ClassHolder.newInstance(Set.class, objectClass));
 			
+		}
+
+		public <T> NavigableSet<T> toSortedSetOf(Class<T> destClass, String fieldName) {
+			throw new UnsupportedOperationException();
 		}
 		
 		public <K, V> Map<K, V> toMapOf(Class<K> keyClass, Class<V> valueClass, String fieldName) {
@@ -680,10 +693,10 @@ public class Converter {
 			Object value = getValue(field, srcObject);
 
 			if (value == null) {
-				return this.option.isImmutable() ? new ImmutableMap<K, V>() : new HashMap<K, V>();
+				return immutable ? new ImmutableMap<K, V>() : new HashMap<K, V>();
 			}
 			
-			Map<K, V> result = (Map<K, V>)new MirrorImpl(this.converter, this.convertedObjects, value, option).to(ClassHolder.newInstance(Map.class, keyClass, valueClass));
+			Map<K, V> result = (Map<K, V>)new MirrorImpl(this.converter, this.convertedObjects, value, option, immutable).to(ClassHolder.newInstance(Map.class, keyClass, valueClass));
 			return result;
 		}
 
@@ -694,11 +707,11 @@ public class Converter {
 			Object value = getValue(field, srcObject);
 
 			if (value == null) {
-				return this.option.isImmutable() ? new ImmutableMap<K, V>() : new IdentityHashMap<K, V>();
+				return immutable ? new ImmutableMap<K, V>() : new IdentityHashMap<K, V>();
 			}
 			
-			Map<K, V> result = (Map<K, V>)new MirrorImpl(this.converter, this.convertedObjects, value, option).to(
-					ClassHolder.newInstance(this.option.isImmutable() ? ImmutableIdentityMap.class : IdentityHashMap.class, keyClass, valueClass));
+			Map<K, V> result = (Map<K, V>)new MirrorImpl(this.converter, this.convertedObjects, value, option, immutable).to(
+					ClassHolder.newInstance(immutable ? ImmutableIdentityMap.class : IdentityHashMap.class, keyClass, valueClass));
 			return result;
 		}
 
@@ -709,10 +722,10 @@ public class Converter {
 			Object value = getValue(field, srcObject);
 
 			if (value == null) {
-				return this.option.isImmutable() ? new ImmutableMap<K, List<V>>() : new HashMap<K, List<V>>();
+				return immutable ? new ImmutableMap<K, List<V>>() : new HashMap<K, List<V>>();
 			}
 			
-			Map<K, List<V>> result = (Map<K, List<V>>)new MirrorImpl(this.converter, this.convertedObjects, value, option).to(
+			Map<K, List<V>> result = (Map<K, List<V>>)new MirrorImpl(this.converter, this.convertedObjects, value, option, immutable).to(
 					ClassHolder.newInstance(Map.class,
 					ClassHolder.newInstance(keyClass),
 					ClassHolder.newInstance(List.class, valueClass)));
@@ -726,11 +739,11 @@ public class Converter {
 			Object value = getValue(field, srcObject);
 
 			if (value == null) {
-				return this.option.isImmutable() ? new ImmutableMap<K, List<V>>() : new HashMap<K, List<V>>();
+				return immutable ? new ImmutableMap<K, List<V>>() : new HashMap<K, List<V>>();
 			}
 			
-			Map<K, List<V>> result = (Map<K, List<V>>)new MirrorImpl(this.converter, this.convertedObjects, value, option).to(
-					ClassHolder.newInstance(this.option.isImmutable() ? ImmutableIdentityMap.class : IdentityHashMap.class,
+			Map<K, List<V>> result = (Map<K, List<V>>)new MirrorImpl(this.converter, this.convertedObjects, value, option, immutable).to(
+					ClassHolder.newInstance(immutable ? ImmutableIdentityMap.class : IdentityHashMap.class,
 					ClassHolder.newInstance(keyClass),
 					ClassHolder.newInstance(List.class, valueClass)));
 			return result;

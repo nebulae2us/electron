@@ -20,11 +20,9 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.lang.reflect.ParameterizedType;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
+import java.util.*;
 
-import org.nebulae2us.electron.internal.util.ClassUtils;
+import org.nebulae2us.electron.internal.util.*;
 
 import static org.nebulae2us.electron.Constants.*;
 
@@ -51,6 +49,311 @@ public class BuilderGenerator {
 	}
 	
 	public static void generateBuilders(File genFolder, String packageName, List<Class<?>> _modelClasses) {
+		
+		List<Class<?>> modelClasses = ClassUtils.sortClassesByLevelOfInheritance(_modelClasses);
+		
+		File folder = new File(genFolder, packageName.replaceAll("\\.", "/"));
+		if (!folder.exists()) {
+			folder.mkdirs();
+		}
+
+		buildBuilders(genFolder, packageName, modelClasses);
+		
+		for (Class<?> modelClass : modelClasses) {
+			buildClassBuilder(genFolder, modelClass, modelClasses);
+		}
+		
+	}
+
+	
+	private static void buildClassBuilder(File genFolder, Class<?> srcClass,
+			List<Class<?>> classesToBuild) {
+
+		String packageName = srcClass.getPackage().getName();
+
+		String suffix = "Builder";
+		String srcClassName = srcClass.getSimpleName();
+		String destClassName = srcClassName + suffix;
+		Class<?> destSuperClass = getDestSuperClass(srcClass, classesToBuild);
+		
+		StringBuilder result = new StringBuilder();
+		
+		String packageDeclare = "package " + packageName + ";\n";
+		
+		ImportStatementGenerator importGenerator = new ImportStatementGenerator(packageName);
+		importGenerator.importPackage("org.nebulae2us.electron");
+		importGenerator.importPackage("org.nebulae2us.electron.util");
+		importGenerator.importPackage("java.util");
+		importGenerator.importClass(destSuperClass);
+		
+//		StringBuilder annotationDeclare = new StringBuilder();
+//		annotationDeclare.append("@ConversionBindings({\n");
+//		annotationDeclare.append("    @ConversionBinding(value = ").append(destClassName).append(".class, to = ").append(srcClassName).append(".class)");
+//		for (Class<?> classToBuild : classesToBuild) {
+//			if (classToBuild != srcClass && (srcClass.isAssignableFrom(classToBuild) || classToBuild.isAssignableFrom(srcClass))) {
+//				annotationDeclare.append(",\n    @ConversionBinding(value = ").append(classToBuild.getSimpleName()).append(suffix).append(".class, to = ").append(classToBuild.getSimpleName()).append(".class)");
+//			}
+//		}
+//		annotationDeclare.append("\n})\n");
+		
+		StringBuilder classDeclare = new StringBuilder().append("public class ").append(destClassName);
+		if (destSuperClass != Object.class) {
+			classDeclare.append(" extends ").append(destSuperClass.getSimpleName()).append(suffix);
+		}
+		else {
+			classDeclare.append(" implements Wrappable<").append(srcClassName).append(">");
+		}
+		
+		StringBuilder classContent = new StringBuilder();
+		
+		if (destSuperClass == Object.class) {
+			classContent.append(getTemplates().getProperty("builder_constructors")
+					.replaceAll("SampleBuilderSpec", "`destClassName`")
+					.replaceAll("Sample", srcClassName)
+					.replaceAll("`destClassName`", destClassName)
+					);
+		}
+		else {
+			classContent.append(getTemplates().getProperty("subclass_constructors")
+					.replaceAll("SubSampleBuilderSpec", "`destClassName`")
+					.replaceAll("SubSample", srcClassName)
+					.replaceAll("`destClassName`", destClassName)
+					);
+
+			Class<?> c = srcClass;
+			while ((c = c.getSuperclass()) != null) {
+				if (classesToBuild.contains(c)) {
+					String superClassName = c.getSimpleName();
+					classContent.append(getTemplates().getProperty("subclass_build_methods")
+							.replaceAll("SubSample", "`srcClassName`")
+							.replaceAll("Sample", superClassName)
+							.replaceAll("`srcClassName`", srcClassName)
+							);
+				}
+			}
+			
+		}
+
+		for (Field field : ClassUtils.getFields(srcClass)) {
+			ClassHolder classHolder = ClassHolder.newInstance(field.getGenericType());
+			boolean notDefined = field.getDeclaringClass() == srcClass || destSuperClass == Object.class || !classesToBuild.contains(field.getDeclaringClass());
+			
+			if (notDefined) {
+				classContent.append(getTemplates().getProperty("builder_fieldname_getter_settter")
+						.replaceAll("String", classHolder.toBuilderString(suffix, classesToBuild))
+						.replaceAll("name", field.getName())
+						.replaceAll("Name", toUpperCamelCase(field.getName()))
+						);
+			}
+			
+			switch (classHolder.getClassHolderType()) {
+			case SINGLE:
+				System.out.println("Single : " + field.getName());
+				if (notDefined) {
+					classContent.append(getTemplates().getProperty("builder_single_type_field")
+							.replaceAll("String", classHolder.toBuilderString(suffix, classesToBuild))
+							.replaceAll("name", field.getName())
+							.replaceAll("Name", toUpperCamelCase(field.getName()))
+							.replaceAll("SampleBuilderSpec", destClassName)
+							);
+
+					if (classesToBuild.contains(classHolder.getRawClass())) {
+						classContent.append(getTemplates().getProperty("builder_single_type_builder_field")
+								.replaceAll("SampleBuilderSpec", destClassName)
+								.replaceAll("blank", field.getName())
+								.replaceAll("BlankBuilderSpec", classHolder.getRawClass().getSimpleName() + suffix)
+								.replaceAll("Blank", classHolder.getRawClass().getSimpleName())
+								);
+					}
+				}
+				else {
+					classContent.append(getTemplates().getProperty("subclass_single_type_field")
+							.replaceAll("String", classHolder.toBuilderString(suffix, classesToBuild))
+							.replaceAll("name", field.getName())
+							.replaceAll("Name", toUpperCamelCase(field.getName()))
+							.replaceAll("SubSampleBuilderSpec", destClassName)
+							);
+
+					if (classesToBuild.contains(classHolder.getRawClass())) {
+						classContent.append(getTemplates().getProperty("subclass_single_type_builder_field")
+								.replaceAll("SubSampleBuilderSpec", destClassName)
+								.replaceAll("blank", field.getName())
+								.replaceAll("BlankBuilderSpec", classHolder.getRawClass().getSimpleName() + suffix)
+								.replaceAll("Blank", classHolder.getRawClass().getSimpleName())
+								);
+					}
+				}
+				
+				
+				break;
+			case COLLECTION:
+				System.out.println("Collection : " + field.getName());
+				if (notDefined) {
+					classContent.append(getTemplates().getProperty("builder_collection_type_field")
+							.replaceAll("String", classHolder.getArgumentClasses().get(0).toBuilderString(suffix, classesToBuild))
+							.replaceAll("names", field.getName())
+							.replaceAll("SampleBuilderSpec", destClassName)
+							.replaceAll("ArrayList", getMutableCollectionType(classHolder.getRawClass()).getSimpleName())
+							);
+					
+					
+					Class<?> elementClass = classHolder.getArgumentClasses().get(0).getRawClass();
+					if (classesToBuild.contains(elementClass)) {
+						classContent.append(getTemplates().getProperty("builder_collection_type_builder_field")
+								.replaceAll("SampleBuilderSpec", destClassName)
+								.replaceAll("blanks", field.getName())
+								.replaceAll("BlankBuilderSpec", elementClass.getSimpleName() + suffix)
+								.replaceAll("Blank", elementClass.getSimpleName())
+								.replaceAll("ArrayList", getMutableCollectionType(classHolder.getRawClass()).getSimpleName())
+								);
+					}
+				}
+				else {
+					classContent.append(getTemplates().getProperty("subclass_collection_type_field")
+							.replaceAll("String", classHolder.getArgumentClasses().get(0).toBuilderString(suffix, classesToBuild))
+							.replaceAll("names", field.getName())
+							.replaceAll("SubSampleBuilderSpec", destClassName)
+							);
+					
+					
+					Class<?> elementClass = classHolder.getArgumentClasses().get(0).getRawClass();
+					if (classesToBuild.contains(elementClass)) {
+						classContent.append(getTemplates().getProperty("subclass_collection_type_builder_field")
+								.replaceAll("SubSampleBuilderSpec", destClassName)
+								.replaceAll("blanks", field.getName())
+								.replaceAll("BlankBuilderSpec", elementClass.getSimpleName() + suffix)
+								.replaceAll("Blank", elementClass.getSimpleName())
+								);
+					}
+				}
+				
+				break;
+			case MAP:
+				System.out.println("Map : " + field.getName());
+				if (notDefined) {
+					classContent.append(getTemplates().getProperty("builder_map_type_field")
+							.replaceAll("String\\.class", classHolder.getArgumentClasses().get(0).getBuilderRawClassName(suffix, classesToBuild) + ".class")
+							.replaceAll("Integer\\.class", classHolder.getArgumentClasses().get(1).getBuilderRawClassName(suffix, classesToBuild) + ".class")
+							.replaceAll("String", classHolder.getArgumentClasses().get(0).toBuilderString(suffix, classesToBuild))
+							.replaceAll("Integer", classHolder.getArgumentClasses().get(1).toBuilderString(suffix, classesToBuild))
+							.replaceAll("keywordCounts", field.getName())
+							.replaceAll("SampleBuilderSpec", destClassName)
+							.replaceAll("HashMap", getMutableCollectionType(classHolder.getRawClass()).getSimpleName())
+							);
+				}
+				else {
+					classContent.append(getTemplates().getProperty("subclass_map_type_field")
+							.replaceAll("String", classHolder.getArgumentClasses().get(0).toBuilderString(suffix, classesToBuild))
+							.replaceAll("Integer", classHolder.getArgumentClasses().get(1).toBuilderString(suffix, classesToBuild))
+							.replaceAll("keywordCounts", field.getName())
+							.replaceAll("SubSampleBuilderSpec", destClassName)
+							);
+				}
+				
+				break;
+				
+			}
+			
+		}
+		
+		
+		result.append(packageDeclare).append("\n")
+			.append(importGenerator.generate()).append("\n")
+//			.append(annotationDeclare)
+			.append(classDeclare).append(" {\n")
+			.append(classContent.toString())
+			.append("}\n");
+		
+		generateJavaFile(genFolder, packageName, destClassName, result.toString());
+		
+	}
+
+	private static Class<?> getMutableCollectionType(Class<?> rawClass) {
+		if (NavigableSet.class.isAssignableFrom(rawClass)) {
+			return TreeSet.class;
+		}
+		else if (Set.class.isAssignableFrom(rawClass)) {
+			return HashSet.class;
+		}
+		else if (Collection.class.isAssignableFrom(rawClass)) {
+			return ArrayList.class;
+		}
+		else if (NavigableMap.class.isAssignableFrom(rawClass)) {
+			return TreeMap.class;
+		}
+		else if (Map.class.isAssignableFrom(rawClass)) {
+			return HashMap.class;
+		}
+		else {
+			throw new IllegalStateException("Unknown collection type " + rawClass.getName());
+		}
+	}
+
+	private static Class<?> getDestSuperClass(Class<?> modelClass, List<Class<?>> modelClasses) {
+		Class<?> c = modelClass;
+		while ((c = c.getSuperclass()) != null) {
+			if (modelClasses.contains(c)) {
+				return c;
+			}
+		}
+		return Object.class;
+	}
+
+	private static void generateJavaFile(File genFolder, String packageName, String destClassName, String content) {
+		File folder = new File(genFolder, packageName.replaceAll("\\.", "/"));
+		if (!folder.exists()) {
+			folder.mkdirs();
+		}
+		
+		File javaFile = new File(folder, destClassName + ".java");
+		try {
+			FileWriter fw = new FileWriter(javaFile);
+			fw.write(content);
+			fw.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+
+	/***
+	 * 
+	 * 
+	 * 
+	 * 
+	 * 
+	 * 
+	 * 
+	 * 
+	 * 
+	 * 
+	 * 
+	 * 
+	 * 
+	 * 
+	 * 
+	 * 
+	 * 
+	 * 
+	 * 
+	 * 
+	 * 
+	 * 
+	 * 
+	 * 
+	 * 
+	 * 
+	 * 
+	 * 
+	 * 
+	 * 
+	 * 
+	 * 
+	 * @param genFolder
+	 * @param packageName
+	 * @param _modelClasses
+	 */
+	
+	public static void _generateBuilders(File genFolder, String packageName, List<Class<?>> _modelClasses) {
 
 		List<Class<?>> modelClasses = ClassUtils.sortClassesByLevelOfInheritance(_modelClasses);
 		
@@ -62,7 +365,7 @@ public class BuilderGenerator {
 		buildBuilders(genFolder, packageName, modelClasses);
 		
 		for (Class<?> modelClass : modelClasses) {
-			buildClassBuilder(genFolder, modelClass, modelClasses);
+			_buildClassBuilder(genFolder, modelClass, modelClasses);
 		}
 		
 	}
@@ -83,7 +386,7 @@ public class BuilderGenerator {
 		
 	}
 	
-	private static void buildClassBuilder(File genFolder, Class<?> modelClass, List<Class<?>> modelClasses) {
+	private static void _buildClassBuilder(File genFolder, Class<?> modelClass, List<Class<?>> modelClasses) {
 		StringBuilder classBuilder = new StringBuilder();
 
 //		boolean isAbstract = (modelClass.getModifiers() & Modifier.ABSTRACT) != 0;
@@ -223,7 +526,7 @@ public class BuilderGenerator {
 				
 				if (declaringClass == modelClass) {
 					ParameterizedType subType = (ParameterizedType)field.getGenericType();
-					Class<?> fieldSubClass = (Class<?>)subType.getActualTypeArguments()[0];
+					Class<?> fieldSubClass = ClassUtils.getClass(subType.getActualTypeArguments()[0]);
 					String fieldSubClassName = fieldSubClass.getSimpleName();
 					String fieldSubBuilderClassName = fieldSubClassName + "Builder";
 					String singularFieldName = singularize(fieldName);
@@ -380,6 +683,9 @@ public class BuilderGenerator {
 		return Character.toLowerCase(camelCap.charAt(0))+ camelCap.substring(1);
 	}	
 	
+	private static String toUpperCamelCase(String camelCase) {
+		return Character.toUpperCase(camelCase.charAt(0))+ camelCase.substring(1);
+	}	
 	
 	private static String singularize(String expression) {
 

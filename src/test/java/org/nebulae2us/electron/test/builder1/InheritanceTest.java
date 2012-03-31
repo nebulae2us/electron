@@ -19,7 +19,7 @@ import org.junit.Test;
 import org.nebulae2us.electron.test.builder1.model.*;
 
 import static org.junit.Assert.*;
-import static org.nebulae2us.electron.test.builder1.Builders.*;
+import static org.nebulae2us.electron.test.builder1.model.Builders.*;
 
 /**
  * @author Trung Phan
@@ -30,7 +30,7 @@ public class InheritanceTest {
 	
 	@Test
 	public void super_class_builder() {
-		PersonBuilder<?> personBuilder = student();
+		PersonBuilder personBuilder = student();
 		
 		Person person = personBuilder.toPerson();
 		
@@ -39,7 +39,7 @@ public class InheritanceTest {
 	
 	@Test
 	public void morph() {
-		StudentBuilder<?> studentBuilder = student();
+		StudentBuilder studentBuilder = student();
 		
 		Student student = studentBuilder.toPerson();
 		
@@ -50,7 +50,7 @@ public class InheritanceTest {
 	@Test
 	public void object_to_immutable() {
 		
-		PersonBuilder<?> personBuilder = person()
+		PersonBuilder personBuilder = person()
 			.parent(
 				teacher()
 			);
@@ -70,7 +70,7 @@ public class InheritanceTest {
 	@Test
 	public void list_of_subclass() {
 		
-		PersonBuilder<?> personBuilder = person()
+		PersonBuilder personBuilder = person()
 				.friends(
 					teacher(),
 					student()

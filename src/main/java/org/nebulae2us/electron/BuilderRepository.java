@@ -26,11 +26,11 @@ import java.util.Map;
  */
 public class BuilderRepository {
 	
-	private Map<Integer, Object> map = new HashMap<Integer, Object>();
+	private Map<Object, Object> map = new HashMap<Object, Object>();
 
 	private final boolean supportLazy;
 
-	private final Map<Integer, List<Procedure>> listenersMap = new HashMap<Integer, List<Procedure>>();
+	private final Map<Object, List<Procedure>> listenersMap = new HashMap<Object, List<Procedure>>();
 	
 	public BuilderRepository() {
 		this(false);
@@ -40,7 +40,7 @@ public class BuilderRepository {
 		this.supportLazy = supportLazy;
 	}
 	
-	public void put(int id, Object object) {
+	public void put(Object id, Object object) {
 		if (map.containsKey(id)) {
 			throw new IllegalStateException("Object with id " + id + " already exists in the repository.");
 		}
@@ -53,7 +53,7 @@ public class BuilderRepository {
 		}
 	}
 
-	public Object get(int id) {
+	public Object get(Object id) {
 		return map.get(id);
 	}
 
@@ -62,7 +62,7 @@ public class BuilderRepository {
 	}
 
 	
-	public void addObjectStoredListener(int id, Procedure procedure) {
+	public void addObjectStoredListener(Object id, Procedure procedure) {
 		List<Procedure> listeners = listenersMap.get(id);
 		if (listeners == null) {
 			listeners = new ArrayList<Procedure>();

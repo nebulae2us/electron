@@ -18,7 +18,7 @@ package org.nebulae2us.electron.test.builder1;
 import org.junit.Test;
 import org.nebulae2us.electron.test.builder1.model.Person;
 
-import static org.nebulae2us.electron.test.builder1.Builders.*;
+import static org.nebulae2us.electron.test.builder1.model.Builders.*;
 import static org.junit.Assert.*;
 
 /**

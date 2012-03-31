@@ -36,20 +36,28 @@ public class ListBuilder<E> {
 	}
 	
 	public ListBuilder<E> add(E ... elements) {
-		for (E element : elements) {
-			result.add(element);
+		if (elements != null) {
+			for (E element : elements) {
+				result.add(element);
+			}
 		}
 		return this;
 	}
 	
 	public ListBuilder<E> add(Collection<E> elements) {
-		for (E element : elements) {
-			result.add(element);
+		if (elements != null) {
+			for (E element : elements) {
+				result.add(element);
+			}
 		}
 		return this;
 	}
 	
 	public List<E> toList() {
 		return new ImmutableList<E>(result);
+	}
+	
+	public List<E> toMutableList() {
+		return new ArrayList<E>(result);
 	}
 }

@@ -19,7 +19,7 @@ import org.junit.Test;
 import org.nebulae2us.electron.test.builder1.model.Person;
 import org.nebulae2us.electron.test.builder1.model.PersonBuilder;
 
-import static org.nebulae2us.electron.test.builder1.Builders.*;
+import static org.nebulae2us.electron.test.builder1.model.Builders.*;
 import static org.junit.Assert.*;
 
 /**
@@ -33,16 +33,17 @@ public class ConvertMutableTest {
 		
 		Person person = person()
 			.name("Person 1")
-			.hobby()
-				.name("Hobby 1")
-			.end()
+			.hobbies(
+				hobby().name("Hobby 1")
+			)
 			.toPerson();
 		
-		PersonBuilder<?> personBuilder = person$copyFrom(person);
+		PersonBuilder personBuilder = person$copyFrom(person);
 		
-		personBuilder.hobby()
-			.name("Hobby 2")
-			.end();
+		personBuilder
+			.hobbies(
+				hobby().name("Hobby 2")
+			);
 		
 		assertEquals(2, personBuilder.getHobbies().size());
 	

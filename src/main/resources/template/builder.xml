@@ -2,6 +2,335 @@
 <!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
 <properties>
 
+<entry key="builder_constructors"><![CDATA[
+	protected final Sample $$$wrapped;
+
+	protected final ConverterOption $$$option;
+	
+	public SampleBuilderSpec() {
+		this(null, null);
+	}
+	
+	public SampleBuilderSpec(ConverterOption option) {
+		this(null, option);
+	}
+
+	protected SampleBuilderSpec(Sample wrapped, ConverterOption option) {
+		this.$$$wrapped = wrapped;
+		this.$$$option = option;
+	}
+	
+    public SampleBuilderSpec storeTo(BuilderRepository repo, Object builderId) {
+    	repo.put(builderId, this);
+    	return this;
+    }
+
+	public Sample getWrappedObject() {
+		return this.$$$wrapped;
+	}
+
+	protected void verifyMutable() {
+		if (this.$$$wrapped != null) {
+    		throw new IllegalStateException("Cannot mutate fields of immutable objects");
+		}
+	}
+
+    public Sample toSample() {
+    	return new Converter(this.$$$option, true).convert(this).to(Sample.class);
+    }
+]]></entry>
+
+<entry key="subclass_constructors"><![CDATA[
+	public SubSampleBuilderSpec() {
+		super();
+	}
+	
+	public SubSampleBuilderSpec(ConverterOption option) {
+		super(option);
+	}
+
+	protected SubSampleBuilderSpec(SubSample wrapped, ConverterOption option) {
+		super(wrapped, option);
+	}
+
+	@Override
+	public SubSample getWrappedObject() {
+		return (SubSample)this.$$$wrapped;
+	}
+
+	@Override
+    public SubSampleBuilderSpec storeTo(BuilderRepository repo, Object builderId) {
+    	repo.put(builderId, this);
+    	return this;
+    }
+	
+    public SubSample toSubSample() {
+    	return new Converter(this.$$$option, true).convert(this).to(SubSample.class);
+    }
+]]></entry>
+
+<entry key="subclass_build_methods"><![CDATA[
+    @Override
+    public SubSample toSample() {
+    	return new Converter(this.$$$option, true).convert(this).to(SubSample.class);
+    }
+]]></entry>
+
+<entry key="builder_fieldname_getter_settter"><![CDATA[
+	private String name;
+	
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		verifyMutable();
+		this.name = name;
+	}
+]]></entry>
+
+<entry key="builder_single_type_field"><![CDATA[
+	public SampleBuilderSpec name(String name) {
+		verifyMutable();
+		this.name = name;
+		return this;
+	}
+]]></entry>
+
+<entry key="subclass_single_type_field"><![CDATA[
+	@Override
+	public SubSampleBuilderSpec name(String name) {
+		return (SubSampleBuilderSpec)super.name(name);
+	}
+]]></entry>
+
+<entry key="builder_single_type_builder_field"><![CDATA[
+    public SampleBuilderSpec blank$wrap(Blank blank) {
+    	verifyMutable();
+    	this.blank = new WrapConverter(this.$$$option).convert(blank).to(BlankBuilderSpec.class);
+        return this;
+    }
+    
+    public SampleBuilderSpec blank$restoreFrom(BuilderRepository repo, Object builderId) {
+    	verifyMutable();
+    	
+        Object restoredObject = repo.get(builderId);
+        if (restoredObject == null) {
+        	if (repo.isSupportLazy()) {
+        		repo.addObjectStoredListener(builderId, new Procedure() {
+					public void execute(Object... arguments) {
+						SampleBuilderSpec.this.blank = (BlankBuilderSpec)arguments[0];
+					}
+				});
+        	}
+        	else {
+                throw new IllegalStateException("Object does not exist with id " + builderId);
+        	}
+        }
+        else if (!(restoredObject instanceof BlankBuilderSpec)) {
+        	throw new IllegalStateException("Type mismatch for id: " + builderId + ". " + BlankBuilderSpec.class.getSimpleName() + " vs " + restoredObject.getClass().getSimpleName());
+        }
+        else {
+            this.blank = (BlankBuilderSpec)restoredObject;
+        }
+        return this;
+    }
+]]></entry>
+
+<entry key="subclass_single_type_builder_field"><![CDATA[
+	@Override
+    public SubSampleBuilderSpec blank$wrap(Blank blank) {
+		return (SubSampleBuilderSpec)super.blank$wrap(blank);
+    }
+
+	@Override
+    public SubSampleBuilderSpec blank$restoreFrom(BuilderRepository repo, Object builderId) {
+		return (SubSampleBuilderSpec)super.blank$restoreFrom(repo, builderId);
+    }
+]]></entry>
+
+<entry key="builder_collection_type_field"><![CDATA[
+	public SampleBuilderSpec names(String ... names) {
+		verifyMutable();
+		return names(new ListBuilder<String>().add(names).toList());
+	}
+	
+	public SampleBuilderSpec names(Collection<String> names) {
+		verifyMutable();
+		if (this.names == null) {
+			this.names = new ArrayList<String>();
+		}
+		if (names != null) {
+			for (String e : names) {
+				this.names.add(e);
+			}
+		}
+		return this;
+	}
+]]></entry>
+
+<entry key="subclass_collection_type_field"><![CDATA[
+	@Override
+	public SubSampleBuilderSpec names(String ... names) {
+		return (SubSampleBuilderSpec)super.names(names);
+	}
+
+	@Override
+	public SubSampleBuilderSpec names(Collection<String> names) {
+		return (SubSampleBuilderSpec)super.names(names);
+	}
+]]></entry>
+
+<entry key="builder_collection_type_builder_field"><![CDATA[
+    public SampleBuilderSpec blanks$wrap(Blank ... blanks) {
+    	return blanks$wrap(new ListBuilder<Blank>().add(blanks).toList());
+    }
+
+    public SampleBuilderSpec blanks$wrap(Collection<Blank> blanks) {
+		verifyMutable();
+
+		if (this.blanks == null) {
+			this.blanks = new ArrayList<BlankBuilderSpec>();
+		}
+		if (blanks != null) {
+			for (Blank e : blanks) {
+				BlankBuilderSpec wrapped = new WrapConverter(this.$$$option).convert(e).to(BlankBuilderSpec.class);
+				this.blanks.add(wrapped);
+			}
+		}
+		return this;
+    }
+    
+    public SampleBuilderSpec blanks$restoreFrom(BuilderRepository repo, Object ... builderIds) {
+    	return blanks$restoreFrom(repo, new ListBuilder<Object>().add(builderIds).toList());
+    }
+
+    public SampleBuilderSpec blanks$restoreFrom(BuilderRepository repo, Collection<Object> builderIds) {
+		verifyMutable();
+
+		if (this.blanks == null) {
+			this.blanks = new ArrayList<BlankBuilderSpec>();
+		}
+		if (builderIds != null) {
+	    	for (Object builderId : builderIds) {
+	            Object restoredObject = repo.get(builderId);
+	            if (restoredObject == null) {
+	            	if (repo.isSupportLazy()) {
+	            		repo.addObjectStoredListener(builderId, new Procedure() {
+	    					public void execute(Object... arguments) {
+	    						SampleBuilderSpec.this.blanks.add((BlankBuilderSpec)arguments[0]);
+	    					}
+	    				});
+	            	}
+	            	else {
+	                    throw new IllegalStateException("Object does not exist with id " + builderId);
+	            	}
+	            }
+	            else if (!(restoredObject instanceof BlankBuilderSpec)) {
+	            	throw new IllegalStateException("Type mismatch for id: " + builderId + ". " + BlankBuilderSpec.class.getSimpleName() + " vs " + restoredObject.getClass().getSimpleName());
+	            }
+	            else {
+	                this.blanks.add((BlankBuilderSpec)restoredObject);
+	            }
+	    	}
+		}
+        return this;
+    }
+]]></entry>
+
+<entry key="subclass_collection_type_builder_field"><![CDATA[
+	@Override
+    public SubSampleBuilderSpec blanks$wrap(Blank ... blanks) {
+		return (SubSampleBuilderSpec)super.blanks$wrap(blanks);
+    }
+
+	@Override
+    public SubSampleBuilderSpec blanks$wrap(Collection<Blank> blanks) {
+		return (SubSampleBuilderSpec)super.blanks$wrap(blanks);
+    }
+
+	@Override
+    public SubSampleBuilderSpec blanks$restoreFrom(BuilderRepository repo, Object ... builderIds) {
+		return (SubSampleBuilderSpec)super.blanks$restoreFrom(repo, builderIds);
+    }
+
+	@Override
+    public SubSampleBuilderSpec blanks$restoreFrom(BuilderRepository repo, Collection<Object> builderIds) {
+		return (SubSampleBuilderSpec)super.blanks$restoreFrom(repo, builderIds);
+    }
+]]></entry>
+
+<entry key="builder_map_type_field"><![CDATA[
+	public ChainedMapBuilder<? extends SampleBuilderSpec, String, Integer> keywordCounts$begin() {
+		verifyMutable();
+
+		if (this.keywordCounts == null) {
+			this.keywordCounts = new HashMap<String, Integer>();
+		}
+		return new ChainedMapBuilder<SampleBuilderSpec, String, Integer>(
+				String.class,
+				Integer.class,
+				SampleBuilderSpec.this.$$$option,
+				this,
+				new Procedure() {
+					public void execute(Object... arguments) {
+						String key = (String)arguments[0];
+						Integer value = (Integer)arguments[1];
+						SampleBuilderSpec.this.keywordCounts.put(key, value);
+					}
+				}
+				);
+	}
+
+	public SampleBuilderSpec keywordCounts(Map<String, Integer> keywordCounts) {
+		verifyMutable();
+
+		if (this.keywordCounts == null) {
+			this.keywordCounts = new HashMap<String, Integer>();
+		}
+		if (keywordCounts != null) {
+			for (Map.Entry<String, Integer> e : keywordCounts.entrySet()) {
+				this.keywordCounts.put(e.getKey(), e.getValue());
+			}
+		}
+		return this;
+	}
+]]></entry>
+
+<entry key="subclass_map_type_field"><![CDATA[
+	@SuppressWarnings("unchecked")
+	@Override
+	public ChainedMapBuilder<? extends SubSampleBuilderSpec, String, Integer> keywordCounts$begin() {
+		return (ChainedMapBuilder<? extends SubSampleBuilderSpec, String, Integer>)super.keywordCounts$begin();
+	}
+
+	@Override
+	public SubSampleBuilderSpec keywordCounts(Map<String, Integer> keywordCounts) {
+		return (SubSampleBuilderSpec)super.keywordCounts(keywordCounts);
+	}
+]]></entry>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 <entry key="builders_declare"><![CDATA[
 package packageName;
 
@@ -10,32 +339,25 @@ import org.nebulae2us.electron.util.*;
 import Person;
 public class Builders {
 
-	public static final ConverterOption CONVERTER_OPTIONS_IMMUTABLE = new ConverterOption(
+	public static final ConverterOption CONVERTER_OPTIONS = new ConverterOption(
 			new MapBuilder<Class<?>, Class<?>> ()
 				.put(Person.class, PersonBuilder.class)
-			.toMap(),
-			true
-			);
-
-	public static final ConverterOption CONVERTER_OPTIONS_MUTABLE = new ConverterOption(
-			CONVERTER_OPTIONS_IMMUTABLE.getAssociates(),
-			false
+			.toMap()
 			);
 
 ]]></entry>
 
 <entry key="builders_each_model_class"><![CDATA[
-    public static PersonBuilder<?> person() {
-        return new PersonBuilder<Object>(CONVERTER_OPTIONS_IMMUTABLE);
+    public static PersonBuilder person() {
+        return new PersonBuilder(CONVERTER_OPTIONS);
     }
 
-    public static PersonBuilder<?> person$restoreFrom(BuilderRepository repo, int builderId) {
-        return (PersonBuilder<?>)repo.get(builderId);
+    public static PersonBuilder person$restoreFrom(BuilderRepository repo, int builderId) {
+        return (PersonBuilder)repo.get(builderId);
     }
 
-    public static PersonBuilder<?> person$copyFrom(Person person) {
-    	PersonBuilder<?> result = new Converter(CONVERTER_OPTIONS_MUTABLE).convert(person).to(PersonBuilder.class);
-    	result.setConverterOption(CONVERTER_OPTIONS_IMMUTABLE);
+    public static PersonBuilder person$copyFrom(Person person) {
+    	PersonBuilder result = new Converter(CONVERTER_OPTIONS, false).convert(person).to(PersonBuilder.class);
     	return result;
     }
 ]]></entry>

@@ -37,9 +37,9 @@ public class GenerateBuilders {
 	@SuppressWarnings("unchecked")
 	public static void main(String[] args) {
 
-		File genFolder = new File("src/test/generated");
+		File genFolder = new File("src/test/java");
 		
-		BuilderGenerator.generateBuilders(genFolder, "org.nebulae2us.electron.test.builder1", 
+		BuilderGenerator.generateBuilders(genFolder, "org.nebulae2us.electron.test.builder1.model", 
 				Arrays.asList(Person.class, Hobby.class, Speech.class, Teacher.class, Student.class));
 		
 	}

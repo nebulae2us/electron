@@ -19,6 +19,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import org.nebulae2us.electron.internal.util.ClassHolder;
+
 /**
  * @author Trung Phan
  *
@@ -48,6 +50,17 @@ public class ImportStatementGenerator {
 		}
 	}
 	
+	public void importClasses(ClassHolder classHolder) {
+		if (classHolder != null) {
+			importClass(classHolder.getRawClass());
+			if (classHolder.getArgumentClasses() != null) {
+				for (ClassHolder ch : classHolder.getArgumentClasses()) {
+					importClasses(ch);
+				}
+			}
+		}
+	}
+	
 	public String generate() {
 		StringBuilder result = new StringBuilder();
 		Collections.sort(packageNames);
@@ -58,4 +71,6 @@ public class ImportStatementGenerator {
 		
 		return result.toString();
 	}
+	
+	
 }

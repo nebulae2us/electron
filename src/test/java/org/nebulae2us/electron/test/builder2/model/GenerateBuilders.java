@@ -13,16 +13,31 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.nebulae2us.electron;
+package org.nebulae2us.electron.test.builder2.model;
+
+import java.io.File;
+import java.util.Arrays;
+
+import org.nebulae2us.electron.BuilderGenerator;
 
 /**
  * @author Trung Phan
  *
  */
-public interface Convertable {
+public class GenerateBuilders {
 
-	public boolean convertableTo(Class<?> c);
-	
-	public <T> T convertTo(Class<T> c);
+	@SuppressWarnings("static-access")
+	public static void main(String ... arguments) {
+		
+		new BuilderGenerator()
+			.generateBuilders(new File("src/test/java"),
+					"org.nebulae2us.electron.test.builder2.model", 
+					Arrays.asList(new Class<?>[]{
+						Blank.class,
+						Sample.class,
+						SubSample.class
+					}));
+		
+	}
 	
 }

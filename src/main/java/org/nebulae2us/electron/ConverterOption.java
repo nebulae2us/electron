@@ -37,7 +37,7 @@ public class ConverterOption {
 	/**
 	 * Immutable flag determines what Collection is used (ImmutableList vs ArrayList)
 	 */
-	private final boolean immutable;
+//	private final boolean immutable;
 	
 	@SuppressWarnings("unchecked")
 	public ConverterOption() {
@@ -45,12 +45,7 @@ public class ConverterOption {
 	}
 	
 	public ConverterOption(Map<Class<?>, Class<?>> associates) {
-		this(associates, false);
-	}
-
-	public ConverterOption(Map<Class<?>, Class<?>> associates, boolean immutable) {
 		this.associates = new ImmutableMap<Class<?>, Class<?>>(associates, new IdentityEqualityComparator<Class<?>>());
-		this.immutable = immutable;
 		
 		Map<Class<?>, Class<?>> inverseAssociates = new IdentityHashMap<Class<?>, Class<?>>();
 		for (Entry<Class<?>, Class<?>> entry : associates.entrySet()) {
@@ -63,10 +58,6 @@ public class ConverterOption {
 		return associates;
 	}
 
-	public boolean isImmutable() {
-		return immutable;
-	}
-	
 	public ConverterOption merge(ConverterOption otherOption) {
 
 		Map<Class<?>, Class<?>> associates;
@@ -80,7 +71,7 @@ public class ConverterOption {
 			associates = new IdentityHashMap<Class<?>, Class<?>>(this.associates);
 			associates.putAll(otherOption.associates);
 		}
-		return new ConverterOption(associates, otherOption.immutable);
+		return new ConverterOption(associates);
 	}
 
 	private void assertClassInstantiatable(Class<?> c) {

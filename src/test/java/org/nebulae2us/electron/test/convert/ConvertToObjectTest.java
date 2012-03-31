@@ -36,15 +36,15 @@ public class ConvertToObjectTest {
 
 	private Converter converter;
 	
-	public ConvertToObjectTest(Converter converter) {
-		this.converter = converter;
+	public ConvertToObjectTest(boolean immutable) {
+		converter = new Converter(new ConverterOption(), immutable);
 	}
 	
 	@Parameters
-	public static Collection<Converter[]> data() {
+	public static Collection<boolean[]> data() {
 		return Arrays.asList(
-				new Converter[] {new Converter(ConverterOptions.EMPTY_MUTABLE_OPTION)}, 
-				new Converter[] {new Converter(ConverterOptions.EMPTY_IMMUTABLE_OPTION)});
+				new boolean[] {false}, 
+				new boolean[] {true});
 	}
 	
 	@Test
@@ -71,7 +71,7 @@ public class ConvertToObjectTest {
 		Object result = converter.convert((Object)numbers).to(Object.class);
 		
 		assertTrue(result instanceof List);
-		assertTrue(converter.getConverterOption().isImmutable() ? result instanceof ImmutableList : result instanceof ArrayList);
+		assertTrue(converter.isImmutable() ? result instanceof ImmutableList : result instanceof ArrayList);
 		assertEquals(numbers, result);
 		
 	}
@@ -84,7 +84,7 @@ public class ConvertToObjectTest {
 		
 		assertTrue(result instanceof Set);
 		assertEquals(numbers, result);
-		assertTrue(converter.getConverterOption().isImmutable() ?
+		assertTrue(converter.isImmutable() ?
 				result instanceof ImmutableSet : result instanceof HashSet);
 	}
 	
@@ -97,7 +97,7 @@ public class ConvertToObjectTest {
 		assertTrue(result instanceof SortedSet);
 		assertEquals(numbers, result);
 
-		assertTrue(converter.getConverterOption().isImmutable() ?
+		assertTrue(converter.isImmutable() ?
 				result instanceof ImmutableSortedSet : result instanceof TreeSet);
 	}
 
@@ -114,7 +114,7 @@ public class ConvertToObjectTest {
 		assertTrue(result instanceof Map);
 		assertEquals(oddNumbers, result);
 		
-		if (converter.getConverterOption().isImmutable()) {
+		if (converter.isImmutable()) {
 			assertTrue(result instanceof ImmutableMap);
 			assertTrue( ((ImmutableMap)result).containsKey(new Integer(1)) );
 		}
@@ -137,7 +137,7 @@ public class ConvertToObjectTest {
 		assertTrue(result instanceof Map);
 		assertEquals(oddNumbers, result);
 		
-		if (converter.getConverterOption().isImmutable()) {
+		if (converter.isImmutable()) {
 			assertTrue(result instanceof ImmutableMap);
 			assertFalse( ((ImmutableMap)result).containsKey(new Integer(1)) );
 		}
@@ -160,7 +160,7 @@ public class ConvertToObjectTest {
 		assertEquals(3, ((Map)result).size());
 		assertEquals(oddNumbers, result);
 		
-		if (converter.getConverterOption().isImmutable()) {
+		if (converter.isImmutable()) {
 			assertTrue(result instanceof ImmutableSortedMap);
 			assertTrue( ((ImmutableSortedMap)result).containsKey(new Integer(1)) );
 		}

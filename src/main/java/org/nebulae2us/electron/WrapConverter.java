@@ -15,28 +15,7 @@
  */
 package org.nebulae2us.electron;
 
-import static org.nebulae2us.electron.Constants.*;
-
 import java.lang.reflect.Constructor;
-import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Type;
-import java.math.BigDecimal;
-import java.math.BigInteger;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.IdentityHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import org.nebulae2us.electron.internal.util.ClassUtils;
-import org.nebulae2us.electron.util.ImmutableList;
-import org.nebulae2us.electron.util.ImmutableSet;
-
-import static org.nebulae2us.electron.internal.util.ClassUtils.*;
 
 /**
  * @author Trung Phan
@@ -45,11 +24,11 @@ import static org.nebulae2us.electron.internal.util.ClassUtils.*;
 public class WrapConverter extends Converter {
 
 	public WrapConverter() {
-		super();
+		this(null);
 	}
 	
 	public WrapConverter(ConverterOption option) {
-		super(option);
+		super(option, false);
 	}
 
 	@Override
@@ -58,7 +37,7 @@ public class WrapConverter extends Converter {
 
 		Constructor<?> constructor;
 		try {
-			constructor = destClass.getDeclaredConstructor(new Class<?>[]{srcClass});
+			constructor = destClass.getDeclaredConstructor(new Class<?>[]{srcClass, ConverterOption.class});
 			constructor.setAccessible(true);
 		} catch (Exception e1) {
 			throw new RuntimeException("Failed to find constructor ", e1);
@@ -66,7 +45,7 @@ public class WrapConverter extends Converter {
 
 		T result;
 		try {
-			result = (T)constructor.newInstance(srcObject);
+			result = (T)constructor.newInstance(srcObject, this.getConverterOption());
 			return new Pair<T, Boolean>(result, Boolean.FALSE);
 		} catch (Exception e) {
 			throw new RuntimeException("Failed to create object", e);

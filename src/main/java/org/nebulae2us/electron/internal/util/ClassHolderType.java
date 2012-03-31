@@ -13,22 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.nebulae2us.electron;
-
-import java.util.Collections;
+package org.nebulae2us.electron.internal.util;
 
 /**
  * @author Trung Phan
  *
  */
-public class ConverterOptions {
+public enum ClassHolderType {
 
-//	@SuppressWarnings("unchecked")
-//	public static final ConverterOption EMPTY_MUTABLE_OPTION = new ConverterOption(Collections.EMPTY_MAP, false);
-//	
-//	@SuppressWarnings("unchecked")
-//	public static final ConverterOption EMPTY_IMMUTABLE_OPTION = new ConverterOption(Collections.EMPTY_MAP, true);
-	
-	
+	SINGLE,
+	COLLECTION,
+	MAP,
+	MULTI_COLLECTION,
+	MULTI_MAP
 	
 }

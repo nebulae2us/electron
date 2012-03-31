@@ -200,6 +200,54 @@ public class ImmutableMap<K, V> extends AbstractImmutableMap<K, V> implements Ma
 
         return null;
     }
+    
+    @Override
+    public boolean equals(Object o) {
+    	if (o == this) {
+    	    return true;
+    	}
+
+    	if (!(o instanceof Map)) {
+    	    return false;
+    	}
+    	
+    	Map<K,V> t = (Map<K,V>) o;
+    	if (t.size() != size()) {
+    	    return false;
+    	}
+
+        try {
+            Iterator<Entry<K,V>> i = entrySet().iterator();
+            while (i.hasNext()) {
+                Entry<K,V> e = i.next();
+                K key = e.getKey();
+                V value = e.getValue();
+                if (value == null) {
+                    if (!(t.get(key)==null && t.containsKey(key)))
+                        return false;
+                } else {
+                    if (!value.equals(t.get(key)))
+                        return false;
+                }
+            }
+        } catch(ClassCastException unused) {
+            return false;
+        } catch(NullPointerException unused) {
+            return false;
+        }
+
+    	return true;
+    }
+    
+    @Override
+    public int hashCode() {
+    	int h = 0;
+    	Iterator<Entry<K,V>> i = entrySet().iterator();
+    	while (i.hasNext()) {
+    	    h += i.next().hashCode();
+    	}
+    	return h;
+    }
 
     private class KeyIterator extends AbstractImmutableIterator<K> implements Iterator<K> {
 

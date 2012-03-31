@@ -29,6 +29,8 @@ public interface Mirror {
 	
 	public <T> List<T> toListOf(Class<T> objectClass, String fieldName);
 
+	public <T> NavigableSet<T> toSortedSetOf(Class<T> objectClass, String fieldName);
+	
 	public <T> Set<T> toSetOf(Class<T> objectClass, String fieldName);
 	
 	public <K, V> Map<K, V> toMapOf(Class<K> keyClass, Class<V> valueClass, String fieldName);

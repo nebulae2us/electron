@@ -13,22 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.nebulae2us.electron;
+package org.nebulae2us.electron.test.builder2.model;
 
-import java.util.Collections;
+import org.nebulae2us.electron.Mirror;
 
 /**
  * @author Trung Phan
  *
  */
-public class ConverterOptions {
+public class SubSample extends Sample {
 
-//	@SuppressWarnings("unchecked")
-//	public static final ConverterOption EMPTY_MUTABLE_OPTION = new ConverterOption(Collections.EMPTY_MAP, false);
-//	
-//	@SuppressWarnings("unchecked")
-//	public static final ConverterOption EMPTY_IMMUTABLE_OPTION = new ConverterOption(Collections.EMPTY_MAP, true);
-	
-	
-	
+	public SubSample(Mirror mirror) {
+		super(mirror);
+	}
+
 }

@@ -15,20 +15,12 @@
  */
 package org.nebulae2us.electron;
 
-import java.util.Collections;
-
 /**
  * @author Trung Phan
  *
  */
-public class ConverterOptions {
+public interface Wrappable<T> {
 
-//	@SuppressWarnings("unchecked")
-//	public static final ConverterOption EMPTY_MUTABLE_OPTION = new ConverterOption(Collections.EMPTY_MAP, false);
-//	
-//	@SuppressWarnings("unchecked")
-//	public static final ConverterOption EMPTY_IMMUTABLE_OPTION = new ConverterOption(Collections.EMPTY_MAP, true);
-	
-	
+	public T getWrappedObject();
 	
 }
