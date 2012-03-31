@@ -86,16 +86,6 @@ public class BuilderGenerator {
 		importGenerator.importPackage("java.util");
 		importGenerator.importClass(destSuperClass);
 		
-//		StringBuilder annotationDeclare = new StringBuilder();
-//		annotationDeclare.append("@ConversionBindings({\n");
-//		annotationDeclare.append("    @ConversionBinding(value = ").append(destClassName).append(".class, to = ").append(srcClassName).append(".class)");
-//		for (Class<?> classToBuild : classesToBuild) {
-//			if (classToBuild != srcClass && (srcClass.isAssignableFrom(classToBuild) || classToBuild.isAssignableFrom(srcClass))) {
-//				annotationDeclare.append(",\n    @ConversionBinding(value = ").append(classToBuild.getSimpleName()).append(suffix).append(".class, to = ").append(classToBuild.getSimpleName()).append(".class)");
-//			}
-//		}
-//		annotationDeclare.append("\n})\n");
-		
 		StringBuilder classDeclare = new StringBuilder().append("public class ").append(destClassName);
 		if (destSuperClass != Object.class) {
 			classDeclare.append(" extends ").append(destSuperClass.getSimpleName()).append(suffix);
@@ -136,50 +126,51 @@ public class BuilderGenerator {
 
 		for (Field field : ClassUtils.getFields(srcClass)) {
 			ClassHolder classHolder = ClassHolder.newInstance(field.getGenericType());
+			importGenerator.importClasses(classHolder);
+			
 			boolean notDefined = field.getDeclaringClass() == srcClass || destSuperClass == Object.class || !classesToBuild.contains(field.getDeclaringClass());
 			
 			if (notDefined) {
-				classContent.append(getTemplates().getProperty("builder_fieldname_getter_settter")
-						.replaceAll("String", classHolder.toBuilderString(suffix, classesToBuild))
-						.replaceAll("name", field.getName())
-						.replaceAll("Name", toUpperCamelCase(field.getName()))
+				classContent.append(new StringReplacer(getTemplates().getProperty("builder_fieldname_getter_settter"))
+						.replace("String", classHolder.toBuilderString(suffix, classesToBuild))
+						.replace("name", field.getName())
+						.replace("Name", toUpperCamelCase(field.getName()))
 						);
 			}
 			
 			switch (classHolder.getClassHolderType()) {
 			case SINGLE:
-				System.out.println("Single : " + field.getName());
 				if (notDefined) {
-					classContent.append(getTemplates().getProperty("builder_single_type_field")
-							.replaceAll("String", classHolder.toBuilderString(suffix, classesToBuild))
-							.replaceAll("name", field.getName())
-							.replaceAll("Name", toUpperCamelCase(field.getName()))
-							.replaceAll("SampleBuilderSpec", destClassName)
+					classContent.append(new StringReplacer(getTemplates().getProperty("builder_single_type_field"))
+							.replace("String", classHolder.toBuilderString(suffix, classesToBuild))
+							.replace("name", field.getName())
+							.replace("Name", toUpperCamelCase(field.getName()))
+							.replace("SampleBuilderSpec", destClassName)
 							);
 
 					if (classesToBuild.contains(classHolder.getRawClass())) {
-						classContent.append(getTemplates().getProperty("builder_single_type_builder_field")
-								.replaceAll("SampleBuilderSpec", destClassName)
-								.replaceAll("blank", field.getName())
-								.replaceAll("BlankBuilderSpec", classHolder.getRawClass().getSimpleName() + suffix)
-								.replaceAll("Blank", classHolder.getRawClass().getSimpleName())
+						classContent.append(new StringReplacer(getTemplates().getProperty("builder_single_type_builder_field"))
+								.replace("SampleBuilderSpec", destClassName)
+								.replace("blank", field.getName())
+								.replace("BlankBuilderSpec", classHolder.getRawClass().getSimpleName() + suffix)
+								.replace("Blank", classHolder.getRawClass().getSimpleName())
 								);
 					}
 				}
 				else {
-					classContent.append(getTemplates().getProperty("subclass_single_type_field")
-							.replaceAll("String", classHolder.toBuilderString(suffix, classesToBuild))
-							.replaceAll("name", field.getName())
-							.replaceAll("Name", toUpperCamelCase(field.getName()))
-							.replaceAll("SubSampleBuilderSpec", destClassName)
+					classContent.append(new StringReplacer(getTemplates().getProperty("subclass_single_type_field"))
+							.replace("String", classHolder.toBuilderString(suffix, classesToBuild))
+							.replace("name", field.getName())
+							.replace("Name", toUpperCamelCase(field.getName()))
+							.replace("SubSampleBuilderSpec", destClassName)
 							);
 
 					if (classesToBuild.contains(classHolder.getRawClass())) {
-						classContent.append(getTemplates().getProperty("subclass_single_type_builder_field")
-								.replaceAll("SubSampleBuilderSpec", destClassName)
-								.replaceAll("blank", field.getName())
-								.replaceAll("BlankBuilderSpec", classHolder.getRawClass().getSimpleName() + suffix)
-								.replaceAll("Blank", classHolder.getRawClass().getSimpleName())
+						classContent.append(new StringReplacer(getTemplates().getProperty("subclass_single_type_builder_field"))
+								.replace("SubSampleBuilderSpec", destClassName)
+								.replace("blank", field.getName())
+								.replace("BlankBuilderSpec", classHolder.getRawClass().getSimpleName() + suffix)
+								.replace("Blank", classHolder.getRawClass().getSimpleName())
 								);
 					}
 				}
@@ -187,66 +178,64 @@ public class BuilderGenerator {
 				
 				break;
 			case COLLECTION:
-				System.out.println("Collection : " + field.getName());
 				if (notDefined) {
-					classContent.append(getTemplates().getProperty("builder_collection_type_field")
-							.replaceAll("String", classHolder.getArgumentClasses().get(0).toBuilderString(suffix, classesToBuild))
-							.replaceAll("names", field.getName())
-							.replaceAll("SampleBuilderSpec", destClassName)
-							.replaceAll("ArrayList", getMutableCollectionType(classHolder.getRawClass()).getSimpleName())
+					classContent.append(new StringReplacer(getTemplates().getProperty("builder_collection_type_field"))
+							.replace("String", classHolder.getArgumentClasses().get(0).toBuilderString(suffix, classesToBuild))
+							.replace("names", field.getName())
+							.replace("SampleBuilderSpec", destClassName)
+							.replace("ArrayList", getMutableCollectionType(classHolder.getRawClass()).getSimpleName())
 							);
 					
 					
 					Class<?> elementClass = classHolder.getArgumentClasses().get(0).getRawClass();
 					if (classesToBuild.contains(elementClass)) {
-						classContent.append(getTemplates().getProperty("builder_collection_type_builder_field")
-								.replaceAll("SampleBuilderSpec", destClassName)
-								.replaceAll("blanks", field.getName())
-								.replaceAll("BlankBuilderSpec", elementClass.getSimpleName() + suffix)
-								.replaceAll("Blank", elementClass.getSimpleName())
-								.replaceAll("ArrayList", getMutableCollectionType(classHolder.getRawClass()).getSimpleName())
+						classContent.append(new StringReplacer(getTemplates().getProperty("builder_collection_type_builder_field"))
+								.replace("SampleBuilderSpec", destClassName)
+								.replace("blanks", field.getName())
+								.replace("BlankBuilderSpec", elementClass.getSimpleName() + suffix)
+								.replace("Blank", elementClass.getSimpleName())
+								.replace("ArrayList", getMutableCollectionType(classHolder.getRawClass()).getSimpleName())
 								);
 					}
 				}
 				else {
-					classContent.append(getTemplates().getProperty("subclass_collection_type_field")
-							.replaceAll("String", classHolder.getArgumentClasses().get(0).toBuilderString(suffix, classesToBuild))
-							.replaceAll("names", field.getName())
-							.replaceAll("SubSampleBuilderSpec", destClassName)
+					classContent.append(new StringReplacer(getTemplates().getProperty("subclass_collection_type_field"))
+							.replace("String", classHolder.getArgumentClasses().get(0).toBuilderString(suffix, classesToBuild))
+							.replace("names", field.getName())
+							.replace("SubSampleBuilderSpec", destClassName)
 							);
 					
 					
 					Class<?> elementClass = classHolder.getArgumentClasses().get(0).getRawClass();
 					if (classesToBuild.contains(elementClass)) {
-						classContent.append(getTemplates().getProperty("subclass_collection_type_builder_field")
-								.replaceAll("SubSampleBuilderSpec", destClassName)
-								.replaceAll("blanks", field.getName())
-								.replaceAll("BlankBuilderSpec", elementClass.getSimpleName() + suffix)
-								.replaceAll("Blank", elementClass.getSimpleName())
+						classContent.append(new StringReplacer(getTemplates().getProperty("subclass_collection_type_builder_field"))
+								.replace("SubSampleBuilderSpec", destClassName)
+								.replace("blanks", field.getName())
+								.replace("BlankBuilderSpec", elementClass.getSimpleName() + suffix)
+								.replace("Blank", elementClass.getSimpleName())
 								);
 					}
 				}
 				
 				break;
 			case MAP:
-				System.out.println("Map : " + field.getName());
 				if (notDefined) {
-					classContent.append(getTemplates().getProperty("builder_map_type_field")
-							.replaceAll("String\\.class", classHolder.getArgumentClasses().get(0).getBuilderRawClassName(suffix, classesToBuild) + ".class")
-							.replaceAll("Integer\\.class", classHolder.getArgumentClasses().get(1).getBuilderRawClassName(suffix, classesToBuild) + ".class")
-							.replaceAll("String", classHolder.getArgumentClasses().get(0).toBuilderString(suffix, classesToBuild))
-							.replaceAll("Integer", classHolder.getArgumentClasses().get(1).toBuilderString(suffix, classesToBuild))
-							.replaceAll("keywordCounts", field.getName())
-							.replaceAll("SampleBuilderSpec", destClassName)
-							.replaceAll("HashMap", getMutableCollectionType(classHolder.getRawClass()).getSimpleName())
+					classContent.append(new StringReplacer(getTemplates().getProperty("builder_map_type_field"))
+							.replace("String\\.class", classHolder.getArgumentClasses().get(0).getBuilderRawClassName(suffix, classesToBuild) + ".class")
+							.replace("Integer\\.class", classHolder.getArgumentClasses().get(1).getBuilderRawClassName(suffix, classesToBuild) + ".class")
+							.replace("String", classHolder.getArgumentClasses().get(0).toBuilderString(suffix, classesToBuild))
+							.replace("Integer", classHolder.getArgumentClasses().get(1).toBuilderString(suffix, classesToBuild))
+							.replace("keywordCounts", field.getName())
+							.replace("SampleBuilderSpec", destClassName)
+							.replace("HashMap", getMutableCollectionType(classHolder.getRawClass()).getSimpleName())
 							);
 				}
 				else {
-					classContent.append(getTemplates().getProperty("subclass_map_type_field")
-							.replaceAll("String", classHolder.getArgumentClasses().get(0).toBuilderString(suffix, classesToBuild))
-							.replaceAll("Integer", classHolder.getArgumentClasses().get(1).toBuilderString(suffix, classesToBuild))
-							.replaceAll("keywordCounts", field.getName())
-							.replaceAll("SubSampleBuilderSpec", destClassName)
+					classContent.append(new StringReplacer(getTemplates().getProperty("subclass_map_type_field"))
+							.replace("String", classHolder.getArgumentClasses().get(0).toBuilderString(suffix, classesToBuild))
+							.replace("Integer", classHolder.getArgumentClasses().get(1).toBuilderString(suffix, classesToBuild))
+							.replace("keywordCounts", field.getName())
+							.replace("SubSampleBuilderSpec", destClassName)
 							);
 				}
 				

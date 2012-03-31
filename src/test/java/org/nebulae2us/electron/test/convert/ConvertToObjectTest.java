@@ -41,10 +41,10 @@ public class ConvertToObjectTest {
 	}
 	
 	@Parameters
-	public static Collection<boolean[]> data() {
+	public static Collection<Boolean[]> data() {
 		return Arrays.asList(
-				new boolean[] {false}, 
-				new boolean[] {true});
+				new Boolean[] {Boolean.FALSE}, 
+				new Boolean[] {Boolean.TRUE});
 	}
 	
 	@Test
