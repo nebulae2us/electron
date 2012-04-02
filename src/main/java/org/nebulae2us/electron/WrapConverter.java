@@ -23,12 +23,8 @@ import java.lang.reflect.Constructor;
  */
 public class WrapConverter extends Converter {
 
-	public WrapConverter() {
-		this(null);
-	}
-	
-	public WrapConverter(ConverterOption option) {
-		super(option, false);
+	public WrapConverter(DestinationClassResolver destinationClassResolver) {
+		super(destinationClassResolver, false);
 	}
 
 	@Override
@@ -37,7 +33,7 @@ public class WrapConverter extends Converter {
 
 		Constructor<?> constructor;
 		try {
-			constructor = destClass.getDeclaredConstructor(new Class<?>[]{srcClass, ConverterOption.class});
+			constructor = destClass.getDeclaredConstructor(new Class<?>[]{srcClass});
 			constructor.setAccessible(true);
 		} catch (Exception e1) {
 			throw new RuntimeException("Failed to find constructor ", e1);
@@ -45,7 +41,7 @@ public class WrapConverter extends Converter {
 
 		T result;
 		try {
-			result = (T)constructor.newInstance(srcObject, this.getConverterOption());
+			result = (T)constructor.newInstance(srcObject);
 			return new Pair<T, Boolean>(result, Boolean.FALSE);
 		} catch (Exception e) {
 			throw new RuntimeException("Failed to create object", e);

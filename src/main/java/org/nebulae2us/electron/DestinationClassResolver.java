@@ -13,30 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.nebulae2us.electron.test.builder2.model;
-
-import java.io.File;
-
-import org.nebulae2us.electron.BuilderGenerator;
+package org.nebulae2us.electron;
 
 /**
+ * 
+ * Examples:
+ * getDestinationClass(Person.class, Object.class) -> PersonBuilder.class.
+ * getDestinationClass(PersonBuilder.class, Object.class) -> Person.class.
+ * 
+ * The first example makes the Annotation in the Builder class not usable.
+ * 
  * @author Trung Phan
  *
  */
-public class GenerateBuilders {
-
-	public static void main(String ... arguments) {
-		
-		new BuilderGenerator()
-			.baseFolder(new File("src/test/java"))
-			.buildersClassName("org.nebulae2us.electron.test.builder2.model.Builders")
-			.builderSuffix("Builder")
-			.generate(
-					Blank.class,
-					Sample.class,
-					SubSample.class
-					);
-		
-	}
+public interface DestinationClassResolver {
+	
+	public <T> Class<? extends T> getDestinationClass(Class<?> src, Class<T> expectedDest);
 	
 }

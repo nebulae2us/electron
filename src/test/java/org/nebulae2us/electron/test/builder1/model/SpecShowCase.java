@@ -13,29 +13,28 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.nebulae2us.electron.test.builder2.model;
+package org.nebulae2us.electron.test.builder1.model;
 
-import java.io.File;
+import org.junit.Test;
 
-import org.nebulae2us.electron.BuilderGenerator;
+import static org.nebulae2us.electron.test.builder1.model.BuilderSpecs.*;
 
 /**
  * @author Trung Phan
  *
  */
-public class GenerateBuilders {
+public class SpecShowCase {
 
-	public static void main(String ... arguments) {
+	@Test
+	public void speech_owner() {
 		
-		new BuilderGenerator()
-			.baseFolder(new File("src/test/java"))
-			.buildersClassName("org.nebulae2us.electron.test.builder2.model.Builders")
-			.builderSuffix("Builder")
-			.generate(
-					Blank.class,
-					Sample.class,
-					SubSample.class
-					);
+		
+		
+	}
+	
+	@Test
+	public void hobby_people() {
+		
 		
 	}
 	

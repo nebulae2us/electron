@@ -4,26 +4,29 @@ import java.util.*;
 import org.nebulae2us.electron.*;
 import org.nebulae2us.electron.util.*;
 
-public class BlankBuilder implements Wrappable<Blank> {
+@Builder(destination=Blank.class)
+public class BlankBuilder<P> implements Wrappable<Blank> {
 
 	protected final Blank $$$wrapped;
 
-	protected final ConverterOption $$$option;
+	protected final P $$$parentBuilder;
 	
 	public BlankBuilder() {
-		this(null, null);
+		this.$$$wrapped = null;
+		this.$$$parentBuilder = null;
 	}
 	
-	public BlankBuilder(ConverterOption option) {
-		this(null, option);
+	public BlankBuilder(P parentBuilder) {
+		this.$$$wrapped = null;
+		this.$$$parentBuilder = parentBuilder;
 	}
 
-	protected BlankBuilder(Blank wrapped, ConverterOption option) {
+	protected BlankBuilder(Blank wrapped) {
 		this.$$$wrapped = wrapped;
-		this.$$$option = option;
+		this.$$$parentBuilder = null;
 	}
 	
-    public BlankBuilder storeTo(BuilderRepository repo, Object builderId) {
+    public BlankBuilder<P> storeTo(BuilderRepository repo, Object builderId) {
     	repo.put(builderId, this);
     	return this;
     }
@@ -38,8 +41,12 @@ public class BlankBuilder implements Wrappable<Blank> {
 		}
 	}
 
+	public P end() {
+		return this.$$$parentBuilder;
+	}
+
     public Blank toBlank() {
-    	return new Converter(this.$$$option, true).convert(this).to(Blank.class);
+    	return new Converter(new BuilderAnnotationDestinationClassResolver(), true).convert(this).to(Blank.class);
     }
 
 	private String name;
@@ -53,7 +60,7 @@ public class BlankBuilder implements Wrappable<Blank> {
 		this.name = name;
 	}
 
-	public BlankBuilder name(String name) {
+	public BlankBuilder<P> name(String name) {
 		verifyMutable();
 		this.name = name;
 		return this;

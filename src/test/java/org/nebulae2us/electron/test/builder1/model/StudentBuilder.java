@@ -4,18 +4,19 @@ import java.util.*;
 import org.nebulae2us.electron.*;
 import org.nebulae2us.electron.util.*;
 
-public class StudentBuilder extends PersonBuilder {
+@Builder(destination=Student.class)
+public class StudentBuilder<P> extends PersonBuilder<P> {
 
 	public StudentBuilder() {
 		super();
 	}
 	
-	public StudentBuilder(ConverterOption option) {
-		super(option);
+	public StudentBuilder(P parentBuilder) {
+		super(parentBuilder);
 	}
 
-	protected StudentBuilder(Student wrapped, ConverterOption option) {
-		super(wrapped, option);
+	protected StudentBuilder(Student wrapped) {
+		super(wrapped);
 	}
 
 	@Override
@@ -24,18 +25,18 @@ public class StudentBuilder extends PersonBuilder {
 	}
 
 	@Override
-    public StudentBuilder storeTo(BuilderRepository repo, Object builderId) {
+    public StudentBuilder<P> storeTo(BuilderRepository repo, Object builderId) {
     	repo.put(builderId, this);
     	return this;
     }
 	
     public Student toStudent() {
-    	return new Converter(this.$$$option, true).convert(this).to(Student.class);
+    	return new Converter(new BuilderAnnotationDestinationClassResolver(), true).convert(this).to(Student.class);
     }
 
     @Override
     public Student toPerson() {
-    	return new Converter(this.$$$option, true).convert(this).to(Student.class);
+    	return new Converter(new BuilderAnnotationDestinationClassResolver(), true).convert(this).to(Student.class);
     }
 
 	private boolean partTime;
@@ -49,69 +50,104 @@ public class StudentBuilder extends PersonBuilder {
 		this.partTime = partTime;
 	}
 
-	public StudentBuilder partTime(boolean partTime) {
+	public StudentBuilder<P> partTime(boolean partTime) {
 		verifyMutable();
 		this.partTime = partTime;
 		return this;
 	}
 
-	private List<TeacherBuilder> teachers;
+	private List<TeacherBuilder<?>> teachers;
 	
-	public List<TeacherBuilder> getTeachers() {
+	public List<TeacherBuilder<?>> getTeachers() {
 		return teachers;
 	}
 
-	public void setTeachers(List<TeacherBuilder> teachers) {
+	public void setTeachers(List<TeacherBuilder<?>> teachers) {
 		verifyMutable();
 		this.teachers = teachers;
 	}
 
-	public StudentBuilder teachers(TeacherBuilder ... teachers) {
+	public StudentBuilder<P> teachers(TeacherBuilder<?> ... teachers) {
 		verifyMutable();
-		return teachers(new ListBuilder<TeacherBuilder>().add(teachers).toList());
+		return teachers(new ListBuilder<TeacherBuilder<?>>().add(teachers).toList());
 	}
 	
-	public StudentBuilder teachers(Collection<TeacherBuilder> teachers) {
+	public StudentBuilder<P> teachers(Collection<TeacherBuilder<?>> teachers) {
 		verifyMutable();
 		if (this.teachers == null) {
-			this.teachers = new ArrayList<TeacherBuilder>();
+			this.teachers = new ArrayList<TeacherBuilder<?>>();
 		}
 		if (teachers != null) {
-			for (TeacherBuilder e : teachers) {
+			for (TeacherBuilder<?> e : teachers) {
 				this.teachers.add(e);
 			}
 		}
 		return this;
 	}
 
-    public StudentBuilder teachers$wrap(Teacher ... teachers) {
+	public TeacherBuilder<StudentBuilder<P>> teachers$one() {
+		verifyMutable();
+		if (this.teachers == null) {
+			this.teachers = new ArrayList<TeacherBuilder<?>>();
+		}
+		
+		TeacherBuilder<StudentBuilder<P>> result =
+				new TeacherBuilder<StudentBuilder<P>>(this);
+		
+		this.teachers.add(result);
+		
+		return result;
+	}
+
+	public class Teachers$$$builder {
+		
+		public TeacherBuilder<Teachers$$$builder> blank$begin() {
+			TeacherBuilder<Teachers$$$builder> result = new TeacherBuilder<Teachers$$$builder>(this);
+			StudentBuilder.this.teachers.add(result);
+			return result;
+		}
+		
+		public StudentBuilder<P> end() {
+			return StudentBuilder.this;
+		}
+	}
+	
+	public Teachers$$$builder teachers$list() {
+		verifyMutable();
+		if (this.teachers == null) {
+			this.teachers = new ArrayList<TeacherBuilder<?>>();
+		}
+		return new Teachers$$$builder();
+	}
+
+    public StudentBuilder<P> teachers$wrap(Teacher ... teachers) {
     	return teachers$wrap(new ListBuilder<Teacher>().add(teachers).toList());
     }
 
-    public StudentBuilder teachers$wrap(Collection<Teacher> teachers) {
+    public StudentBuilder<P> teachers$wrap(Collection<Teacher> teachers) {
 		verifyMutable();
 
 		if (this.teachers == null) {
-			this.teachers = new ArrayList<TeacherBuilder>();
+			this.teachers = new ArrayList<TeacherBuilder<?>>();
 		}
 		if (teachers != null) {
 			for (Teacher e : teachers) {
-				TeacherBuilder wrapped = new WrapConverter(this.$$$option).convert(e).to(TeacherBuilder.class);
+				TeacherBuilder<?> wrapped = new WrapConverter(Builders.DESTINATION_CLASS_RESOLVER).convert(e).to(TeacherBuilder.class);
 				this.teachers.add(wrapped);
 			}
 		}
 		return this;
     }
     
-    public StudentBuilder teachers$restoreFrom(BuilderRepository repo, Object ... builderIds) {
+    public StudentBuilder<P> teachers$restoreFrom(BuilderRepository repo, Object ... builderIds) {
     	return teachers$restoreFrom(repo, new ListBuilder<Object>().add(builderIds).toList());
     }
 
-    public StudentBuilder teachers$restoreFrom(BuilderRepository repo, Collection<Object> builderIds) {
+    public StudentBuilder<P> teachers$restoreFrom(BuilderRepository repo, Collection<Object> builderIds) {
 		verifyMutable();
 
 		if (this.teachers == null) {
-			this.teachers = new ArrayList<TeacherBuilder>();
+			this.teachers = new ArrayList<TeacherBuilder<?>>();
 		}
 		if (builderIds != null) {
 	    	for (Object builderId : builderIds) {
@@ -120,7 +156,7 @@ public class StudentBuilder extends PersonBuilder {
 	            	if (repo.isSupportLazy()) {
 	            		repo.addObjectStoredListener(builderId, new Procedure() {
 	    					public void execute(Object... arguments) {
-	    						StudentBuilder.this.teachers.add((TeacherBuilder)arguments[0]);
+	    						StudentBuilder.this.teachers.add((TeacherBuilder<?>)arguments[0]);
 	    					}
 	    				});
 	            	}
@@ -132,7 +168,7 @@ public class StudentBuilder extends PersonBuilder {
 	            	throw new IllegalStateException("Type mismatch for id: " + builderId + ". " + TeacherBuilder.class.getSimpleName() + " vs " + restoredObject.getClass().getSimpleName());
 	            }
 	            else {
-	                this.teachers.add((TeacherBuilder)restoredObject);
+	                this.teachers.add((TeacherBuilder<?>)restoredObject);
 	            }
 	    	}
 		}
@@ -140,152 +176,152 @@ public class StudentBuilder extends PersonBuilder {
     }
 
 	@Override
-	public StudentBuilder name(String name) {
-		return (StudentBuilder)super.name(name);
+	public StudentBuilder<P> name(String name) {
+		return (StudentBuilder<P>)super.name(name);
 	}
 
 	@Override
-	public StudentBuilder age(int age) {
-		return (StudentBuilder)super.age(age);
+	public StudentBuilder<P> age(int age) {
+		return (StudentBuilder<P>)super.age(age);
 	}
 
 	@Override
-	public StudentBuilder gender(Gender gender) {
-		return (StudentBuilder)super.gender(gender);
+	public StudentBuilder<P> gender(Gender gender) {
+		return (StudentBuilder<P>)super.gender(gender);
 	}
 
 	@Override
-	public StudentBuilder parent(PersonBuilder parent) {
-		return (StudentBuilder)super.parent(parent);
+	public StudentBuilder<P> parent(PersonBuilder<?> parent) {
+		return (StudentBuilder<P>)super.parent(parent);
 	}
 
 	@Override
-    public StudentBuilder parent$wrap(Person parent) {
-		return (StudentBuilder)super.parent$wrap(parent);
+    public StudentBuilder<P> parent$wrap(Person parent) {
+		return (StudentBuilder<P>)super.parent$wrap(parent);
     }
 
 	@Override
-    public StudentBuilder parent$restoreFrom(BuilderRepository repo, Object builderId) {
-		return (StudentBuilder)super.parent$restoreFrom(repo, builderId);
+    public StudentBuilder<P> parent$restoreFrom(BuilderRepository repo, Object builderId) {
+		return (StudentBuilder<P>)super.parent$restoreFrom(repo, builderId);
     }
 
 	@Override
-	public StudentBuilder children(PersonBuilder ... children) {
-		return (StudentBuilder)super.children(children);
+	public StudentBuilder<P> children(PersonBuilder<?> ... children) {
+		return (StudentBuilder<P>)super.children(children);
 	}
 
 	@Override
-	public StudentBuilder children(Collection<PersonBuilder> children) {
-		return (StudentBuilder)super.children(children);
+	public StudentBuilder<P> children(Collection<PersonBuilder<?>> children) {
+		return (StudentBuilder<P>)super.children(children);
 	}
 
 	@Override
-    public StudentBuilder children$wrap(Person ... children) {
-		return (StudentBuilder)super.children$wrap(children);
+    public StudentBuilder<P> children$wrap(Person ... children) {
+		return (StudentBuilder<P>)super.children$wrap(children);
     }
 
 	@Override
-    public StudentBuilder children$wrap(Collection<Person> children) {
-		return (StudentBuilder)super.children$wrap(children);
+    public StudentBuilder<P> children$wrap(Collection<Person> children) {
+		return (StudentBuilder<P>)super.children$wrap(children);
     }
 
 	@Override
-    public StudentBuilder children$restoreFrom(BuilderRepository repo, Object ... builderIds) {
-		return (StudentBuilder)super.children$restoreFrom(repo, builderIds);
+    public StudentBuilder<P> children$restoreFrom(BuilderRepository repo, Object ... builderIds) {
+		return (StudentBuilder<P>)super.children$restoreFrom(repo, builderIds);
     }
 
 	@Override
-    public StudentBuilder children$restoreFrom(BuilderRepository repo, Collection<Object> builderIds) {
-		return (StudentBuilder)super.children$restoreFrom(repo, builderIds);
+    public StudentBuilder<P> children$restoreFrom(BuilderRepository repo, Collection<Object> builderIds) {
+		return (StudentBuilder<P>)super.children$restoreFrom(repo, builderIds);
     }
 
 	@Override
-	public StudentBuilder hobbies(HobbyBuilder ... hobbies) {
-		return (StudentBuilder)super.hobbies(hobbies);
+	public StudentBuilder<P> hobbies(HobbyBuilder<?> ... hobbies) {
+		return (StudentBuilder<P>)super.hobbies(hobbies);
 	}
 
 	@Override
-	public StudentBuilder hobbies(Collection<HobbyBuilder> hobbies) {
-		return (StudentBuilder)super.hobbies(hobbies);
+	public StudentBuilder<P> hobbies(Collection<HobbyBuilder<?>> hobbies) {
+		return (StudentBuilder<P>)super.hobbies(hobbies);
 	}
 
 	@Override
-    public StudentBuilder hobbies$wrap(Hobby ... hobbies) {
-		return (StudentBuilder)super.hobbies$wrap(hobbies);
+    public StudentBuilder<P> hobbies$wrap(Hobby ... hobbies) {
+		return (StudentBuilder<P>)super.hobbies$wrap(hobbies);
     }
 
 	@Override
-    public StudentBuilder hobbies$wrap(Collection<Hobby> hobbies) {
-		return (StudentBuilder)super.hobbies$wrap(hobbies);
+    public StudentBuilder<P> hobbies$wrap(Collection<Hobby> hobbies) {
+		return (StudentBuilder<P>)super.hobbies$wrap(hobbies);
     }
 
 	@Override
-    public StudentBuilder hobbies$restoreFrom(BuilderRepository repo, Object ... builderIds) {
-		return (StudentBuilder)super.hobbies$restoreFrom(repo, builderIds);
+    public StudentBuilder<P> hobbies$restoreFrom(BuilderRepository repo, Object ... builderIds) {
+		return (StudentBuilder<P>)super.hobbies$restoreFrom(repo, builderIds);
     }
 
 	@Override
-    public StudentBuilder hobbies$restoreFrom(BuilderRepository repo, Collection<Object> builderIds) {
-		return (StudentBuilder)super.hobbies$restoreFrom(repo, builderIds);
+    public StudentBuilder<P> hobbies$restoreFrom(BuilderRepository repo, Collection<Object> builderIds) {
+		return (StudentBuilder<P>)super.hobbies$restoreFrom(repo, builderIds);
     }
 
 	@Override
-	public StudentBuilder speeches(SpeechBuilder ... speeches) {
-		return (StudentBuilder)super.speeches(speeches);
+	public StudentBuilder<P> speeches(SpeechBuilder<?> ... speeches) {
+		return (StudentBuilder<P>)super.speeches(speeches);
 	}
 
 	@Override
-	public StudentBuilder speeches(Collection<SpeechBuilder> speeches) {
-		return (StudentBuilder)super.speeches(speeches);
+	public StudentBuilder<P> speeches(Collection<SpeechBuilder<?>> speeches) {
+		return (StudentBuilder<P>)super.speeches(speeches);
 	}
 
 	@Override
-    public StudentBuilder speeches$wrap(Speech ... speeches) {
-		return (StudentBuilder)super.speeches$wrap(speeches);
+    public StudentBuilder<P> speeches$wrap(Speech ... speeches) {
+		return (StudentBuilder<P>)super.speeches$wrap(speeches);
     }
 
 	@Override
-    public StudentBuilder speeches$wrap(Collection<Speech> speeches) {
-		return (StudentBuilder)super.speeches$wrap(speeches);
+    public StudentBuilder<P> speeches$wrap(Collection<Speech> speeches) {
+		return (StudentBuilder<P>)super.speeches$wrap(speeches);
     }
 
 	@Override
-    public StudentBuilder speeches$restoreFrom(BuilderRepository repo, Object ... builderIds) {
-		return (StudentBuilder)super.speeches$restoreFrom(repo, builderIds);
+    public StudentBuilder<P> speeches$restoreFrom(BuilderRepository repo, Object ... builderIds) {
+		return (StudentBuilder<P>)super.speeches$restoreFrom(repo, builderIds);
     }
 
 	@Override
-    public StudentBuilder speeches$restoreFrom(BuilderRepository repo, Collection<Object> builderIds) {
-		return (StudentBuilder)super.speeches$restoreFrom(repo, builderIds);
+    public StudentBuilder<P> speeches$restoreFrom(BuilderRepository repo, Collection<Object> builderIds) {
+		return (StudentBuilder<P>)super.speeches$restoreFrom(repo, builderIds);
     }
 
 	@Override
-	public StudentBuilder friends(PersonBuilder ... friends) {
-		return (StudentBuilder)super.friends(friends);
+	public StudentBuilder<P> friends(PersonBuilder<?> ... friends) {
+		return (StudentBuilder<P>)super.friends(friends);
 	}
 
 	@Override
-	public StudentBuilder friends(Collection<PersonBuilder> friends) {
-		return (StudentBuilder)super.friends(friends);
+	public StudentBuilder<P> friends(Collection<PersonBuilder<?>> friends) {
+		return (StudentBuilder<P>)super.friends(friends);
 	}
 
 	@Override
-    public StudentBuilder friends$wrap(Person ... friends) {
-		return (StudentBuilder)super.friends$wrap(friends);
+    public StudentBuilder<P> friends$wrap(Person ... friends) {
+		return (StudentBuilder<P>)super.friends$wrap(friends);
     }
 
 	@Override
-    public StudentBuilder friends$wrap(Collection<Person> friends) {
-		return (StudentBuilder)super.friends$wrap(friends);
+    public StudentBuilder<P> friends$wrap(Collection<Person> friends) {
+		return (StudentBuilder<P>)super.friends$wrap(friends);
     }
 
 	@Override
-    public StudentBuilder friends$restoreFrom(BuilderRepository repo, Object ... builderIds) {
-		return (StudentBuilder)super.friends$restoreFrom(repo, builderIds);
+    public StudentBuilder<P> friends$restoreFrom(BuilderRepository repo, Object ... builderIds) {
+		return (StudentBuilder<P>)super.friends$restoreFrom(repo, builderIds);
     }
 
 	@Override
-    public StudentBuilder friends$restoreFrom(BuilderRepository repo, Collection<Object> builderIds) {
-		return (StudentBuilder)super.friends$restoreFrom(repo, builderIds);
+    public StudentBuilder<P> friends$restoreFrom(BuilderRepository repo, Collection<Object> builderIds) {
+		return (StudentBuilder<P>)super.friends$restoreFrom(repo, builderIds);
     }
 }

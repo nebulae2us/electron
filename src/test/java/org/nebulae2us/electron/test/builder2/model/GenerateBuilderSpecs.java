@@ -23,14 +23,14 @@ import org.nebulae2us.electron.BuilderGenerator;
  * @author Trung Phan
  *
  */
-public class GenerateBuilders {
+public class GenerateBuilderSpecs {
 
 	public static void main(String ... arguments) {
 		
 		new BuilderGenerator()
 			.baseFolder(new File("src/test/java"))
-			.buildersClassName("org.nebulae2us.electron.test.builder2.model.Builders")
-			.builderSuffix("Builder")
+			.buildersClassName("org.nebulae2us.electron.test.builder2.model.BuilderSpecs")
+			.builderSuffix("BuilderSpec")
 			.generate(
 					Blank.class,
 					Sample.class,

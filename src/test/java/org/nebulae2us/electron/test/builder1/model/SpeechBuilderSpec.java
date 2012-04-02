@@ -5,28 +5,28 @@ import org.nebulae2us.electron.*;
 import org.nebulae2us.electron.util.*;
 
 @Builder(destination=Speech.class)
-public class SpeechBuilder<P> implements Wrappable<Speech> {
+public class SpeechBuilderSpec<P> implements Wrappable<Speech> {
 
 	protected final Speech $$$wrapped;
 
 	protected final P $$$parentBuilder;
 	
-	public SpeechBuilder() {
+	public SpeechBuilderSpec() {
 		this.$$$wrapped = null;
 		this.$$$parentBuilder = null;
 	}
 	
-	public SpeechBuilder(P parentBuilder) {
+	public SpeechBuilderSpec(P parentBuilder) {
 		this.$$$wrapped = null;
 		this.$$$parentBuilder = parentBuilder;
 	}
 
-	protected SpeechBuilder(Speech wrapped) {
+	protected SpeechBuilderSpec(Speech wrapped) {
 		this.$$$wrapped = wrapped;
 		this.$$$parentBuilder = null;
 	}
 	
-    public SpeechBuilder<P> storeTo(BuilderRepository repo, Object builderId) {
+    public SpeechBuilderSpec<P> storeTo(BuilderRepository repo, Object builderId) {
     	repo.put(builderId, this);
     	return this;
     }
@@ -60,36 +60,36 @@ public class SpeechBuilder<P> implements Wrappable<Speech> {
 		this.name = name;
 	}
 
-	public SpeechBuilder<P> name(String name) {
+	public SpeechBuilderSpec<P> name(String name) {
 		verifyMutable();
 		this.name = name;
 		return this;
 	}
 
-	private PersonBuilder<?> owner;
+	private PersonBuilderSpec<?> owner;
 	
-	public PersonBuilder<?> getOwner() {
+	public PersonBuilderSpec<?> getOwner() {
 		return owner;
 	}
 
-	public void setOwner(PersonBuilder<?> owner) {
+	public void setOwner(PersonBuilderSpec<?> owner) {
 		verifyMutable();
 		this.owner = owner;
 	}
 
-	public SpeechBuilder<P> owner(PersonBuilder<?> owner) {
+	public SpeechBuilderSpec<P> owner(PersonBuilderSpec<?> owner) {
 		verifyMutable();
 		this.owner = owner;
 		return this;
 	}
 
-    public SpeechBuilder<P> owner$wrap(Person owner) {
+    public SpeechBuilderSpec<P> owner$wrap(Person owner) {
     	verifyMutable();
-    	this.owner = new WrapConverter(Builders.DESTINATION_CLASS_RESOLVER).convert(owner).to(PersonBuilder.class);
+    	this.owner = new WrapConverter(BuilderSpecs.DESTINATION_CLASS_RESOLVER).convert(owner).to(PersonBuilderSpec.class);
         return this;
     }
     
-    public SpeechBuilder<P> owner$restoreFrom(BuilderRepository repo, Object builderId) {
+    public SpeechBuilderSpec<P> owner$restoreFrom(BuilderRepository repo, Object builderId) {
     	verifyMutable();
     	
         Object restoredObject = repo.get(builderId);
@@ -97,7 +97,7 @@ public class SpeechBuilder<P> implements Wrappable<Speech> {
         	if (repo.isSupportLazy()) {
         		repo.addObjectStoredListener(builderId, new Procedure() {
 					public void execute(Object... arguments) {
-						SpeechBuilder.this.owner = (PersonBuilder<?>)arguments[0];
+						SpeechBuilderSpec.this.owner = (PersonBuilderSpec<?>)arguments[0];
 					}
 				});
         	}
@@ -105,11 +105,11 @@ public class SpeechBuilder<P> implements Wrappable<Speech> {
                 throw new IllegalStateException("Object does not exist with id " + builderId);
         	}
         }
-        else if (!(restoredObject instanceof PersonBuilder)) {
-        	throw new IllegalStateException("Type mismatch for id: " + builderId + ". " + PersonBuilder.class.getSimpleName() + " vs " + restoredObject.getClass().getSimpleName());
+        else if (!(restoredObject instanceof PersonBuilderSpec)) {
+        	throw new IllegalStateException("Type mismatch for id: " + builderId + ". " + PersonBuilderSpec.class.getSimpleName() + " vs " + restoredObject.getClass().getSimpleName());
         }
         else {
-            this.owner = (PersonBuilder<?>)restoredObject;
+            this.owner = (PersonBuilderSpec<?>)restoredObject;
         }
         return this;
     }
@@ -125,12 +125,12 @@ public class SpeechBuilder<P> implements Wrappable<Speech> {
 		this.keywords = keywords;
 	}
 
-	public SpeechBuilder<P> keywords(String ... keywords) {
+	public SpeechBuilderSpec<P> keywords(String ... keywords) {
 		verifyMutable();
 		return keywords(new ListBuilder<String>().add(keywords).toList());
 	}
 	
-	public SpeechBuilder<P> keywords(Collection<String> keywords) {
+	public SpeechBuilderSpec<P> keywords(Collection<String> keywords) {
 		verifyMutable();
 		if (this.keywords == null) {
 			this.keywords = new ArrayList<String>();
@@ -143,13 +143,13 @@ public class SpeechBuilder<P> implements Wrappable<Speech> {
 		return this;
 	}
 
-	private Map<HobbyBuilder<?>, List<String>> hobbyKeywords;
+	private Map<HobbyBuilderSpec<?>, List<String>> hobbyKeywords;
 	
-	public Map<HobbyBuilder<?>, List<String>> getHobbyKeywords() {
+	public Map<HobbyBuilderSpec<?>, List<String>> getHobbyKeywords() {
 		return hobbyKeywords;
 	}
 
-	public void setHobbyKeywords(Map<HobbyBuilder<?>, List<String>> hobbyKeywords) {
+	public void setHobbyKeywords(Map<HobbyBuilderSpec<?>, List<String>> hobbyKeywords) {
 		verifyMutable();
 		this.hobbyKeywords = hobbyKeywords;
 	}

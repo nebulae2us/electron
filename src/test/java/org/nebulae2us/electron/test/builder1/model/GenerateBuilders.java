@@ -13,17 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.nebulae2us.electron.test.builder1;
+package org.nebulae2us.electron.test.builder1.model;
 
 import java.io.File;
-import java.util.Arrays;
 
 import org.nebulae2us.electron.BuilderGenerator;
-import org.nebulae2us.electron.test.builder1.model.Student;
-import org.nebulae2us.electron.test.builder1.model.Teacher;
-import org.nebulae2us.electron.test.builder1.model.Hobby;
-import org.nebulae2us.electron.test.builder1.model.Person;
-import org.nebulae2us.electron.test.builder1.model.Speech;
 
 /**
  * @author Trung Phan
@@ -34,13 +28,15 @@ public class GenerateBuilders {
 	/**
 	 * @param args
 	 */
-	@SuppressWarnings("unchecked")
 	public static void main(String[] args) {
 
 		File genFolder = new File("src/test/java");
 		
-		BuilderGenerator.generateBuilders(genFolder, "org.nebulae2us.electron.test.builder1.model", 
-				Arrays.asList(Person.class, Hobby.class, Speech.class, Teacher.class, Student.class));
+		new BuilderGenerator()
+			.baseFolder(genFolder)
+			.buildersClassName("org.nebulae2us.electron.test.builder1.model.Builders")
+			.builderSuffix("Builder")
+			.generate(Person.class, Hobby.class, Speech.class, Teacher.class, Student.class);
 		
 	}
 

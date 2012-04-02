@@ -13,28 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.nebulae2us.electron.test.builder2.model;
+package org.nebulae2us.electron;
 
-import org.nebulae2us.electron.*;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
 /**
  * @author Trung Phan
  *
  */
-public class BuildersSpec {
-
-    public static SampleBuilderSpec sample() {
-    	return new SampleBuilderSpec();
-    }
-
-    public static SampleBuilderSpec hobby$restoreFrom(BuilderRepository repo, int builderId) {
-        return (SampleBuilderSpec)repo.get(builderId);
-    }
-
-    public static SampleBuilderSpec hobby$copyFrom(Sample sample) {
-    	SampleBuilderSpec result = new Converter().convert(sample).to(SampleBuilderSpec.class);
-    	return result;
-    }
-	
-	
+@Retention(RetentionPolicy.RUNTIME)
+@Target(ElementType.TYPE)
+public @interface Builder {
+	public Class<?> destination();
 }

@@ -21,6 +21,7 @@ import java.util.List;
 
 import org.nebulae2us.electron.BuilderRepository;
 import org.nebulae2us.electron.ConverterOption;
+import org.nebulae2us.electron.DestinationClassResolver;
 import org.nebulae2us.electron.Procedure;
 import org.nebulae2us.electron.WrapConverter;
 
@@ -38,14 +39,14 @@ public class ChainedMultiMapBuilder<P, K, V> {
 	
 	private final Procedure listener;
 	
-	private final ConverterOption option;
+	private final DestinationClassResolver destinationClassResolver;
 	
-	public ChainedMultiMapBuilder(Class<?> keyClass, Class<?> valueClass, ConverterOption option, P parentBuilder, Procedure listener) {
+	public ChainedMultiMapBuilder(Class<?> keyClass, Class<?> valueClass, DestinationClassResolver destinationClassResolver, P parentBuilder, Procedure listener) {
 		this.keyClass = keyClass;
 		this.valueClass = valueClass;
 		this.parentBuilder = parentBuilder;
 		this.listener = listener;
-		this.option = option;
+		this.destinationClassResolver = destinationClassResolver;
 	}
 	
 	public ValueBuilder key(K key) {
@@ -53,7 +54,7 @@ public class ChainedMultiMapBuilder<P, K, V> {
 	}
 	
     public ValueBuilder key$wrap(Object wrapped) {
-    	K key = (K)new WrapConverter(option).convert(wrapped).to(keyClass);
+    	K key = (K)new WrapConverter(destinationClassResolver).convert(wrapped).to(keyClass);
     	return key(key);
     }	
 	

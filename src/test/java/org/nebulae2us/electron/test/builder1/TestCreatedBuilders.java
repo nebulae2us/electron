@@ -37,7 +37,7 @@ public class TestCreatedBuilders {
 	@Test
 	public void create_person() {
 		
-		PersonBuilder personBuilder = person()
+		PersonBuilder<?> personBuilder = person()
 				.name("John Deere")
 				.age(30)
 				.children(
@@ -63,7 +63,7 @@ public class TestCreatedBuilders {
 	
 	@Test
 	public void list_of_scalar() {
-		SpeechBuilder s1 = speech().name("I Have A Dream")
+		SpeechBuilder<?> s1 = speech().name("I Have A Dream")
 			.keywords("free", "skin", "slave")
 			.keywords("color");
 		
@@ -79,7 +79,7 @@ public class TestCreatedBuilders {
 	@Test
 	public void scalar_enum() {
 		
-		PersonBuilder personBuilder =
+		PersonBuilder<?> personBuilder =
 		person()
 			.name("George Washington")
 			.gender(Gender.MALE);
@@ -101,7 +101,7 @@ public class TestCreatedBuilders {
 		
 		BuilderRepository repo = new BuilderRepository();
 		
-		PersonBuilder personBuilder = person()
+		PersonBuilder<?> personBuilder = person()
 				.storeTo(repo, 1)
 				.name("John Deere")
 				.children(
@@ -119,12 +119,12 @@ public class TestCreatedBuilders {
 	public void self_reference() {
 		BuilderRepository repo = new BuilderRepository();
 
-		PersonBuilder tom = person()
+		PersonBuilder<?> tom = person()
 				.storeTo(repo, 1)
 				.name("Tom Smith")
 				;
 		
-		PersonBuilder john = person()
+		PersonBuilder<?> john = person()
 				.storeTo(repo, 2)
 				.name("John Deere")
 				.children(
@@ -135,7 +135,7 @@ public class TestCreatedBuilders {
 		
 		tom.friends$restoreFrom(repo, 2);
 		
-		PersonBuilder sarah = person()
+		PersonBuilder<?> sarah = person()
 				.name("Sarah Lee")
 				.children$restoreFrom(repo, 3, 4);
 		
@@ -163,12 +163,12 @@ public class TestCreatedBuilders {
 	public void circular_reference() {
 		BuilderRepository repo = new BuilderRepository(true);
 
-		PersonBuilder tom = person()
+		PersonBuilder<?> tom = person()
 				.storeTo(repo, 1)
 				.name("Tom Smith")
 				.friends$restoreFrom(repo, 2);
 		
-		PersonBuilder john = person()
+		PersonBuilder<?> john = person()
 				.storeTo(repo, 2)
 				.name("John Deere")
 				.friends$restoreFrom(repo, 1);
@@ -186,7 +186,7 @@ public class TestCreatedBuilders {
 		
 		BuilderRepository repo = new BuilderRepository();
 	
-		PersonBuilder washington = person()
+		PersonBuilder<?> washington = person()
 			.storeTo(repo, 1)
 			.name("George Washington")
 			.speeches(
@@ -211,13 +211,13 @@ public class TestCreatedBuilders {
 	public void one_to_many_circular_reference() {
 		BuilderRepository repo = new BuilderRepository(true);
 
-		SpeechBuilder s1 = speech().name("First Inaugural Address").owner$restoreFrom(repo, 1);
-		SpeechBuilder s2 = speech().name("Thanksgiving Proclamation").owner$restoreFrom(repo, 1);
-		SpeechBuilder s3 = speech().name("First Annual Message to Congress").owner$restoreFrom(repo, 1);
-		SpeechBuilder s4 = speech().name("Second Annual Message to Congress").owner$restoreFrom(repo, 1);
-		SpeechBuilder s5 = speech().name("Proclamation Against Crimes Against the Cherokee Nations").owner$restoreFrom(repo, 1);
+		SpeechBuilder<?> s1 = speech().name("First Inaugural Address").owner$restoreFrom(repo, 1);
+		SpeechBuilder<?> s2 = speech().name("Thanksgiving Proclamation").owner$restoreFrom(repo, 1);
+		SpeechBuilder<?> s3 = speech().name("First Annual Message to Congress").owner$restoreFrom(repo, 1);
+		SpeechBuilder<?> s4 = speech().name("Second Annual Message to Congress").owner$restoreFrom(repo, 1);
+		SpeechBuilder<?> s5 = speech().name("Proclamation Against Crimes Against the Cherokee Nations").owner$restoreFrom(repo, 1);
 		
-		PersonBuilder washington = person().storeTo(repo, 1)
+		PersonBuilder<?> washington = person().storeTo(repo, 1)
 				.speeches(s1, s2, s3, s4, s5);
 		
 		assertTrue(washington == s1.getOwner());
@@ -251,18 +251,18 @@ public class TestCreatedBuilders {
 	public void many_to_many() {
 		
 		BuilderRepository repo = new BuilderRepository();
-		HobbyBuilder h1 = hobby().name("fishing").storeTo(repo, 1);
-		HobbyBuilder h2 = hobby().name("swimming").storeTo(repo, 2);
-		HobbyBuilder h3 = hobby().name("dancing").storeTo(repo, 3);
+		HobbyBuilder<?> h1 = hobby().name("fishing").storeTo(repo, 1);
+		HobbyBuilder<?> h2 = hobby().name("swimming").storeTo(repo, 2);
+		HobbyBuilder<?> h3 = hobby().name("dancing").storeTo(repo, 3);
 		
-		PersonBuilder p1 = person().name("A")
+		PersonBuilder<?> p1 = person().name("A")
 			.storeTo(repo, 11)
 			.hobbies(
 				hobby$restoreFrom(repo, 1),
 				hobby$restoreFrom(repo, 2)
 			);
 		
-		PersonBuilder p2 = person().name("B")
+		PersonBuilder<?> p2 = person().name("B")
 			.storeTo(repo, 12)
 			.hobbies(
 				hobby$restoreFrom(repo, 2),
@@ -308,17 +308,17 @@ public class TestCreatedBuilders {
 		
 		BuilderRepository repo = new BuilderRepository(true);
 		
-		HobbyBuilder h1 = hobby().name("fishing").storeTo(repo, 1)
+		HobbyBuilder<?> h1 = hobby().name("fishing").storeTo(repo, 1)
 				.people$restoreFrom(repo, 11);
-		HobbyBuilder h2 = hobby().name("swimming").storeTo(repo, 2)
+		HobbyBuilder<?> h2 = hobby().name("swimming").storeTo(repo, 2)
 				.people$restoreFrom(repo, 11, 12);
-		HobbyBuilder h3 = hobby().name("dancing").storeTo(repo, 3)
+		HobbyBuilder<?> h3 = hobby().name("dancing").storeTo(repo, 3)
 				.people$restoreFrom(repo, 12);
-		PersonBuilder p1 = person().name("A")
+		PersonBuilder<?> p1 = person().name("A")
 			.storeTo(repo, 11)
 			.hobbies$restoreFrom(repo, 1, 2);
 		
-		PersonBuilder p2 = person().name("B")
+		PersonBuilder<?> p2 = person().name("B")
 			.storeTo(repo, 12)
 			.hobbies$restoreFrom(repo, 2, 3);
 	
@@ -353,7 +353,7 @@ public class TestCreatedBuilders {
 	@Test
 	public void assign_mutable_to_builder() {
 
-		PersonBuilder personBuilder = student()
+		PersonBuilder<?> personBuilder = student()
 				.name("John Deere")
 				.age(30)
 				.children(
@@ -365,7 +365,7 @@ public class TestCreatedBuilders {
 		
 		assertTrue(person instanceof Student);
 		
-		PersonBuilder personBuilder2 = person()
+		PersonBuilder<?> personBuilder2 = person()
 				.parent$wrap(person);
 		
 		Person person2 = personBuilder2.toPerson();

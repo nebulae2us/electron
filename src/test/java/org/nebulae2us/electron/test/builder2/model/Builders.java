@@ -12,7 +12,7 @@ import org.nebulae2us.electron.test.builder2.model.SubSampleBuilder;
 
 public class Builders {
 
-	public static final ConverterOption CONVERTER_OPTIONS = new ConverterOption(
+	public static final DestinationClassResolver DESTINATION_CLASS_RESOLVER = new DestinationClassResolverByMap(
 			new MapBuilder<Class<?>, Class<?>> ()
 				.put(Blank.class, BlankBuilder.class)
 				.put(Sample.class, SampleBuilder.class)
@@ -21,42 +21,42 @@ public class Builders {
 			);
 
 
-    public static BlankBuilder blank() {
-        return new BlankBuilder(CONVERTER_OPTIONS);
+    public static BlankBuilder<?> blank() {
+        return new BlankBuilder<Object>();
     }
 
-    public static BlankBuilder blank$restoreFrom(BuilderRepository repo, int builderId) {
-        return (BlankBuilder)repo.get(builderId);
+    public static BlankBuilder<?> blank$restoreFrom(BuilderRepository repo, int builderId) {
+        return (BlankBuilder<?>)repo.get(builderId);
     }
 
-    public static BlankBuilder blank$copyFrom(Blank blank) {
-    	BlankBuilder result = new Converter(CONVERTER_OPTIONS, false).convert(blank).to(BlankBuilder.class);
+    public static BlankBuilder<?> blank$copyFrom(Blank blank) {
+    	BlankBuilder<?> result = new Converter(DESTINATION_CLASS_RESOLVER, false).convert(blank).to(BlankBuilder.class);
     	return result;
     }
 
-    public static SampleBuilder sample() {
-        return new SampleBuilder(CONVERTER_OPTIONS);
+    public static SampleBuilder<?> sample() {
+        return new SampleBuilder<Object>();
     }
 
-    public static SampleBuilder sample$restoreFrom(BuilderRepository repo, int builderId) {
-        return (SampleBuilder)repo.get(builderId);
+    public static SampleBuilder<?> sample$restoreFrom(BuilderRepository repo, int builderId) {
+        return (SampleBuilder<?>)repo.get(builderId);
     }
 
-    public static SampleBuilder sample$copyFrom(Sample sample) {
-    	SampleBuilder result = new Converter(CONVERTER_OPTIONS, false).convert(sample).to(SampleBuilder.class);
+    public static SampleBuilder<?> sample$copyFrom(Sample sample) {
+    	SampleBuilder<?> result = new Converter(DESTINATION_CLASS_RESOLVER, false).convert(sample).to(SampleBuilder.class);
     	return result;
     }
 
-    public static SubSampleBuilder subSample() {
-        return new SubSampleBuilder(CONVERTER_OPTIONS);
+    public static SubSampleBuilder<?> subSample() {
+        return new SubSampleBuilder<Object>();
     }
 
-    public static SubSampleBuilder subSample$restoreFrom(BuilderRepository repo, int builderId) {
-        return (SubSampleBuilder)repo.get(builderId);
+    public static SubSampleBuilder<?> subSample$restoreFrom(BuilderRepository repo, int builderId) {
+        return (SubSampleBuilder<?>)repo.get(builderId);
     }
 
-    public static SubSampleBuilder subSample$copyFrom(SubSample subSample) {
-    	SubSampleBuilder result = new Converter(CONVERTER_OPTIONS, false).convert(subSample).to(SubSampleBuilder.class);
+    public static SubSampleBuilder<?> subSample$copyFrom(SubSample subSample) {
+    	SubSampleBuilder<?> result = new Converter(DESTINATION_CLASS_RESOLVER, false).convert(subSample).to(SubSampleBuilder.class);
     	return result;
     }
 }

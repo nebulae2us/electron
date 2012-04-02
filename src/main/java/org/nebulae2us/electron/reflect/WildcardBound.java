@@ -13,30 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.nebulae2us.electron.test.builder2.model;
-
-import java.io.File;
-
-import org.nebulae2us.electron.BuilderGenerator;
+package org.nebulae2us.electron.reflect;
 
 /**
  * @author Trung Phan
  *
  */
-public class GenerateBuilders {
+public enum WildcardBound {
 
-	public static void main(String ... arguments) {
-		
-		new BuilderGenerator()
-			.baseFolder(new File("src/test/java"))
-			.buildersClassName("org.nebulae2us.electron.test.builder2.model.Builders")
-			.builderSuffix("Builder")
-			.generate(
-					Blank.class,
-					Sample.class,
-					SubSample.class
-					);
-		
-	}
+	NO_WILDCARD,
+	LOWER,
+	UPPER
 	
 }

@@ -5,28 +5,28 @@ import org.nebulae2us.electron.*;
 import org.nebulae2us.electron.util.*;
 
 @Builder(destination=Hobby.class)
-public class HobbyBuilder<P> implements Wrappable<Hobby> {
+public class HobbyBuilderSpec<P> implements Wrappable<Hobby> {
 
 	protected final Hobby $$$wrapped;
 
 	protected final P $$$parentBuilder;
 	
-	public HobbyBuilder() {
+	public HobbyBuilderSpec() {
 		this.$$$wrapped = null;
 		this.$$$parentBuilder = null;
 	}
 	
-	public HobbyBuilder(P parentBuilder) {
+	public HobbyBuilderSpec(P parentBuilder) {
 		this.$$$wrapped = null;
 		this.$$$parentBuilder = parentBuilder;
 	}
 
-	protected HobbyBuilder(Hobby wrapped) {
+	protected HobbyBuilderSpec(Hobby wrapped) {
 		this.$$$wrapped = wrapped;
 		this.$$$parentBuilder = null;
 	}
 	
-    public HobbyBuilder<P> storeTo(BuilderRepository repo, Object builderId) {
+    public HobbyBuilderSpec<P> storeTo(BuilderRepository repo, Object builderId) {
     	repo.put(builderId, this);
     	return this;
     }
@@ -60,49 +60,49 @@ public class HobbyBuilder<P> implements Wrappable<Hobby> {
 		this.name = name;
 	}
 
-	public HobbyBuilder<P> name(String name) {
+	public HobbyBuilderSpec<P> name(String name) {
 		verifyMutable();
 		this.name = name;
 		return this;
 	}
 
-	private List<PersonBuilder<?>> people;
+	private List<PersonBuilderSpec<?>> people;
 	
-	public List<PersonBuilder<?>> getPeople() {
+	public List<PersonBuilderSpec<?>> getPeople() {
 		return people;
 	}
 
-	public void setPeople(List<PersonBuilder<?>> people) {
+	public void setPeople(List<PersonBuilderSpec<?>> people) {
 		verifyMutable();
 		this.people = people;
 	}
 
-	public HobbyBuilder<P> people(PersonBuilder<?> ... people) {
+	public HobbyBuilderSpec<P> people(PersonBuilderSpec<?> ... people) {
 		verifyMutable();
-		return people(new ListBuilder<PersonBuilder<?>>().add(people).toList());
+		return people(new ListBuilder<PersonBuilderSpec<?>>().add(people).toList());
 	}
 	
-	public HobbyBuilder<P> people(Collection<PersonBuilder<?>> people) {
+	public HobbyBuilderSpec<P> people(Collection<PersonBuilderSpec<?>> people) {
 		verifyMutable();
 		if (this.people == null) {
-			this.people = new ArrayList<PersonBuilder<?>>();
+			this.people = new ArrayList<PersonBuilderSpec<?>>();
 		}
 		if (people != null) {
-			for (PersonBuilder<?> e : people) {
+			for (PersonBuilderSpec<?> e : people) {
 				this.people.add(e);
 			}
 		}
 		return this;
 	}
 
-	public PersonBuilder<HobbyBuilder<P>> people$one() {
+	public PersonBuilderSpec<HobbyBuilderSpec<P>> people$one() {
 		verifyMutable();
 		if (this.people == null) {
-			this.people = new ArrayList<PersonBuilder<?>>();
+			this.people = new ArrayList<PersonBuilderSpec<?>>();
 		}
 		
-		PersonBuilder<HobbyBuilder<P>> result =
-				new PersonBuilder<HobbyBuilder<P>>(this);
+		PersonBuilderSpec<HobbyBuilderSpec<P>> result =
+				new PersonBuilderSpec<HobbyBuilderSpec<P>>(this);
 		
 		this.people.add(result);
 		
@@ -111,53 +111,53 @@ public class HobbyBuilder<P> implements Wrappable<Hobby> {
 
 	public class People$$$builder {
 		
-		public PersonBuilder<People$$$builder> blank$begin() {
-			PersonBuilder<People$$$builder> result = new PersonBuilder<People$$$builder>(this);
-			HobbyBuilder.this.people.add(result);
+		public PersonBuilderSpec<People$$$builder> blank$begin() {
+			PersonBuilderSpec<People$$$builder> result = new PersonBuilderSpec<People$$$builder>(this);
+			HobbyBuilderSpec.this.people.add(result);
 			return result;
 		}
 		
-		public HobbyBuilder<P> end() {
-			return HobbyBuilder.this;
+		public HobbyBuilderSpec<P> end() {
+			return HobbyBuilderSpec.this;
 		}
 	}
 	
 	public People$$$builder people$list() {
 		verifyMutable();
 		if (this.people == null) {
-			this.people = new ArrayList<PersonBuilder<?>>();
+			this.people = new ArrayList<PersonBuilderSpec<?>>();
 		}
 		return new People$$$builder();
 	}
 
-    public HobbyBuilder<P> people$wrap(Person ... people) {
+    public HobbyBuilderSpec<P> people$wrap(Person ... people) {
     	return people$wrap(new ListBuilder<Person>().add(people).toList());
     }
 
-    public HobbyBuilder<P> people$wrap(Collection<Person> people) {
+    public HobbyBuilderSpec<P> people$wrap(Collection<Person> people) {
 		verifyMutable();
 
 		if (this.people == null) {
-			this.people = new ArrayList<PersonBuilder<?>>();
+			this.people = new ArrayList<PersonBuilderSpec<?>>();
 		}
 		if (people != null) {
 			for (Person e : people) {
-				PersonBuilder<?> wrapped = new WrapConverter(Builders.DESTINATION_CLASS_RESOLVER).convert(e).to(PersonBuilder.class);
+				PersonBuilderSpec<?> wrapped = new WrapConverter(BuilderSpecs.DESTINATION_CLASS_RESOLVER).convert(e).to(PersonBuilderSpec.class);
 				this.people.add(wrapped);
 			}
 		}
 		return this;
     }
     
-    public HobbyBuilder<P> people$restoreFrom(BuilderRepository repo, Object ... builderIds) {
+    public HobbyBuilderSpec<P> people$restoreFrom(BuilderRepository repo, Object ... builderIds) {
     	return people$restoreFrom(repo, new ListBuilder<Object>().add(builderIds).toList());
     }
 
-    public HobbyBuilder<P> people$restoreFrom(BuilderRepository repo, Collection<Object> builderIds) {
+    public HobbyBuilderSpec<P> people$restoreFrom(BuilderRepository repo, Collection<Object> builderIds) {
 		verifyMutable();
 
 		if (this.people == null) {
-			this.people = new ArrayList<PersonBuilder<?>>();
+			this.people = new ArrayList<PersonBuilderSpec<?>>();
 		}
 		if (builderIds != null) {
 	    	for (Object builderId : builderIds) {
@@ -166,7 +166,7 @@ public class HobbyBuilder<P> implements Wrappable<Hobby> {
 	            	if (repo.isSupportLazy()) {
 	            		repo.addObjectStoredListener(builderId, new Procedure() {
 	    					public void execute(Object... arguments) {
-	    						HobbyBuilder.this.people.add((PersonBuilder<?>)arguments[0]);
+	    						HobbyBuilderSpec.this.people.add((PersonBuilderSpec<?>)arguments[0]);
 	    					}
 	    				});
 	            	}
@@ -174,11 +174,11 @@ public class HobbyBuilder<P> implements Wrappable<Hobby> {
 	                    throw new IllegalStateException("Object does not exist with id " + builderId);
 	            	}
 	            }
-	            else if (!(restoredObject instanceof PersonBuilder)) {
-	            	throw new IllegalStateException("Type mismatch for id: " + builderId + ". " + PersonBuilder.class.getSimpleName() + " vs " + restoredObject.getClass().getSimpleName());
+	            else if (!(restoredObject instanceof PersonBuilderSpec)) {
+	            	throw new IllegalStateException("Type mismatch for id: " + builderId + ". " + PersonBuilderSpec.class.getSimpleName() + " vs " + restoredObject.getClass().getSimpleName());
 	            }
 	            else {
-	                this.people.add((PersonBuilder<?>)restoredObject);
+	                this.people.add((PersonBuilderSpec<?>)restoredObject);
 	            }
 	    	}
 		}

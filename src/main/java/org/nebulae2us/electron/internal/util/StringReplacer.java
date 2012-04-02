@@ -50,10 +50,20 @@ public class StringReplacer {
 		
 		String result = text;
 		for (Entry<String, String> entry : substitutes.entrySet()) {
-			result = result.replaceAll(entry.getKey(), encode(entry.getKey()));
+			String oldText = entry.getKey();
+			String newText = encode(oldText);
+			int idx = -1;
+			while ((idx = result.indexOf(oldText)) > -1) {
+				result = result.substring(0, idx) + newText + result.substring(idx + oldText.length(), result.length());
+			}
 		}
 		for (Entry<String, String> entry : substitutes.entrySet()) {
-			result = result.replaceAll(encode(entry.getKey()), entry.getValue());
+			String oldText = encode(entry.getKey());
+			String newText = entry.getValue();
+			int idx = -1;
+			while ((idx = result.indexOf(oldText)) > -1) {
+				result = result.substring(0, idx) + newText + result.substring(idx + oldText.length(), result.length());
+			}
 		}
 		return result;
 	}

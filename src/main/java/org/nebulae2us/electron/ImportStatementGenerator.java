@@ -19,7 +19,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import org.nebulae2us.electron.internal.util.ClassHolder;
+import org.nebulae2us.electron.reflect.TypeHolder;
 
 /**
  * @author Trung Phan
@@ -50,12 +50,12 @@ public class ImportStatementGenerator {
 		}
 	}
 	
-	public void importClasses(ClassHolder classHolder) {
+	public void importClasses(TypeHolder classHolder) {
 		if (classHolder != null) {
 			importClass(classHolder.getRawClass());
-			if (classHolder.getArgumentClasses() != null) {
-				for (ClassHolder ch : classHolder.getArgumentClasses()) {
-					importClasses(ch);
+			if (classHolder.getTypeParams() != null) {
+				for (TypeHolder ch : classHolder.getTypeParams()) {
+					importPackage(ch.getPackageName());
 				}
 			}
 		}

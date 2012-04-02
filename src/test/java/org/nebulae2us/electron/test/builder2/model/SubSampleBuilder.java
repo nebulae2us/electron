@@ -4,18 +4,19 @@ import java.util.*;
 import org.nebulae2us.electron.*;
 import org.nebulae2us.electron.util.*;
 
-public class SubSampleBuilder extends SampleBuilder {
+@Builder(destination=SubSample.class)
+public class SubSampleBuilder<P> extends SampleBuilder<P> {
 
 	public SubSampleBuilder() {
 		super();
 	}
 	
-	public SubSampleBuilder(ConverterOption option) {
-		super(option);
+	public SubSampleBuilder(P parentBuilder) {
+		super(parentBuilder);
 	}
 
-	public SubSampleBuilder(SubSample wrapped, ConverterOption option) {
-		super(wrapped, option);
+	protected SubSampleBuilder(SubSample wrapped) {
+		super(wrapped);
 	}
 
 	@Override
@@ -24,124 +25,118 @@ public class SubSampleBuilder extends SampleBuilder {
 	}
 
 	@Override
-    public SubSampleBuilder storeTo(BuilderRepository repo, Object builderId) {
+    public SubSampleBuilder<P> storeTo(BuilderRepository repo, Object builderId) {
     	repo.put(builderId, this);
     	return this;
     }
 	
     public SubSample toSubSample() {
-    	return new Converter(this.$$$option, true).convert(this).to(SubSample.class);
+    	return new Converter(new BuilderAnnotationDestinationClassResolver(), true).convert(this).to(SubSample.class);
     }
 
     @Override
     public SubSample toSample() {
-    	return new Converter(this.$$$option, true).convert(this).to(SubSample.class);
+    	return new Converter(new BuilderAnnotationDestinationClassResolver(), true).convert(this).to(SubSample.class);
     }
 
 	@Override
-	public SubSampleBuilder name(String name) {
-		return (SubSampleBuilder)super.name(name);
+	public SubSampleBuilder<P> name(String name) {
+		return (SubSampleBuilder<P>)super.name(name);
 	}
 
 	@Override
-	public SubSampleBuilder names(String ... names) {
-		return (SubSampleBuilder)super.names(names);
+	public SubSampleBuilder<P> names(String ... names) {
+		return (SubSampleBuilder<P>)super.names(names);
 	}
 
 	@Override
-	public SubSampleBuilder names(Collection<String> names) {
-		return (SubSampleBuilder)super.names(names);
+	public SubSampleBuilder<P> names(Collection<String> names) {
+		return (SubSampleBuilder<P>)super.names(names);
 	}
 
 	@Override
-	public SubSampleBuilder keywords(String ... keywords) {
-		return (SubSampleBuilder)super.keywords(keywords);
+	public SubSampleBuilder<P> keywords(String ... keywords) {
+		return (SubSampleBuilder<P>)super.keywords(keywords);
 	}
 
 	@Override
-	public SubSampleBuilder keywords(Collection<String> keywords) {
-		return (SubSampleBuilder)super.keywords(keywords);
+	public SubSampleBuilder<P> keywords(Collection<String> keywords) {
+		return (SubSampleBuilder<P>)super.keywords(keywords);
+	}
+
+	@Override
+	public SubSampleBuilder<P> keywordCounts(Map<String, Integer> keywordCounts) {
+		return (SubSampleBuilder<P>)super.keywordCounts(keywordCounts);
+	}
+
+	@Override
+	public SubSampleBuilder<P> myClass(Class<?> myClass) {
+		return (SubSampleBuilder<P>)super.myClass(myClass);
+	}
+
+	@Override
+	public SubSampleBuilder<P> otherClasses(Class<?> ... otherClasses) {
+		return (SubSampleBuilder<P>)super.otherClasses(otherClasses);
+	}
+
+	@Override
+	public SubSampleBuilder<P> otherClasses(Collection<Class<?>> otherClasses) {
+		return (SubSampleBuilder<P>)super.otherClasses(otherClasses);
+	}
+
+	@Override
+	public SubSampleBuilder<P> blank(BlankBuilder<?> blank) {
+		return (SubSampleBuilder<P>)super.blank(blank);
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public ChainedMapBuilder<? extends SubSampleBuilder, String, Integer> keywordCounts$begin() {
-		return (ChainedMapBuilder<? extends SubSampleBuilder, String, Integer>)super.keywordCounts$begin();
+	public BlankBuilder<? extends SubSampleBuilder<P>> blank$begin() {
+		return (BlankBuilder<? extends SubSampleBuilder<P>>)super.blank$begin();
 	}
 
 	@Override
-	public SubSampleBuilder keywordCounts(Map<String, Integer> keywordCounts) {
-		return (SubSampleBuilder)super.keywordCounts(keywordCounts);
-	}
-
-	@Override
-	public SubSampleBuilder myClass(Class<?> myClass) {
-		return (SubSampleBuilder)super.myClass(myClass);
-	}
-
-	@Override
-	public SubSampleBuilder otherClasses(Class<?> ... otherClasses) {
-		return (SubSampleBuilder)super.otherClasses(otherClasses);
-	}
-
-	@Override
-	public SubSampleBuilder otherClasses(Collection<Class<?>> otherClasses) {
-		return (SubSampleBuilder)super.otherClasses(otherClasses);
-	}
-
-	@Override
-	public SubSampleBuilder blank(BlankBuilder blank) {
-		return (SubSampleBuilder)super.blank(blank);
-	}
-
-	@Override
-    public SubSampleBuilder blank$wrap(Blank blank) {
-		return (SubSampleBuilder)super.blank$wrap(blank);
+    public SubSampleBuilder<P> blank$wrap(Blank blank) {
+		return (SubSampleBuilder<P>)super.blank$wrap(blank);
     }
 
 	@Override
-    public SubSampleBuilder blank$restoreFrom(BuilderRepository repo, Object builderId) {
-		return (SubSampleBuilder)super.blank$restoreFrom(repo, builderId);
+    public SubSampleBuilder<P> blank$restoreFrom(BuilderRepository repo, Object builderId) {
+		return (SubSampleBuilder<P>)super.blank$restoreFrom(repo, builderId);
     }
 
 	@Override
-	public SubSampleBuilder blanks(BlankBuilder ... blanks) {
-		return (SubSampleBuilder)super.blanks(blanks);
+	public SubSampleBuilder<P> blanks(BlankBuilder<?> ... blanks) {
+		return (SubSampleBuilder<P>)super.blanks(blanks);
 	}
 
 	@Override
-	public SubSampleBuilder blanks(Collection<BlankBuilder> blanks) {
-		return (SubSampleBuilder)super.blanks(blanks);
+	public SubSampleBuilder<P> blanks(Collection<BlankBuilder<?>> blanks) {
+		return (SubSampleBuilder<P>)super.blanks(blanks);
 	}
 
 	@Override
-    public SubSampleBuilder blanks$wrap(Blank ... blanks) {
-		return (SubSampleBuilder)super.blanks$wrap(blanks);
+    public SubSampleBuilder<P> blanks$wrap(Blank ... blanks) {
+		return (SubSampleBuilder<P>)super.blanks$wrap(blanks);
     }
 
 	@Override
-    public SubSampleBuilder blanks$wrap(Collection<Blank> blanks) {
-		return (SubSampleBuilder)super.blanks$wrap(blanks);
+    public SubSampleBuilder<P> blanks$wrap(Collection<Blank> blanks) {
+		return (SubSampleBuilder<P>)super.blanks$wrap(blanks);
     }
 
 	@Override
-    public SubSampleBuilder blanks$restoreFrom(BuilderRepository repo, Object ... builderIds) {
-		return (SubSampleBuilder)super.blanks$restoreFrom(repo, builderIds);
+    public SubSampleBuilder<P> blanks$restoreFrom(BuilderRepository repo, Object ... builderIds) {
+		return (SubSampleBuilder<P>)super.blanks$restoreFrom(repo, builderIds);
     }
 
 	@Override
-    public SubSampleBuilder blanks$restoreFrom(BuilderRepository repo, Collection<Object> builderIds) {
-		return (SubSampleBuilder)super.blanks$restoreFrom(repo, builderIds);
+    public SubSampleBuilder<P> blanks$restoreFrom(BuilderRepository repo, Collection<Object> builderIds) {
+		return (SubSampleBuilder<P>)super.blanks$restoreFrom(repo, builderIds);
     }
 
-	@SuppressWarnings("unchecked")
 	@Override
-	public ChainedMapBuilder<? extends SubSampleBuilder, Class<BlankBuilder>, BlankBuilder> blanksMap$begin() {
-		return (ChainedMapBuilder<? extends SubSampleBuilder, Class<BlankBuilder>, BlankBuilder>)super.blanksMap$begin();
-	}
-
-	@Override
-	public SubSampleBuilder blanksMap(Map<Class<BlankBuilder>, BlankBuilder> blanksMap) {
-		return (SubSampleBuilder)super.blanksMap(blanksMap);
+	public SubSampleBuilder<P> blanksMap(Map<Class<BlankBuilder<?>>, BlankBuilder<?>> blanksMap) {
+		return (SubSampleBuilder<P>)super.blanksMap(blanksMap);
 	}
 }

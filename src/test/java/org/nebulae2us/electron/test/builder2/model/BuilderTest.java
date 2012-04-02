@@ -15,28 +15,12 @@
  */
 package org.nebulae2us.electron.test.builder2.model;
 
-import java.io.File;
-
-import org.nebulae2us.electron.BuilderGenerator;
-
 /**
  * @author Trung Phan
  *
  */
-public class GenerateBuilders {
+public class BuilderTest {
 
-	public static void main(String ... arguments) {
-		
-		new BuilderGenerator()
-			.baseFolder(new File("src/test/java"))
-			.buildersClassName("org.nebulae2us.electron.test.builder2.model.Builders")
-			.builderSuffix("Builder")
-			.generate(
-					Blank.class,
-					Sample.class,
-					SubSample.class
-					);
-		
-	}
+	
 	
 }
