@@ -160,6 +160,43 @@ public class SampleBuilder<P> implements Wrappable<Sample> {
 		return this;
 	}
 
+	public class KeywordCounts$builder<P1 extends SampleBuilder<P>> {
+		
+		private final P1 $$$parentBuilder;
+		
+		public class Value$builder {
+			private String key;
+			private Value$builder(String key) {
+				this.key = key;
+			}
+			public KeywordCounts$builder<P1> value(Integer value) {
+				SampleBuilder.this.keywordCounts.put(key, value);
+				return KeywordCounts$builder.this;
+			}
+		}
+		
+		private KeywordCounts$builder(P1 parentBuilder) {
+			this.$$$parentBuilder = parentBuilder;
+		}
+		
+		public Value$builder key(String key) {
+			return new Value$builder(key);
+		}
+		
+		public P1 end() {
+			return this.$$$parentBuilder;
+		}
+	}
+	
+	public KeywordCounts$builder<? extends SampleBuilder<P>> keywordCounts$map() {
+		verifyMutable();
+
+		if (this.keywordCounts == null) {
+			this.keywordCounts = new HashMap<String, Integer>();
+		}
+		return new KeywordCounts$builder<SampleBuilder<P>>(this);
+	}	
+
 	private Map<String, Set<String>> keywordSynonyms;
 	
 	public Map<String, Set<String>> getKeywordSynonyms() {
@@ -425,4 +462,41 @@ public class SampleBuilder<P> implements Wrappable<Sample> {
 		}
 		return this;
 	}
+
+	public class BlanksMap$builder<P1 extends SampleBuilder<P>> {
+		
+		private final P1 $$$parentBuilder;
+		
+		public class Value$builder {
+			private Class<BlankBuilder<?>> key;
+			private Value$builder(Class<BlankBuilder<?>> key) {
+				this.key = key;
+			}
+			public BlanksMap$builder<P1> value(BlankBuilder<?> value) {
+				SampleBuilder.this.blanksMap.put(key, value);
+				return BlanksMap$builder.this;
+			}
+		}
+		
+		private BlanksMap$builder(P1 parentBuilder) {
+			this.$$$parentBuilder = parentBuilder;
+		}
+		
+		public Value$builder key(Class<BlankBuilder<?>> key) {
+			return new Value$builder(key);
+		}
+		
+		public P1 end() {
+			return this.$$$parentBuilder;
+		}
+	}
+	
+	public BlanksMap$builder<? extends SampleBuilder<P>> blanksMap$map() {
+		verifyMutable();
+
+		if (this.blanksMap == null) {
+			this.blanksMap = new TreeMap<Class<BlankBuilder<?>>, BlankBuilder<?>>();
+		}
+		return new BlanksMap$builder<SampleBuilder<P>>(this);
+	}	
 }

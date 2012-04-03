@@ -50,6 +50,8 @@ public class Sample {
 	
 	private final NavigableMap<Class<Blank>, Blank> blanksMap;
 	
+	private final Map<Blank, Blank> blanks2blanks;
+	
 	public Sample(Mirror mirror) {
 		mirror.bind(this);
 		
@@ -70,6 +72,8 @@ public class Sample {
 				(Map<Class<Blank>, Blank>)(Object)mirror.toMapOf(Class.class, Blank.class, "blanksMap"),
 				new NaturalComparator<Class<Blank>>()
 				);
+		
+		this.blanks2blanks = (Map<Blank, Blank>)mirror.toObject("blanks2blanks");
 	}
 	
 
@@ -119,6 +123,10 @@ public class Sample {
 
 	public NavigableMap<Class<Blank>, Blank> getBlanksMap() {
 		return blanksMap;
+	}
+
+	public Map<Blank, Blank> getBlanks2blanks() {
+		return blanks2blanks;
 	}
 
 	

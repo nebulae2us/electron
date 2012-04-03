@@ -327,12 +327,55 @@
 		}
 		return this;
 	}
+
+	public class KeywordCounts$builder<P1 extends SampleBuilderSpec<P>> {
+		
+		private final P1 $$$parentBuilder;
+		
+		public class Value$builder {
+			private String key;
+			private Value$builder(String key) {
+				this.key = key;
+			}
+			public KeywordCounts$builder<P1> value(Integer value) {
+				SampleBuilderSpec.this.keywordCounts.put(key, value);
+				return KeywordCounts$builder.this;
+			}
+		}
+		
+		private KeywordCounts$builder(P1 parentBuilder) {
+			this.$$$parentBuilder = parentBuilder;
+		}
+		
+		public Value$builder key(String key) {
+			return new Value$builder(key);
+		}
+		
+		public P1 end() {
+			return this.$$$parentBuilder;
+		}
+	}
+	
+	public KeywordCounts$builder<? extends SampleBuilderSpec<P>> keywordCounts$map() {
+		verifyMutable();
+
+		if (this.keywordCounts == null) {
+			this.keywordCounts = new HashMap<String, Integer>();
+		}
+		return new KeywordCounts$builder<SampleBuilderSpec<P>>(this);
+	}	
 ]]></entry>
 
 <entry key="subclass_map_type_field"><![CDATA[
 	@Override
 	public SubSampleBuilderSpec<P> keywordCounts(Map<String, Integer> keywordCounts) {
 		return (SubSampleBuilderSpec<P>)super.keywordCounts(keywordCounts);
+	}
+	
+	@SuppressWarnings("unchecked")
+	@Override
+	public KeywordCounts$builder<? extends SubSampleBuilderSpec<P>> keywordCounts$map() {
+		return (KeywordCounts$builder<? extends SubSampleBuilderSpec<P>>)super.keywordCounts$map();
 	}
 ]]></entry>
 

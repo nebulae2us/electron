@@ -23,7 +23,9 @@ import java.util.Map;
 import java.util.Set;
 
 import org.junit.Test;
+import org.nebulae2us.electron.util.ImmutableSet;
 import org.nebulae2us.electron.util.MapBuilder;
+import org.nebulae2us.electron.util.SetBuilder;
 
 import static org.junit.Assert.*;
 import static org.nebulae2us.electron.test.builder2.model.BuilderSpecs.*;
@@ -43,6 +45,81 @@ public class SpecTest {
 		
 		assertEquals("Name 1", builder.getName());
 		
+	}
+	
+	@Test
+	public void sample_names() {
+		SampleBuilderSpec<?> sampleBuilder = sample()
+			.names("a", "b", "c")
+			.names(Arrays.asList("x", "y"));
+		
+		assertTrue(sampleBuilder.getNames() instanceof List);
+		assertEquals(Arrays.asList("a", "b", "c", "x", "y"), sampleBuilder.getNames());
+	}
+	
+	@Test
+	public void sample_keywords() {
+		SampleBuilderSpec<?> sampleBuilder = sample()
+			.keywords("a", "b", "c")
+			.keywords(Arrays.asList("x", "y"));
+
+		assertTrue(sampleBuilder.getKeywords() instanceof Set);
+		assertEquals(new SetBuilder<String>().add("a", "b", "c", "x", "y").toSet(), sampleBuilder.getKeywords());
+	}
+	
+	@Test
+	public void sample_keywordCounts() {
+		SampleBuilderSpec<?> sampleBuilder = sample()
+				.keywordCounts$map()
+					.key("a").value(1)
+					.key("b").value(2)
+					.key("c").value(3)
+				.end();
+		
+		Map<String, Integer> keywordCounts = sampleBuilder.getKeywordCounts();
+		assertEquals(3, keywordCounts.size());
+		assertEquals(new MapBuilder<String, Integer>()
+				.put("a", 1).put("b", 2).put("c", 3)
+				.toMap(), sampleBuilder.getKeywordCounts());
+	}
+
+	@Test
+	public void subSample_keywordCounts() {
+		SubSampleBuilderSpec<?> subSampleBuilder = subSample()
+				.keywordCounts$map()
+					.key("a").value(1)
+					.key("b").value(2)
+					.key("c").value(3)
+				.end();
+		
+		Map<String, Integer> keywordCounts = subSampleBuilder.getKeywordCounts();
+		assertEquals(3, keywordCounts.size());
+		assertEquals(new MapBuilder<String, Integer>()
+				.put("a", 1).put("b", 2).put("c", 3)
+				.toMap(), subSampleBuilder.getKeywordCounts());
+	}
+	
+	@Test
+	public void sample_blanksMap() {
+		SampleBuilderSpec<?> sampleBuilder = sample()
+				.blanksMap$map()
+					.key( BlankBuilderSpec.class ).value(blank())
+				.end();
+		
+		assertEquals(1, sampleBuilder.getBlanksMap().size());
+	}
+	
+	@Test
+	public void subSample_blanksMap() {
+		SubSampleBuilderSpec<?> subSampleBuilder = subSample()
+				.blanksMap$map()
+					.key( BlankBuilderSpec.class ).value(blank())
+//					.key(BlankBuilderSpec.class).value$begin()
+//						.name("Blank 2")
+//					.end()
+				.end();
+		
+		assertEquals(1, subSampleBuilder.getBlanksMap().size());
 	}
 	
 	@Test

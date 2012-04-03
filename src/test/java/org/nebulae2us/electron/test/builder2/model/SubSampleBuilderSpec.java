@@ -68,19 +68,25 @@ public class SubSampleBuilderSpec<P> extends SampleBuilderSpec<P> {
 	public SubSampleBuilderSpec<P> keywordCounts(Map<String, Integer> keywordCounts) {
 		return (SubSampleBuilderSpec<P>)super.keywordCounts(keywordCounts);
 	}
+	
+	@SuppressWarnings("unchecked")
+	@Override
+	public KeywordCounts$builder<? extends SubSampleBuilderSpec<P>> keywordCounts$map() {
+		return (KeywordCounts$builder<? extends SubSampleBuilderSpec<P>>)super.keywordCounts$map();
+	}
 
 	@Override
-	public SubSampleBuilderSpec<P> myClass(Class<?> myClass) {
+	public SubSampleBuilderSpec<P> myClass(Class<Object> myClass) {
 		return (SubSampleBuilderSpec<P>)super.myClass(myClass);
 	}
 
 	@Override
-	public SubSampleBuilderSpec<P> otherClasses(Class<?> ... otherClasses) {
+	public SubSampleBuilderSpec<P> otherClasses(Class<Object> ... otherClasses) {
 		return (SubSampleBuilderSpec<P>)super.otherClasses(otherClasses);
 	}
 
 	@Override
-	public SubSampleBuilderSpec<P> otherClasses(Collection<Class<?>> otherClasses) {
+	public SubSampleBuilderSpec<P> otherClasses(Collection<Class<Object>> otherClasses) {
 		return (SubSampleBuilderSpec<P>)super.otherClasses(otherClasses);
 	}
 
@@ -136,7 +142,24 @@ public class SubSampleBuilderSpec<P> extends SampleBuilderSpec<P> {
     }
 
 	@Override
-	public SubSampleBuilderSpec<P> blanksMap(Map<Class<BlankBuilderSpec<?>>, BlankBuilderSpec<?>> blanksMap) {
+	public SubSampleBuilderSpec<P> blanksMap(Map<Class<BlankBuilderSpec>, BlankBuilderSpec<?>> blanksMap) {
 		return (SubSampleBuilderSpec<P>)super.blanksMap(blanksMap);
+	}
+	
+	@SuppressWarnings("unchecked")
+	@Override
+	public BlanksMap$builder<? extends SubSampleBuilderSpec<P>> blanksMap$map() {
+		return (BlanksMap$builder<? extends SubSampleBuilderSpec<P>>)super.blanksMap$map();
+	}
+
+	@Override
+	public SubSampleBuilderSpec<P> blanks2blanks(Map<BlankBuilderSpec<?>, BlankBuilderSpec<?>> blanks2blanks) {
+		return (SubSampleBuilderSpec<P>)super.blanks2blanks(blanks2blanks);
+	}
+	
+	@SuppressWarnings("unchecked")
+	@Override
+	public Blanks2blanks$builder<? extends SubSampleBuilderSpec<P>> blanks2blanks$map() {
+		return (Blanks2blanks$builder<? extends SubSampleBuilderSpec<P>>)super.blanks2blanks$map();
 	}
 }

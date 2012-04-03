@@ -110,7 +110,11 @@ public class TypeHolder {
 		else{
 			return SINGLE;
 		}
-	}	
+	}
+	
+	public TypeHolder eraseParams() {
+		return new TypeHolder(name, packageName, rawClass, WildcardBound.NO_WILDCARD, null);
+	}
 	
 	public TypeHolder toBuilderTypeHolder(String builderSuffix, String parentBuilderVariableName, List<Class<?>> classesToBuild) {
 		
@@ -123,6 +127,16 @@ public class TypeHolder {
 		if (classesToBuild.contains(rawClass)) {
 			newBuilderTypeParams.add(0, new TypeHolder(parentBuilderVariableName, "", null, WildcardBound.NO_WILDCARD, null));
 			return new TypeHolder(name + builderSuffix, packageName, null, wildcardBound, newBuilderTypeParams);
+		}
+		
+		/**
+		 * Class is a special class where Class<? extends |x|> is the result of x.getClass(). |x| is the erasure of all static types
+		 */
+		if (rawClass == Class.class) {
+			for (int i = 0; i < newBuilderTypeParams.size(); i++) {
+				TypeHolder newBuilderTypeParam = newBuilderTypeParams.get(i);
+				newBuilderTypeParams.set(i, newBuilderTypeParam.eraseParams());
+			}
 		}
 		
 		return new TypeHolder(name, packageName, rawClass, wildcardBound, newBuilderTypeParams);

@@ -98,8 +98,8 @@ public class BuilderGenerator {
 		String destClassDeclaration = destClassHolder.toString();
 		String destClassName = destClassHolder.getName();
 		
-		Class<?> destSuperClass = getDestSuperClass(srcClass, classesToBuild);
-		ClassHolder destSuperClassHolder = ClassHolder.newInstance(destSuperClass).toBuilderClassHolder(this.builderSuffix, "P", classesToBuild);
+		Class<?> srcSuperClass = getSourceSuperClass(srcClass, classesToBuild);
+		ClassHolder destSuperClassHolder = ClassHolder.newInstance(srcSuperClass).toBuilderClassHolder(this.builderSuffix, "P", classesToBuild);
 		String destSuperClassDeclaration = destSuperClassHolder.toString();
 		
 		StringBuilder result = new StringBuilder();
@@ -110,13 +110,13 @@ public class BuilderGenerator {
 		importGenerator.importPackage("org.nebulae2us.electron");
 		importGenerator.importPackage("org.nebulae2us.electron.util");
 		importGenerator.importPackage("java.util");
-		importGenerator.importClass(destSuperClass);
+		importGenerator.importClass(srcSuperClass);
 		importGenerator.importPackage(buildersPackageName);
 		
 		StringBuilder annotationDeclare = new StringBuilder("@Builder(destination=").append(srcClassName).append(".class)");
 		
 		StringBuilder classDeclare = new StringBuilder().append("public class ").append(destClassDeclaration);
-		if (destSuperClass != Object.class) {
+		if (srcSuperClass != Object.class) {
 			classDeclare.append(" extends ").append(destSuperClassDeclaration);
 		}
 		else {
@@ -125,7 +125,7 @@ public class BuilderGenerator {
 		
 		StringBuilder classContent = new StringBuilder();
 		
-		if (destSuperClass == Object.class) {
+		if (srcSuperClass == Object.class) {
 			classContent.append(new StringReplacer(getTemplates().getProperty("builder_constructors"))
 					.replace("SampleBuilderSpec", destClassName)
 					.replace("Sample", srcClassName)
@@ -154,7 +154,7 @@ public class BuilderGenerator {
 			TypeHolder typeHolder = TypeHolder.newInstance(field.getGenericType());
 			importGenerator.importClasses(typeHolder);
 			
-			boolean notDefined = field.getDeclaringClass() == srcClass || destSuperClass == Object.class || !classesToBuild.contains(field.getDeclaringClass());
+			boolean notDefined = field.getDeclaringClass() == srcClass || srcSuperClass == Object.class || !classesToBuild.contains(field.getDeclaringClass());
 			
 			if (notDefined) {
 				classContent.append(new StringReplacer(getTemplates().getProperty("builder_fieldname_getter_settter"))
@@ -269,6 +269,7 @@ public class BuilderGenerator {
 							.replace("String", typeHolder.getTypeParams().get(0).toBuilderTypeHolder(this.builderSuffix, "?", classesToBuild).toString())
 							.replace("Integer", typeHolder.getTypeParams().get(1).toBuilderTypeHolder(this.builderSuffix, "?", classesToBuild).toString())
 							.replace("keywordCounts", field.getName())
+							.replace("KeywordCounts", toUpperCamelCase(field.getName()))
 							.replace("SampleBuilderSpec<P>", destClassDeclaration)
 							.replace("SampleBuilderSpec", destClassName)
 							.replace("HashMap", getMutableCollectionType(typeHolder.getRawClass()).getSimpleName())
@@ -280,6 +281,7 @@ public class BuilderGenerator {
 							.replace("String", typeHolder.getTypeParams().get(0).toBuilderTypeHolder(this.builderSuffix, "?", classesToBuild).toString())
 							.replace("Integer", typeHolder.getTypeParams().get(1).toBuilderTypeHolder(this.builderSuffix, "?", classesToBuild).toString())
 							.replace("keywordCounts", field.getName())
+							.replace("KeywordCounts", toUpperCamelCase(field.getName()))
 							.replace("SubSampleBuilderSpec<P>", destClassDeclaration)
 							.replace("SubSampleBuilderSpec", destClassName)
 							.replace("Builders", this.buildersClassName)
@@ -325,7 +327,7 @@ public class BuilderGenerator {
 		}
 	}
 
-	private static Class<?> getDestSuperClass(Class<?> modelClass, List<Class<?>> modelClasses) {
+	private static Class<?> getSourceSuperClass(Class<?> modelClass, List<Class<?>> modelClasses) {
 		Class<?> c = modelClass;
 		while ((c = c.getSuperclass()) != null) {
 			if (modelClasses.contains(c)) {

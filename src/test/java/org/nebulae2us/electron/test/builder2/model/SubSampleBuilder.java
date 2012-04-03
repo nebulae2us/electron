@@ -68,6 +68,12 @@ public class SubSampleBuilder<P> extends SampleBuilder<P> {
 	public SubSampleBuilder<P> keywordCounts(Map<String, Integer> keywordCounts) {
 		return (SubSampleBuilder<P>)super.keywordCounts(keywordCounts);
 	}
+	
+	@SuppressWarnings("unchecked")
+	@Override
+	public KeywordCounts$builder<? extends SubSampleBuilder<P>> keywordCounts$map() {
+		return (KeywordCounts$builder<? extends SubSampleBuilder<P>>)super.keywordCounts$map();
+	}
 
 	@Override
 	public SubSampleBuilder<P> myClass(Class<?> myClass) {
@@ -138,5 +144,11 @@ public class SubSampleBuilder<P> extends SampleBuilder<P> {
 	@Override
 	public SubSampleBuilder<P> blanksMap(Map<Class<BlankBuilder<?>>, BlankBuilder<?>> blanksMap) {
 		return (SubSampleBuilder<P>)super.blanksMap(blanksMap);
+	}
+	
+	@SuppressWarnings("unchecked")
+	@Override
+	public BlanksMap$builder<? extends SubSampleBuilder<P>> blanksMap$map() {
+		return (BlanksMap$builder<? extends SubSampleBuilder<P>>)super.blanksMap$map();
 	}
 }
