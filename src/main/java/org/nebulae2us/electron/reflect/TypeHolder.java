@@ -113,7 +113,7 @@ public class TypeHolder {
 	}
 	
 	public TypeHolder eraseParams() {
-		return new TypeHolder(name, packageName, rawClass, WildcardBound.NO_WILDCARD, null);
+		return new TypeHolder(name, packageName, rawClass, wildcardBound, null);
 	}
 	
 	public TypeHolder toBuilderTypeHolder(String builderSuffix, String parentBuilderVariableName, List<Class<?>> classesToBuild) {
