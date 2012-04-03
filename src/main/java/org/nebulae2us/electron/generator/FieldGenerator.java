@@ -18,7 +18,9 @@ package org.nebulae2us.electron.generator;
 import java.lang.reflect.Field;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 
+import org.nebulae2us.electron.internal.util.StringReplacer;
 import org.nebulae2us.electron.reflect.ClassHolder;
 import org.nebulae2us.electron.reflect.TypeHolder;
 
@@ -26,40 +28,77 @@ import org.nebulae2us.electron.reflect.TypeHolder;
  * @author Trung Phan
  *
  */
-public class FieldGenerator implements Generator {
+public class FieldGenerator {
 	
-	protected final Map<String, String> templates;
+	protected final Properties templates;
 	
 	protected final Field field;
 	
 	protected final Class<?> srcClass;
 	
-	protected final ClassHolder destClassHolder;
+	protected ClassHolder destClassHolder;
+	
+	protected TypeHolder destTypeHolder;
 	
 	protected final List<Class<?>> classesToBuild;
+	
+	protected final String builderSuffix;
 	
 	protected final TypeHolder typeHolder;
 	
 	protected final boolean defined;
 	
-	public FieldGenerator(Map<String, String> templates, Field field, Class<?> srcClass, ClassHolder destClassHolder, List<Class<?>> classesToBuild, boolean defined) {
+	public FieldGenerator(Properties templates, Field field, Class<?> srcClass, String builderSuffix, List<Class<?>> classesToBuild, boolean defined) {
 		this.field = field;
 		this.srcClass = srcClass;
 		this.classesToBuild = classesToBuild;
+		this.builderSuffix = builderSuffix;
 		
 		this.typeHolder = TypeHolder.newInstance(field);
-		this.destClassHolder = destClassHolder;
+		this.destTypeHolder = typeHolder.toBuilderTypeHolder(builderSuffix, "?", classesToBuild);
+		
+		this.destClassHolder = ClassHolder.newInstance(srcClass).toBuilderClassHolder(builderSuffix, "P", classesToBuild);
 
 		this.defined = defined;
 		this.templates = templates;
 	}
+	
+	public FieldGenerator(FieldGenerator fieldGenerator) {
+		this.field = fieldGenerator.field;
+		this.srcClass = fieldGenerator.srcClass;
+		this.classesToBuild = fieldGenerator.classesToBuild;
+		this.builderSuffix = fieldGenerator.builderSuffix;
+		
+		this.typeHolder = fieldGenerator.typeHolder;
+		this.destTypeHolder = fieldGenerator.destTypeHolder;
+		this.destClassHolder = fieldGenerator.destClassHolder;
 
-	public String generate() {
-		return null;
+		this.defined = fieldGenerator.defined;
+		this.templates = fieldGenerator.templates;
 	}
 
-	public Generator recommendBestGenerator() {
-		return null;
+	protected String generateGetterSettter() {
+		return
+		new StringReplacer(templates.getProperty("builder_fieldname_getter_settter"))
+		.replace("String", destTypeHolder.toString())
+		.replace("name", field.getName())
+		.replace("Name", toUpperCamelCase(field.getName()))
+		.toString();
+		
+	}
+	
+	@Override
+	public String toString() {
+		return "";
 	}
 
+	
+	public static String toCamelCase(String camelCap) {
+		return Character.toLowerCase(camelCap.charAt(0))+ camelCap.substring(1);
+	}	
+	
+	public static String toUpperCamelCase(String camelCase) {
+		return Character.toUpperCase(camelCase.charAt(0))+ camelCase.substring(1);
+	}	
+	
 }
