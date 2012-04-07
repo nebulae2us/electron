@@ -33,6 +33,10 @@ public class Builders {
     	BlankBuilder<?> result = new Converter(DESTINATION_CLASS_RESOLVER, false).convert(blank).to(BlankBuilder.class);
     	return result;
     }
+    
+    public static BlankBuilder<?> wrap(Blank blank) {
+    	return new WrapConverter(DESTINATION_CLASS_RESOLVER).convert(blank).to(BlankBuilder.class);
+    }
 
     public static SampleBuilder<?> sample() {
         return new SampleBuilder<Object>();
@@ -46,6 +50,10 @@ public class Builders {
     	SampleBuilder<?> result = new Converter(DESTINATION_CLASS_RESOLVER, false).convert(sample).to(SampleBuilder.class);
     	return result;
     }
+    
+    public static SampleBuilder<?> wrap(Sample sample) {
+    	return new WrapConverter(DESTINATION_CLASS_RESOLVER).convert(sample).to(SampleBuilder.class);
+    }
 
     public static SubSampleBuilder<?> subSample() {
         return new SubSampleBuilder<Object>();
@@ -58,5 +66,9 @@ public class Builders {
     public static SubSampleBuilder<?> subSample$copyFrom(SubSample subSample) {
     	SubSampleBuilder<?> result = new Converter(DESTINATION_CLASS_RESOLVER, false).convert(subSample).to(SubSampleBuilder.class);
     	return result;
+    }
+    
+    public static SubSampleBuilder<?> wrap(SubSample subSample) {
+    	return new WrapConverter(DESTINATION_CLASS_RESOLVER).convert(subSample).to(SubSampleBuilder.class);
     }
 }

@@ -91,7 +91,11 @@ public class TypeHolder {
 	}
 	
 	public ClassHolderType getClassHolderType() {
-		if (Collection.class.isAssignableFrom(rawClass)) {
+		if (rawClass == null) {
+			// rawClass == null in the generic case such as T variable;
+			return SINGLE;
+		}
+		else if (Collection.class.isAssignableFrom(rawClass)) {
 			if (typeParams.size() > 0) {
 				ClassHolderType innerType = typeParams.get(0).getClassHolderType();
 				return innerType == COLLECTION ? MULTI_COLLECTION :

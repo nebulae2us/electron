@@ -83,6 +83,12 @@ public class SpeechBuilder<P> implements Wrappable<Speech> {
 		return this;
 	}
 
+	public PersonBuilder<? extends SpeechBuilder<P>> owner$begin() {
+		PersonBuilder<SpeechBuilder<P>> result = new PersonBuilder<SpeechBuilder<P>>(this);
+		this.owner = result;
+		return result;
+	}
+
     public SpeechBuilder<P> owner$wrap(Person owner) {
     	verifyMutable();
     	this.owner = new WrapConverter(Builders.DESTINATION_CLASS_RESOLVER).convert(owner).to(PersonBuilder.class);

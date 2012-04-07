@@ -94,6 +94,18 @@ public class ClassHolder {
 		
 	}
 	
+	public ClassHolder eraseTypeVariableUpperBounds() {
+		
+		List<TypeVariableHolder> newTypeVariableHolders = new ArrayList<TypeVariableHolder>();
+		for (TypeVariableHolder typeVariableHolder : this.typeVariables) {
+			newTypeVariableHolders.add(new TypeVariableHolder(typeVariableHolder.getName(), null));
+		}
+		
+		return new ClassHolder(name, packageName, rawClass, newTypeVariableHolders);
+	}
+	
+	
+	
 	public ClassHolder toBuilderClassHolder(String builderSuffix, String parentBuilderVariableName, List<Class<?>> classesToBuild) {
 		
 		List<TypeVariableHolder> newBuilderTypeVariables = new ArrayList<TypeVariableHolder>();

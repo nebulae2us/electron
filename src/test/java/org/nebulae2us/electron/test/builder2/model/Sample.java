@@ -117,7 +117,7 @@ public class Sample {
 		return blank;
 	}
 
-	public Collection<Blank> getBlanks() {
+	public Collection<? extends Blank> getBlanks() {
 		return blanks;
 	}
 

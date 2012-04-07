@@ -94,8 +94,11 @@ public class BuilderGenerator {
 
 		String srcClassName = srcClass.getSimpleName();
 		
-		ClassHolder destClassHolder = ClassHolder.newInstance(srcClass).toBuilderClassHolder(this.builderSuffix, "P", classesToBuild);
+		ClassHolder srcClassHolder = ClassHolder.newInstance(srcClass);
+		ClassHolder srcClassHolderNoUpperBound = srcClassHolder.eraseTypeVariableUpperBounds();
+		ClassHolder destClassHolder = srcClassHolder.toBuilderClassHolder(this.builderSuffix, "P", classesToBuild);
 		String destClassDeclaration = destClassHolder.toString();
+		String destClassReturnName = destClassHolder.eraseTypeVariableUpperBounds().toString();
 		String destClassName = destClassHolder.getName();
 		
 		Class<?> srcSuperClass = getSourceSuperClass(srcClass, classesToBuild);
@@ -120,22 +123,34 @@ public class BuilderGenerator {
 			classDeclare.append(" extends ").append(destSuperClassDeclaration);
 		}
 		else {
-			classDeclare.append(" implements Wrappable<").append(srcClassName).append(">");
+			classDeclare.append(" implements Wrappable<").append(srcClassHolderNoUpperBound.toString()).append(">");
 		}
 		
 		StringBuilder classContent = new StringBuilder();
 		
 		if (srcSuperClass == Object.class) {
 			classContent.append(new StringReplacer(getTemplates().getProperty("builder_constructors"))
+					.replace("SampleBuilderSpec<P>", destClassReturnName)
 					.replace("SampleBuilderSpec", destClassName)
+					.replace("Sample", srcClassHolderNoUpperBound.toString())
+					);
+			
+			classContent.append(new StringReplacer(getTemplates().getProperty("build_methods"))
+					.replace("Sample<T>", srcClassHolderNoUpperBound.toString())
 					.replace("Sample", srcClassName)
 					);
 		}
 		else {
 			classContent.append(new StringReplacer(getTemplates().getProperty("subclass_constructors"))
+					.replace("SubSampleBuilderSpec<P>", destClassReturnName)
 					.replace("SubSampleBuilderSpec", destClassName)
-					.replace("SubSample", srcClassName)
+					.replace("SubSample", srcClassHolderNoUpperBound.toString())
 					);
+
+			classContent.append(new StringReplacer(getTemplates().getProperty("build_methods"))
+			.replace("Sample<T>", srcClassHolderNoUpperBound.toString())
+			.replace("Sample", srcClassName)
+			);
 
 			Class<?> c = srcClass;
 			while ((c = c.getSuperclass()) != null) {
@@ -171,14 +186,14 @@ public class BuilderGenerator {
 							.replace("String", typeHolder.toBuilderTypeHolder(this.builderSuffix, "?", classesToBuild).toString())
 							.replace("name", field.getName())
 							.replace("Name", toUpperCamelCase(field.getName()))
-							.replace("SampleBuilderSpec<P>", destClassDeclaration)
+							.replace("SampleBuilderSpec<P>", destClassReturnName)
 							.replace("SampleBuilderSpec", destClassName)
 							.replace("Builders", this.buildersClassName)
 							);
 
 					if (classesToBuild.contains(typeHolder.getRawClass())) {
 						classContent.append(new StringReplacer(getTemplates().getProperty("builder_single_type_builder_field"))
-								.replace("SampleBuilderSpec<P>", destClassDeclaration)
+								.replace("SampleBuilderSpec<P>", destClassReturnName)
 								.replace("SampleBuilderSpec", destClassName)
 								.replace("blank", field.getName())
 								.replace("BlankBuilderSpec", typeHolder.getRawClass().getSimpleName() + this.builderSuffix)
@@ -192,14 +207,14 @@ public class BuilderGenerator {
 							.replace("String", typeHolder.toBuilderTypeHolder(this.builderSuffix, "?", classesToBuild).toString())
 							.replace("name", field.getName())
 							.replace("Name", toUpperCamelCase(field.getName()))
-							.replace("SubSampleBuilderSpec<P>", destClassDeclaration)
+							.replace("SubSampleBuilderSpec<P>", destClassReturnName)
 							.replace("SubSampleBuilderSpec", destClassName)
 							.replace("Builders", this.buildersClassName)
 							);
 
 					if (classesToBuild.contains(typeHolder.getRawClass())) {
 						classContent.append(new StringReplacer(getTemplates().getProperty("subclass_single_type_builder_field"))
-								.replace("SubSampleBuilderSpec<P>", destClassDeclaration)
+								.replace("SubSampleBuilderSpec<P>", destClassReturnName)
 								.replace("SubSampleBuilderSpec", destClassName)
 								.replace("blank", field.getName())
 								.replace("BlankBuilderSpec", typeHolder.getRawClass().getSimpleName() + this.builderSuffix)
@@ -216,7 +231,7 @@ public class BuilderGenerator {
 					classContent.append(new StringReplacer(getTemplates().getProperty("builder_collection_type_field"))
 							.replace("String", typeHolder.getTypeParams().get(0).toBuilderTypeHolder(this.builderSuffix, "?", classesToBuild).toString())
 							.replace("names", field.getName())
-							.replace("SampleBuilderSpec<P>", destClassDeclaration)
+							.replace("SampleBuilderSpec<P>", destClassReturnName)
 							.replace("SampleBuilderSpec", destClassName)
 							.replace("ArrayList", getMutableCollectionType(typeHolder.getRawClass()).getSimpleName())
 							.replace("Builders", this.buildersClassName)
@@ -226,7 +241,7 @@ public class BuilderGenerator {
 					Class<?> elementClass = typeHolder.getTypeParams().get(0).getRawClass();
 					if (classesToBuild.contains(elementClass)) {
 						classContent.append(new StringReplacer(getTemplates().getProperty("builder_collection_type_builder_field"))
-								.replace("SampleBuilderSpec<P>", destClassDeclaration)
+								.replace("SampleBuilderSpec<P>", destClassReturnName)
 								.replace("SampleBuilderSpec", destClassName)
 								.replace("blanks", field.getName())
 								.replace("BlankBuilderSpec", elementClass.getSimpleName() + this.builderSuffix)
@@ -241,7 +256,7 @@ public class BuilderGenerator {
 					classContent.append(new StringReplacer(getTemplates().getProperty("subclass_collection_type_field"))
 							.replace("String", typeHolder.getTypeParams().get(0).toBuilderTypeHolder(this.builderSuffix, "?", classesToBuild).toString())
 							.replace("names", field.getName())
-							.replace("SubSampleBuilderSpec<P>", destClassDeclaration)
+							.replace("SubSampleBuilderSpec<P>", destClassReturnName)
 							.replace("SubSampleBuilderSpec", destClassName)
 							.replace("Builders", this.buildersClassName)
 							);
@@ -250,7 +265,7 @@ public class BuilderGenerator {
 					Class<?> elementClass = typeHolder.getTypeParams().get(0).getRawClass();
 					if (classesToBuild.contains(elementClass)) {
 						classContent.append(new StringReplacer(getTemplates().getProperty("subclass_collection_type_builder_field"))
-								.replace("SubSampleBuilderSpec<P>", destClassDeclaration)
+								.replace("SubSampleBuilderSpec<P>", destClassReturnName)
 								.replace("SubSampleBuilderSpec", destClassName)
 								.replace("blanks", field.getName())
 								.replace("BlankBuilderSpec", elementClass.getSimpleName() + this.builderSuffix)
@@ -270,7 +285,7 @@ public class BuilderGenerator {
 							.replace("Integer", typeHolder.getTypeParams().get(1).toBuilderTypeHolder(this.builderSuffix, "?", classesToBuild).toString())
 							.replace("keywordCounts", field.getName())
 							.replace("KeywordCounts", toUpperCamelCase(field.getName()))
-							.replace("SampleBuilderSpec<P>", destClassDeclaration)
+							.replace("SampleBuilderSpec<P>", destClassReturnName)
 							.replace("SampleBuilderSpec", destClassName)
 							.replace("HashMap", getMutableCollectionType(typeHolder.getRawClass()).getSimpleName())
 							.replace("Builders", this.buildersClassName)
@@ -282,7 +297,7 @@ public class BuilderGenerator {
 							.replace("Integer", typeHolder.getTypeParams().get(1).toBuilderTypeHolder(this.builderSuffix, "?", classesToBuild).toString())
 							.replace("keywordCounts", field.getName())
 							.replace("KeywordCounts", toUpperCamelCase(field.getName()))
-							.replace("SubSampleBuilderSpec<P>", destClassDeclaration)
+							.replace("SubSampleBuilderSpec<P>", destClassReturnName)
 							.replace("SubSampleBuilderSpec", destClassName)
 							.replace("Builders", this.buildersClassName)
 							);
@@ -387,13 +402,16 @@ public class BuilderGenerator {
 				);
 		
 		for (Class<?> modelClass : this.classesToBuild) {
+			ClassHolder srcClassHolder = ClassHolder.newInstance(modelClass);
+			ClassHolder destClassHolder = srcClassHolder.toBuilderClassHolder(builderSuffix, "?", classesToBuild);
+			
 			String className = modelClass.getSimpleName();
 			String classCamelCase = toCamelCase(className);
-			String builderClassName = className + builderSuffix;
 			
 			builder.append(new StringReplacer(getTemplates().getProperty("builders_each_model_class"))
-					.replace("PersonBuilder", builderClassName)
-					.replace("Person", className)
+					.replace("PersonBuilder<?>", destClassHolder.eraseTypeVariableUpperBounds().toString())
+					.replace("PersonBuilder", destClassHolder.getName())
+					.replace("Person", srcClassHolder.eraseTypeVariableUpperBounds().toString())
 					.replace("person", classCamelCase));
 				
 		}

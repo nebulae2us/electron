@@ -438,25 +438,25 @@ public class SampleBuilder<P> implements Wrappable<Sample> {
         return this;
     }
 
-	private NavigableMap<Class<BlankBuilder<?>>, BlankBuilder<?>> blanksMap;
+	private NavigableMap<Class<BlankBuilder>, BlankBuilder<?>> blanksMap;
 	
-	public NavigableMap<Class<BlankBuilder<?>>, BlankBuilder<?>> getBlanksMap() {
+	public NavigableMap<Class<BlankBuilder>, BlankBuilder<?>> getBlanksMap() {
 		return blanksMap;
 	}
 
-	public void setBlanksMap(NavigableMap<Class<BlankBuilder<?>>, BlankBuilder<?>> blanksMap) {
+	public void setBlanksMap(NavigableMap<Class<BlankBuilder>, BlankBuilder<?>> blanksMap) {
 		verifyMutable();
 		this.blanksMap = blanksMap;
 	}
 
-	public SampleBuilder<P> blanksMap(Map<Class<BlankBuilder<?>>, BlankBuilder<?>> blanksMap) {
+	public SampleBuilder<P> blanksMap(Map<Class<BlankBuilder>, BlankBuilder<?>> blanksMap) {
 		verifyMutable();
 
 		if (this.blanksMap == null) {
-			this.blanksMap = new TreeMap<Class<BlankBuilder<?>>, BlankBuilder<?>>();
+			this.blanksMap = new TreeMap<Class<BlankBuilder>, BlankBuilder<?>>();
 		}
 		if (blanksMap != null) {
-			for (Map.Entry<Class<BlankBuilder<?>>, BlankBuilder<?>> e : blanksMap.entrySet()) {
+			for (Map.Entry<Class<BlankBuilder>, BlankBuilder<?>> e : blanksMap.entrySet()) {
 				this.blanksMap.put(e.getKey(), e.getValue());
 			}
 		}
@@ -468,8 +468,8 @@ public class SampleBuilder<P> implements Wrappable<Sample> {
 		private final P1 $$$parentBuilder;
 		
 		public class Value$builder {
-			private Class<BlankBuilder<?>> key;
-			private Value$builder(Class<BlankBuilder<?>> key) {
+			private Class<BlankBuilder> key;
+			private Value$builder(Class<BlankBuilder> key) {
 				this.key = key;
 			}
 			public BlanksMap$builder<P1> value(BlankBuilder<?> value) {
@@ -482,7 +482,7 @@ public class SampleBuilder<P> implements Wrappable<Sample> {
 			this.$$$parentBuilder = parentBuilder;
 		}
 		
-		public Value$builder key(Class<BlankBuilder<?>> key) {
+		public Value$builder key(Class<BlankBuilder> key) {
 			return new Value$builder(key);
 		}
 		
@@ -495,8 +495,70 @@ public class SampleBuilder<P> implements Wrappable<Sample> {
 		verifyMutable();
 
 		if (this.blanksMap == null) {
-			this.blanksMap = new TreeMap<Class<BlankBuilder<?>>, BlankBuilder<?>>();
+			this.blanksMap = new TreeMap<Class<BlankBuilder>, BlankBuilder<?>>();
 		}
 		return new BlanksMap$builder<SampleBuilder<P>>(this);
+	}	
+
+	private Map<BlankBuilder<?>, BlankBuilder<?>> blanks2blanks;
+	
+	public Map<BlankBuilder<?>, BlankBuilder<?>> getBlanks2blanks() {
+		return blanks2blanks;
+	}
+
+	public void setBlanks2blanks(Map<BlankBuilder<?>, BlankBuilder<?>> blanks2blanks) {
+		verifyMutable();
+		this.blanks2blanks = blanks2blanks;
+	}
+
+	public SampleBuilder<P> blanks2blanks(Map<BlankBuilder<?>, BlankBuilder<?>> blanks2blanks) {
+		verifyMutable();
+
+		if (this.blanks2blanks == null) {
+			this.blanks2blanks = new HashMap<BlankBuilder<?>, BlankBuilder<?>>();
+		}
+		if (blanks2blanks != null) {
+			for (Map.Entry<BlankBuilder<?>, BlankBuilder<?>> e : blanks2blanks.entrySet()) {
+				this.blanks2blanks.put(e.getKey(), e.getValue());
+			}
+		}
+		return this;
+	}
+
+	public class Blanks2blanks$builder<P1 extends SampleBuilder<P>> {
+		
+		private final P1 $$$parentBuilder;
+		
+		public class Value$builder {
+			private BlankBuilder<?> key;
+			private Value$builder(BlankBuilder<?> key) {
+				this.key = key;
+			}
+			public Blanks2blanks$builder<P1> value(BlankBuilder<?> value) {
+				SampleBuilder.this.blanks2blanks.put(key, value);
+				return Blanks2blanks$builder.this;
+			}
+		}
+		
+		private Blanks2blanks$builder(P1 parentBuilder) {
+			this.$$$parentBuilder = parentBuilder;
+		}
+		
+		public Value$builder key(BlankBuilder<?> key) {
+			return new Value$builder(key);
+		}
+		
+		public P1 end() {
+			return this.$$$parentBuilder;
+		}
+	}
+	
+	public Blanks2blanks$builder<? extends SampleBuilder<P>> blanks2blanks$map() {
+		verifyMutable();
+
+		if (this.blanks2blanks == null) {
+			this.blanks2blanks = new HashMap<BlankBuilder<?>, BlankBuilder<?>>();
+		}
+		return new Blanks2blanks$builder<SampleBuilder<P>>(this);
 	}	
 }

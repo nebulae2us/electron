@@ -29,7 +29,7 @@ public class SubSampleBuilder<P> extends SampleBuilder<P> {
     	repo.put(builderId, this);
     	return this;
     }
-	
+
     public SubSample toSubSample() {
     	return new Converter(new BuilderAnnotationDestinationClassResolver(), true).convert(this).to(SubSample.class);
     }
@@ -142,7 +142,7 @@ public class SubSampleBuilder<P> extends SampleBuilder<P> {
     }
 
 	@Override
-	public SubSampleBuilder<P> blanksMap(Map<Class<BlankBuilder<?>>, BlankBuilder<?>> blanksMap) {
+	public SubSampleBuilder<P> blanksMap(Map<Class<BlankBuilder>, BlankBuilder<?>> blanksMap) {
 		return (SubSampleBuilder<P>)super.blanksMap(blanksMap);
 	}
 	
@@ -150,5 +150,16 @@ public class SubSampleBuilder<P> extends SampleBuilder<P> {
 	@Override
 	public BlanksMap$builder<? extends SubSampleBuilder<P>> blanksMap$map() {
 		return (BlanksMap$builder<? extends SubSampleBuilder<P>>)super.blanksMap$map();
+	}
+
+	@Override
+	public SubSampleBuilder<P> blanks2blanks(Map<BlankBuilder<?>, BlankBuilder<?>> blanks2blanks) {
+		return (SubSampleBuilder<P>)super.blanks2blanks(blanks2blanks);
+	}
+	
+	@SuppressWarnings("unchecked")
+	@Override
+	public Blanks2blanks$builder<? extends SubSampleBuilder<P>> blanks2blanks$map() {
+		return (Blanks2blanks$builder<? extends SubSampleBuilder<P>>)super.blanks2blanks$map();
 	}
 }

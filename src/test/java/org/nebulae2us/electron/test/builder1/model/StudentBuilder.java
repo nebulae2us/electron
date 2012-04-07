@@ -29,7 +29,7 @@ public class StudentBuilder<P> extends PersonBuilder<P> {
     	repo.put(builderId, this);
     	return this;
     }
-	
+
     public Student toStudent() {
     	return new Converter(new BuilderAnnotationDestinationClassResolver(), true).convert(this).to(Student.class);
     }
@@ -193,6 +193,12 @@ public class StudentBuilder<P> extends PersonBuilder<P> {
 	@Override
 	public StudentBuilder<P> parent(PersonBuilder<?> parent) {
 		return (StudentBuilder<P>)super.parent(parent);
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public PersonBuilder<? extends StudentBuilder<P>> parent$begin() {
+		return (PersonBuilder<? extends StudentBuilder<P>>)super.parent$begin();
 	}
 
 	@Override

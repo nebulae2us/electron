@@ -40,10 +40,6 @@
 	public P end() {
 		return this.$$$parentBuilder;
 	}
-
-    public Sample toSample() {
-    	return new Converter(new BuilderAnnotationDestinationClassResolver(), true).convert(this).to(Sample.class);
-    }
 ]]></entry>
 
 <entry key="subclass_constructors"><![CDATA[
@@ -69,9 +65,11 @@
     	repo.put(builderId, this);
     	return this;
     }
-	
-    public SubSample toSubSample() {
-    	return new Converter(new BuilderAnnotationDestinationClassResolver(), true).convert(this).to(SubSample.class);
+]]></entry>
+
+<entry key="build_methods"><![CDATA[
+    public Sample<T> toSample() {
+    	return new Converter(new BuilderAnnotationDestinationClassResolver(), true).convert(this).to(Sample.class);
     }
 ]]></entry>
 
@@ -428,6 +426,10 @@ public class Builders {
     public static PersonBuilder<?> person$copyFrom(Person person) {
     	PersonBuilder<?> result = new Converter(DESTINATION_CLASS_RESOLVER, false).convert(person).to(PersonBuilder.class);
     	return result;
+    }
+    
+    public static PersonBuilder<?> wrap(Person person) {
+    	return new WrapConverter(DESTINATION_CLASS_RESOLVER).convert(person).to(PersonBuilder.class);
     }
 ]]></entry>
 

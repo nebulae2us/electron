@@ -35,7 +35,7 @@ public class ImportStatementGenerator {
 	}
 	
 	public void importPackage(String packageName) {
-		if (packageName.equals("java.lang") || thisPackageName.equals(packageName)) {
+		if (packageName.length() == 0 || packageName.equals("java.lang") || thisPackageName.equals(packageName)) {
 			return;
 		}
 

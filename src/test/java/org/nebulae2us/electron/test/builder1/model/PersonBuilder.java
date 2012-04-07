@@ -117,6 +117,12 @@ public class PersonBuilder<P> implements Wrappable<Person> {
 		return this;
 	}
 
+	public PersonBuilder<? extends PersonBuilder<P>> parent$begin() {
+		PersonBuilder<PersonBuilder<P>> result = new PersonBuilder<PersonBuilder<P>>(this);
+		this.parent = result;
+		return result;
+	}
+
     public PersonBuilder<P> parent$wrap(Person parent) {
     	verifyMutable();
     	this.parent = new WrapConverter(Builders.DESTINATION_CLASS_RESOLVER).convert(parent).to(PersonBuilder.class);

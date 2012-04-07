@@ -39,6 +39,10 @@ public class Builders {
     	HobbyBuilder<?> result = new Converter(DESTINATION_CLASS_RESOLVER, false).convert(hobby).to(HobbyBuilder.class);
     	return result;
     }
+    
+    public static HobbyBuilder<?> wrap(Hobby hobby) {
+    	return new WrapConverter(DESTINATION_CLASS_RESOLVER).convert(hobby).to(HobbyBuilder.class);
+    }
 
     public static PersonBuilder<?> person() {
         return new PersonBuilder<Object>();
@@ -51,6 +55,10 @@ public class Builders {
     public static PersonBuilder<?> person$copyFrom(Person person) {
     	PersonBuilder<?> result = new Converter(DESTINATION_CLASS_RESOLVER, false).convert(person).to(PersonBuilder.class);
     	return result;
+    }
+    
+    public static PersonBuilder<?> wrap(Person person) {
+    	return new WrapConverter(DESTINATION_CLASS_RESOLVER).convert(person).to(PersonBuilder.class);
     }
 
     public static SpeechBuilder<?> speech() {
@@ -65,6 +73,10 @@ public class Builders {
     	SpeechBuilder<?> result = new Converter(DESTINATION_CLASS_RESOLVER, false).convert(speech).to(SpeechBuilder.class);
     	return result;
     }
+    
+    public static SpeechBuilder<?> wrap(Speech speech) {
+    	return new WrapConverter(DESTINATION_CLASS_RESOLVER).convert(speech).to(SpeechBuilder.class);
+    }
 
     public static StudentBuilder<?> student() {
         return new StudentBuilder<Object>();
@@ -78,6 +90,10 @@ public class Builders {
     	StudentBuilder<?> result = new Converter(DESTINATION_CLASS_RESOLVER, false).convert(student).to(StudentBuilder.class);
     	return result;
     }
+    
+    public static StudentBuilder<?> wrap(Student student) {
+    	return new WrapConverter(DESTINATION_CLASS_RESOLVER).convert(student).to(StudentBuilder.class);
+    }
 
     public static TeacherBuilder<?> teacher() {
         return new TeacherBuilder<Object>();
@@ -90,5 +106,9 @@ public class Builders {
     public static TeacherBuilder<?> teacher$copyFrom(Teacher teacher) {
     	TeacherBuilder<?> result = new Converter(DESTINATION_CLASS_RESOLVER, false).convert(teacher).to(TeacherBuilder.class);
     	return result;
+    }
+    
+    public static TeacherBuilder<?> wrap(Teacher teacher) {
+    	return new WrapConverter(DESTINATION_CLASS_RESOLVER).convert(teacher).to(TeacherBuilder.class);
     }
 }
