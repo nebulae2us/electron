@@ -42,7 +42,7 @@ public class MapBuilder<K, V> {
 	}
 	
 	public Map<K, V> toMap() {
-		return new ImmutableMap<K, V>(result, new ObjectEqualityComparator<K>());
+		return new ImmutableMap<K, V>(result, ObjectEqualityComparator.getInstance());
 	}
 	
 	

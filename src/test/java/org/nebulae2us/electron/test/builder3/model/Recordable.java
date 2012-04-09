@@ -19,6 +19,6 @@ package org.nebulae2us.electron.test.builder3.model;
  * @author Trung Phan
  *
  */
-public interface Recordable {
+public interface Recordable<C extends Color> {
 
 }

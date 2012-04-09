@@ -19,7 +19,9 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import org.nebulae2us.electron.reflect.ClassHolder;
 import org.nebulae2us.electron.reflect.TypeHolder;
+import org.nebulae2us.electron.reflect.TypeVariableHolder;
 
 /**
  * @author Trung Phan
@@ -49,12 +51,34 @@ public class ImportStatementGenerator {
 			importPackage(c.getPackage().getName());
 		}
 	}
-	
-	public void importClasses(TypeHolder classHolder) {
+
+	public void importClasses(ClassHolder classHolder) {
 		if (classHolder != null) {
-			importClass(classHolder.getRawClass());
-			if (classHolder.getTypeParams() != null) {
-				for (TypeHolder ch : classHolder.getTypeParams()) {
+			if (classHolder.getRawClass() != null) {
+				importClass(classHolder.getRawClass());
+			}
+			else {
+				importPackage(classHolder.getPackageName());
+			}
+			
+			for (TypeVariableHolder typeVariable : classHolder.getTypeVariables()) {
+				for (TypeHolder typeHolder : typeVariable.getTypeParams()) {
+					importClasses(typeHolder);
+				}
+			}
+		}
+	}
+	
+	public void importClasses(TypeHolder typeHolder) {
+		if (typeHolder != null) {
+			if (typeHolder.getRawClass() != null) {
+				importClass(typeHolder.getRawClass());
+			}
+			else {
+				importPackage(typeHolder.getPackageName());
+			}
+			if (typeHolder.getTypeParams() != null) {
+				for (TypeHolder ch : typeHolder.getTypeParams()) {
 					importPackage(ch.getPackageName());
 				}
 			}
@@ -70,6 +94,11 @@ public class ImportStatementGenerator {
 		}
 		
 		return result.toString();
+	}
+	
+	@Override
+	public String toString() {
+		return generate();
 	}
 	
 	

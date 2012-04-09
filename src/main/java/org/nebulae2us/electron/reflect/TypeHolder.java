@@ -90,6 +90,15 @@ public class TypeHolder {
 		return typeParams;
 	}
 	
+	public TypeHolder changeWildcardBound(WildcardBound wildcardBound) {
+		if (this.wildcardBound == wildcardBound) {
+			return this;
+		}
+		else {
+			return new TypeHolder(this.name, this.packageName, this.rawClass, wildcardBound, this.typeParams);
+		}
+	}
+	
 	public ClassHolderType getClassHolderType() {
 		if (rawClass == null) {
 			// rawClass == null in the generic case such as T variable;
@@ -116,22 +125,33 @@ public class TypeHolder {
 		}
 	}
 	
+	static class A<C extends List<T>, T extends List<C>> {
+	}
+	
 	public TypeHolder eraseParams() {
 		return new TypeHolder(name, packageName, rawClass, wildcardBound, null);
 	}
 	
 	public TypeHolder toBuilderTypeHolder(String builderSuffix, String parentBuilderVariableName, List<Class<?>> classesToBuild) {
+		return _toBuilderTypeHolder(builderSuffix, parentBuilderVariableName, classesToBuild).changeWildcardBound(WildcardBound.NO_WILDCARD);
+	}
+	
+	private TypeHolder _toBuilderTypeHolder(String builderSuffix, String parentBuilderVariableName, List<Class<?>> classesToBuild) {
 		
+		if (classesToBuild.contains(rawClass)) {
+			if (rawClass.isInterface()) {
+				return new TypeHolder(name + builderSuffix, packageName, null, wildcardBound, null);
+			}
+			TypeHolder th = new TypeHolder(parentBuilderVariableName, "", null, WildcardBound.NO_WILDCARD, null);
+			return new TypeHolder(name + builderSuffix, packageName, null, wildcardBound, Collections.singletonList(th));
+		}
+
 		List<TypeHolder> newBuilderTypeParams = new ArrayList<TypeHolder>();
 		for (TypeHolder typeParam : typeParams) {
-			TypeHolder builderTypeParam = typeParam.toBuilderTypeHolder(builderSuffix, parentBuilderVariableName, classesToBuild);
+			TypeHolder builderTypeParam = typeParam._toBuilderTypeHolder(builderSuffix, parentBuilderVariableName, classesToBuild);
 			newBuilderTypeParams.add(builderTypeParam);
 		}
 		
-		if (classesToBuild.contains(rawClass)) {
-			newBuilderTypeParams.add(0, new TypeHolder(parentBuilderVariableName, "", null, WildcardBound.NO_WILDCARD, null));
-			return new TypeHolder(name + builderSuffix, packageName, null, wildcardBound, newBuilderTypeParams);
-		}
 		
 		/**
 		 * Class is a special class where Class<? extends |x|> is the result of x.getClass(). |x| is the erasure of all static types
@@ -178,6 +198,7 @@ public class TypeHolder {
 		return result.toString();
 	}
 
+	@SuppressWarnings("unchecked")
 	public static TypeHolder newInstance(Class<?> rawClass, Class<?> ... typeParams) {
 		List<TypeHolder> classHolders = new ArrayList<TypeHolder>();
 		
@@ -190,7 +211,11 @@ public class TypeHolder {
 	}
 
 	public static TypeHolder newInstance(Class<?> rawClass, TypeHolder ... argumentClasses) {
-		return new TypeHolder(rawClass.getSimpleName(), rawClass.getPackage().getName(), rawClass, WildcardBound.NO_WILDCARD, Arrays.asList(argumentClasses));
+		return newInstance(rawClass, Arrays.asList(argumentClasses));
+	}
+	
+	public static TypeHolder newInstance(Class<?> rawClass, List<TypeHolder> argumentClasses) {
+		return new TypeHolder(rawClass.getSimpleName(), rawClass.getPackage() == null ? "" : rawClass.getPackage().getName(), rawClass, WildcardBound.NO_WILDCARD, argumentClasses);
 	}
 	
 	public static TypeHolder newInstance(Field field) {

@@ -32,10 +32,10 @@ public class ImmutableMap<K, V> extends AbstractImmutableMap<K, V> implements Ma
 	public ImmutableMap() {
     	this.size = 0;
     	data = new InternalEntry[0];
-    	this.equalityComparator = new ObjectEqualityComparator<Object>();
+    	this.equalityComparator = ObjectEqualityComparator.getInstance();
     }
     
-    public ImmutableMap(Map<? extends K, ? extends V> m, EqualityComparator<K> equalityComparator) {
+    public ImmutableMap(Map<? extends K, ? extends V> m, EqualityComparator<? super K> equalityComparator) {
 
         int capacity = 1;
         while (capacity < m.size())
@@ -55,7 +55,7 @@ public class ImmutableMap<K, V> extends AbstractImmutableMap<K, V> implements Ma
             boolean contains = false;
             InternalEntry<K, V> entry = data[i];
             while (entry != null) {
-            	if (equalityComparator.hashCode(entry.getKey()) == h && equalityComparator.equal(entry.getKey(), e.getKey())) {
+            	if (equalityComparator.hashCode(entry.getKey()) == h && equalityComparator.compare(entry.getKey(), e.getKey())) {
             		contains = true;
             		break;
             	}
@@ -70,7 +70,7 @@ public class ImmutableMap<K, V> extends AbstractImmutableMap<K, V> implements Ma
         size = calcSize;
     }
 
-    ImmutableMap(Collection<K> c, EqualityComparator<K> equalityComparator) {
+    ImmutableMap(Collection<K> c, EqualityComparator<? super K> equalityComparator) {
 
         int capacity = 1;
         while (capacity < c.size())
@@ -88,7 +88,7 @@ public class ImmutableMap<K, V> extends AbstractImmutableMap<K, V> implements Ma
             boolean contains = false;
             InternalEntry<K, V> entry = data[i];
             while (entry != null) {
-            	if (equalityComparator.hashCode(entry.getKey()) == h && equalityComparator.equal(entry.getKey(), k)) {
+            	if (equalityComparator.hashCode(entry.getKey()) == h && equalityComparator.compare(entry.getKey(), k)) {
             		contains = true;
             		break;
             	}
@@ -192,7 +192,7 @@ public class ImmutableMap<K, V> extends AbstractImmutableMap<K, V> implements Ma
         InternalEntry<K, V> entry = data[tableIndex];
 
         while (entry != null) {
-        	if (this.equalityComparator.hashCode(entry.getKey()) == h && this.equalityComparator.equal(entry.getKey(), key)) {
+        	if (this.equalityComparator.hashCode(entry.getKey()) == h && this.equalityComparator.compare(entry.getKey(), key)) {
         		return entry;
         	}
         	entry = entry.next;

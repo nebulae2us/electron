@@ -33,6 +33,10 @@ public class BuilderSpecs {
     	BlankBuilderSpec<?> result = new Converter(DESTINATION_CLASS_RESOLVER, false).convert(blank).to(BlankBuilderSpec.class);
     	return result;
     }
+    
+    public static BlankBuilderSpec<?> wrap(Blank blank) {
+    	return new WrapConverter(DESTINATION_CLASS_RESOLVER).convert(blank).to(BlankBuilderSpec.class);
+    }
 
     public static SampleBuilderSpec<?> sample() {
         return new SampleBuilderSpec<Object>();
@@ -46,6 +50,10 @@ public class BuilderSpecs {
     	SampleBuilderSpec<?> result = new Converter(DESTINATION_CLASS_RESOLVER, false).convert(sample).to(SampleBuilderSpec.class);
     	return result;
     }
+    
+    public static SampleBuilderSpec<?> wrap(Sample sample) {
+    	return new WrapConverter(DESTINATION_CLASS_RESOLVER).convert(sample).to(SampleBuilderSpec.class);
+    }
 
     public static SubSampleBuilderSpec<?> subSample() {
         return new SubSampleBuilderSpec<Object>();
@@ -58,5 +66,9 @@ public class BuilderSpecs {
     public static SubSampleBuilderSpec<?> subSample$copyFrom(SubSample subSample) {
     	SubSampleBuilderSpec<?> result = new Converter(DESTINATION_CLASS_RESOLVER, false).convert(subSample).to(SubSampleBuilderSpec.class);
     	return result;
+    }
+    
+    public static SubSampleBuilderSpec<?> wrap(SubSample subSample) {
+    	return new WrapConverter(DESTINATION_CLASS_RESOLVER).convert(subSample).to(SubSampleBuilderSpec.class);
     }
 }

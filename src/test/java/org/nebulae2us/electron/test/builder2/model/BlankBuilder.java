@@ -49,6 +49,8 @@ public class BlankBuilder<P> implements Wrappable<Blank> {
     	return new Converter(new BuilderAnnotationDestinationClassResolver(), true).convert(this).to(Blank.class);
     }
 
+
+
 	private String name;
 	
 	public String getName() {

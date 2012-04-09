@@ -585,10 +585,10 @@ public class Converter {
 						result = new ImmutableSortedMap<Object, Object>(result, new NaturalComparator<Object>());
 					}
 					else if (result instanceof IdentityHashMap) {
-						result = new ImmutableMap<Object, Object>(result, new IdentityEqualityComparator<Object>());
+						result = new ImmutableMap<Object, Object>(result, IdentityEqualityComparator.getInstance());
 					}
 					else {
-						result = new ImmutableMap<Object, Object>(result, new ObjectEqualityComparator<Object>());
+						result = new ImmutableMap<Object, Object>(result, ObjectEqualityComparator.getInstance());
 					}
 				}
 				

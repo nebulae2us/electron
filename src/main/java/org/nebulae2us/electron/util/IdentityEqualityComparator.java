@@ -15,16 +15,29 @@
  */
 package org.nebulae2us.electron.util;
 
+import java.io.Serializable;
+
 /**
  * @author Trung Phan
  */
-public class IdentityEqualityComparator<K> implements EqualityComparator<K> {
-    public int hashCode(K key) {
-        return System.identityHashCode(key);
+public final class IdentityEqualityComparator implements EqualityComparator<Object>, Serializable {
+	
+	private static final long serialVersionUID = -3312476095589954550L;
+	
+	private final static IdentityEqualityComparator equalityComparator = new IdentityEqualityComparator();
+	
+	public static IdentityEqualityComparator getInstance() {
+		return equalityComparator;
+	}
+	
+	private IdentityEqualityComparator() {}
+	
+    public int hashCode(Object element) {
+        return System.identityHashCode(element);
     }
 
-    public boolean equal(K key1, K key2) {
-        return key1 == key2;
+    public boolean compare(Object element1, Object element2) {
+        return element1 == element2;
     }
 
 }

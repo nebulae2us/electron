@@ -29,13 +29,16 @@ public class GenerateBuilderSpecs {
 		
 		new BuilderGenerator()
 			.baseFolder(new File("src/test/java"))
-			.buildersClassName("org.nebulae2us.electron.test.builder2.model.BuilderSpecs")
+			.buildersClassName("org.nebulae2us.electron.test.builder3.model.BuilderSpecs")
 			.builderSuffix("BuilderSpec")
 			.generate(
+					Recordable.class,
 					Book.class,
 					Fiction.class,
 					Paper.class,
-					CopyPaper.class
+					CopyPaper.class,
+					Color.class,
+					RGBColor.class
 					);
 		
 	}

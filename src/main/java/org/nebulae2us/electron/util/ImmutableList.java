@@ -18,6 +18,15 @@ package org.nebulae2us.electron.util;
 import java.io.Serializable;
 import java.util.*;
 
+import org.nebulae2us.electron.ElementContext;
+import org.nebulae2us.electron.Function1;
+import org.nebulae2us.electron.function.ChainedAction;
+import org.nebulae2us.electron.function.DenullifyElement;
+import org.nebulae2us.electron.function.RemoveNullElement;
+import org.nebulae2us.electron.function.FormatElement;
+import org.nebulae2us.electron.function.ReplaceElement;
+import org.nebulae2us.electron.function.SubstringElement;
+
 /**
  * @author Trung Phan
  */
@@ -68,7 +77,7 @@ public class ImmutableList<E> extends AbstractImmutableList<E> implements List<E
     }
 
 	@SuppressWarnings("unchecked")
-	public ImmutableList(Collection<? extends E> c, EqualityComparator<E> equalityComparator, boolean unique) {
+	public ImmutableList(Collection<? extends E> c, EqualityComparator<? super E> equalityComparator, boolean unique) {
         this.fromIndex = 0;
         this.descending = false;
         this.comparator = null;
@@ -80,7 +89,7 @@ public class ImmutableList<E> extends AbstractImmutableList<E> implements List<E
     			
     			boolean contains = false;
     			for (E ie : newList) {
-    				if (equalityComparator.equal(ie, e)) {
+    				if (equalityComparator.compare(ie, e)) {
     					contains = true;
     					break;
     				}
@@ -101,7 +110,7 @@ public class ImmutableList<E> extends AbstractImmutableList<E> implements List<E
     }
     
     public ImmutableList(Collection<? extends E> c) {
-        this(c, new ObjectEqualityComparator<E>(), false);
+        this(c, ObjectEqualityComparator.getInstance(), false);
     }
 
     @SuppressWarnings("unchecked")
@@ -131,8 +140,7 @@ public class ImmutableList<E> extends AbstractImmutableList<E> implements List<E
     		c = newList;
     	}
     	
-        Object[] newData = new Object[c.size()];
-        c.toArray(newData);
+        Object[] newData = c.toArray();
         Arrays.sort(newData, this.comparator);
         data = newData;
 
@@ -161,6 +169,15 @@ public class ImmutableList<E> extends AbstractImmutableList<E> implements List<E
         this.descending = descending ? !cloned.descending : cloned.descending;
         this.comparator = cloned.comparator;
         this.equalityComparator = cloned.equalityComparator;
+    }
+    
+    private ImmutableList(Object[] data, int fromIndex, int size, boolean descending, Comparator<Object> comparator, EqualityComparator<Object> equalityComparator) {
+    	this.data = data;
+    	this.fromIndex = fromIndex;
+    	this.size = size;
+    	this.descending = descending;
+    	this.comparator = comparator;
+    	this.equalityComparator = equalityComparator;
     }
 
     public int size() {
@@ -191,7 +208,7 @@ public class ImmutableList<E> extends AbstractImmutableList<E> implements List<E
         }
         else if (equalityComparator != null) {
             for (int i = 0; i < size; i++) {
-                if (equalityComparator.equal(o, data[realDesc ? fromIndex + size - i - 1 : fromIndex + i]))
+                if (equalityComparator.compare(o, data[realDesc ? fromIndex + size - i - 1 : fromIndex + i]))
                     return descending ? this.size - i - 1 : i;
             }
         }
@@ -312,4 +329,110 @@ public class ImmutableList<E> extends AbstractImmutableList<E> implements List<E
         return this.descending ? this.size - idx - 1 : idx;
     }
 
+    public ImmutableList<E> changeComparator(Comparator<? super E> comparator) {
+    	return sort(comparator);
+    }
+    
+	public ImmutableList<E> sort(Comparator<? super E> comparator) {
+    	Object[] newData = new Object[this.size];
+    	int i = 0;
+    	for (E e : this) {
+    		newData[i++] = e;
+    	}
+    	Arrays.sort(newData, (Comparator<Object>)comparator);
+    	
+    	return new ImmutableList<E>(newData, 0, this.size, false, (Comparator<Object>)comparator, null);
+    }
+    
+    public <T> ImmutableList<T> toList(Function1<T, ElementContext<E>> function) {
+    	if (function == null) {
+    		throw new NullPointerException();
+    	}
+    	
+    	Object[] newData = new Object[this.data.length];
+    	int size = 0;
+    	for (E element : this) {
+    		ElementContext<E> elementContext = new ElementContext<E>(size, element);
+			T newElement = function.execute(elementContext);
+			switch (elementContext.getAction()) {
+			case ElementContext.ACTION_SKIP_ELEMENT:
+				break;
+			default:
+	    		newData[size++] = newElement;
+			}
+    	}
+    	    	
+    	return new ImmutableList<T>(newData, 0, size, false, null, this.equalityComparator instanceof IdentityEqualityComparator ? this.equalityComparator : ObjectEqualityComparator.getInstance());
+    }
+    
+    public ImmutableList<E> toList(Function1<E, ElementContext<E>> ... actions) {
+    	return toList(new ChainedAction<E>(actions));
+    }
+    
+    public ImmutableList<E> toList(Collection<Function1<E, ElementContext<E>>> actions) {
+    	return toList(new ChainedAction<E>(actions));
+    }
+
+    public ImmutableList<String> formatElement(String format) {
+    	return toList(new FormatElement<E>(format));
+    }
+    
+    public ImmutableList<String> substringElement(int fromIndex, int toIndex) {
+    	return toList(new SubstringElement<E>(fromIndex, toIndex));
+    }
+    
+    public ImmutableList<String> substringElement(int fromIndex) {
+    	return substringElement(fromIndex, -1);
+    }
+    
+    public ImmutableList<String> replace(String substring, String newString) {
+    	return toList(new ReplaceElement<E>(substring, newString, -1, false));
+    }
+
+    public ImmutableList<String> replaceForward(String substring, String newString, int replacementCount) {
+    	return toList(new ReplaceElement<E>(substring, newString, replacementCount, false));
+    }
+    
+    public ImmutableList<String> replaceBackward(String substring, String newString, int replacementCount) {
+    	return toList(new ReplaceElement<E>(substring, newString, replacementCount, true));
+    }
+    
+    public ImmutableList<String> replaceFirst(String substring, String newString) {
+    	return toList(new ReplaceElement<E>(substring, newString, 1, false));
+    }
+    
+    public ImmutableList<String> replaceLast(String substring, String newString) {
+    	return toList(new ReplaceElement<E>(substring, newString, 1, true));
+    }
+    
+    public ImmutableList<E> denullify(E nullValue) {
+    	return toList(new DenullifyElement<E>(nullValue));
+    }
+    
+    public ImmutableList<E> removeNull() {
+    	return toList(new RemoveNullElement<E>());
+    }
+
+    public String join(String delimiter) {
+    	return join(delimiter, "", "");
+    }
+    
+    public String join(String delimiter, String prefix, String suffix) {
+    	StringBuilder result = new StringBuilder();
+    	result.append(prefix);
+    	
+    	int i = 0;
+    	for (E e : this) {
+    		if (i > 0) {
+    			result.append(delimiter);
+    		}
+    		result.append(e == null ? "" : e.toString());
+    		i++;
+    	}
+    	
+    	result.append(suffix);
+    	
+    	return result.toString();
+    }
+    
 }

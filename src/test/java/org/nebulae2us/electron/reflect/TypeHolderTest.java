@@ -81,9 +81,12 @@ public class TypeHolderTest {
 		List<Class<?>> classesToBuild = Arrays.asList(new Class<?>[] {Class1.class});
 		
 		assertEquals("Class1Builder<P>", toBuilderString(Class1.class, "field7", "Builder", "P", classesToBuild));
-		assertEquals("Class<? extends Class1Builder<P, T, Q>>", toBuilderString(Class1.class, "field8", "Builder", "P", classesToBuild));
+		assertEquals("Class<? extends Class1Builder>", toBuilderString(Class1.class, "field8", "Builder", "P", classesToBuild));
 	}
 
-	
+	@Test
+	public void changeWildcardBound() throws Exception {
+		assertEquals("?", TypeHolder.newInstance(Object.class).changeWildcardBound(WildcardBound.UPPER).toString());
+	}
 	
 }

@@ -39,6 +39,10 @@ public class BuilderSpecs {
     	HobbyBuilderSpec<?> result = new Converter(DESTINATION_CLASS_RESOLVER, false).convert(hobby).to(HobbyBuilderSpec.class);
     	return result;
     }
+    
+    public static HobbyBuilderSpec<?> wrap(Hobby hobby) {
+    	return new WrapConverter(DESTINATION_CLASS_RESOLVER).convert(hobby).to(HobbyBuilderSpec.class);
+    }
 
     public static PersonBuilderSpec<?> person() {
         return new PersonBuilderSpec<Object>();
@@ -51,6 +55,10 @@ public class BuilderSpecs {
     public static PersonBuilderSpec<?> person$copyFrom(Person person) {
     	PersonBuilderSpec<?> result = new Converter(DESTINATION_CLASS_RESOLVER, false).convert(person).to(PersonBuilderSpec.class);
     	return result;
+    }
+    
+    public static PersonBuilderSpec<?> wrap(Person person) {
+    	return new WrapConverter(DESTINATION_CLASS_RESOLVER).convert(person).to(PersonBuilderSpec.class);
     }
 
     public static SpeechBuilderSpec<?> speech() {
@@ -65,6 +73,10 @@ public class BuilderSpecs {
     	SpeechBuilderSpec<?> result = new Converter(DESTINATION_CLASS_RESOLVER, false).convert(speech).to(SpeechBuilderSpec.class);
     	return result;
     }
+    
+    public static SpeechBuilderSpec<?> wrap(Speech speech) {
+    	return new WrapConverter(DESTINATION_CLASS_RESOLVER).convert(speech).to(SpeechBuilderSpec.class);
+    }
 
     public static StudentBuilderSpec<?> student() {
         return new StudentBuilderSpec<Object>();
@@ -78,6 +90,10 @@ public class BuilderSpecs {
     	StudentBuilderSpec<?> result = new Converter(DESTINATION_CLASS_RESOLVER, false).convert(student).to(StudentBuilderSpec.class);
     	return result;
     }
+    
+    public static StudentBuilderSpec<?> wrap(Student student) {
+    	return new WrapConverter(DESTINATION_CLASS_RESOLVER).convert(student).to(StudentBuilderSpec.class);
+    }
 
     public static TeacherBuilderSpec<?> teacher() {
         return new TeacherBuilderSpec<Object>();
@@ -90,5 +106,9 @@ public class BuilderSpecs {
     public static TeacherBuilderSpec<?> teacher$copyFrom(Teacher teacher) {
     	TeacherBuilderSpec<?> result = new Converter(DESTINATION_CLASS_RESOLVER, false).convert(teacher).to(TeacherBuilderSpec.class);
     	return result;
+    }
+    
+    public static TeacherBuilderSpec<?> wrap(Teacher teacher) {
+    	return new WrapConverter(DESTINATION_CLASS_RESOLVER).convert(teacher).to(TeacherBuilderSpec.class);
     }
 }

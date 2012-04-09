@@ -16,12 +16,14 @@
 package org.nebulae2us.electron.util;
 
 /**
+ * Comparator either implements Comparator<E> or EqualityComparator<E>, but not both.
+ * 
  * @author Trung Phan
  */
 public interface EqualityComparator<T> {
 
     public int hashCode(T object);
 
-    public boolean equal(T o1, T o2);
+    public boolean compare(T o1, T o2);
 
 }

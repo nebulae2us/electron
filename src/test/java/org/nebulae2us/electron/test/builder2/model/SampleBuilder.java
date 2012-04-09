@@ -49,6 +49,8 @@ public class SampleBuilder<P> implements Wrappable<Sample> {
     	return new Converter(new BuilderAnnotationDestinationClassResolver(), true).convert(this).to(Sample.class);
     }
 
+
+
 	private String name;
 	
 	public String getName() {
@@ -89,11 +91,13 @@ public class SampleBuilder<P> implements Wrappable<Sample> {
 		}
 		if (names != null) {
 			for (String e : names) {
-				this.names.add(e);
+				CollectionUtils.addItem(this.names, e);
 			}
 		}
 		return this;
 	}
+
+
 
 	private Set<String> keywords;
 	
@@ -118,11 +122,13 @@ public class SampleBuilder<P> implements Wrappable<Sample> {
 		}
 		if (keywords != null) {
 			for (String e : keywords) {
-				this.keywords.add(e);
+				CollectionUtils.addItem(this.keywords, e);
 			}
 		}
 		return this;
 	}
+
+
 
 	private List<Collection<String>> keywordsList;
 	
@@ -154,7 +160,7 @@ public class SampleBuilder<P> implements Wrappable<Sample> {
 		}
 		if (keywordCounts != null) {
 			for (Map.Entry<String, Integer> e : keywordCounts.entrySet()) {
-				this.keywordCounts.put(e.getKey(), e.getValue());
+				CollectionUtils.putItem(this.keywordCounts, e.getKey(), e.getValue());
 			}
 		}
 		return this;
@@ -165,14 +171,19 @@ public class SampleBuilder<P> implements Wrappable<Sample> {
 		private final P1 $$$parentBuilder;
 		
 		public class Value$builder {
+
 			private String key;
+
 			private Value$builder(String key) {
 				this.key = key;
 			}
+
 			public KeywordCounts$builder<P1> value(Integer value) {
-				SampleBuilder.this.keywordCounts.put(key, value);
+				CollectionUtils.putItem(SampleBuilder.this.keywordCounts, key, value);
 				return KeywordCounts$builder.this;
 			}
+
+
 		}
 		
 		private KeywordCounts$builder(P1 parentBuilder) {
@@ -183,6 +194,7 @@ public class SampleBuilder<P> implements Wrappable<Sample> {
 			return new Value$builder(key);
 		}
 		
+
 		public P1 end() {
 			return this.$$$parentBuilder;
 		}
@@ -248,11 +260,13 @@ public class SampleBuilder<P> implements Wrappable<Sample> {
 		}
 		if (otherClasses != null) {
 			for (Class<?> e : otherClasses) {
-				this.otherClasses.add(e);
+				CollectionUtils.addItem(this.otherClasses, e);
 			}
 		}
 		return this;
 	}
+
+
 
 	private Map<Class<?>, List<Class<?>>> friendClasses;
 	
@@ -280,12 +294,6 @@ public class SampleBuilder<P> implements Wrappable<Sample> {
 		verifyMutable();
 		this.blank = blank;
 		return this;
-	}
-
-	public BlankBuilder<? extends SampleBuilder<P>> blank$begin() {
-		BlankBuilder<SampleBuilder<P>> result = new BlankBuilder<SampleBuilder<P>>(this);
-		this.blank = result;
-		return result;
 	}
 
     public SampleBuilder<P> blank$wrap(Blank blank) {
@@ -319,6 +327,13 @@ public class SampleBuilder<P> implements Wrappable<Sample> {
         return this;
     }
 
+	public BlankBuilder<? extends SampleBuilder<P>> blank$begin() {
+		verifyMutable();
+		BlankBuilder<SampleBuilder<P>> result = new BlankBuilder<SampleBuilder<P>>(this);
+		this.blank = result;
+		return result;
+	}
+
 	private Collection<BlankBuilder<?>> blanks;
 	
 	public Collection<BlankBuilder<?>> getBlanks() {
@@ -342,13 +357,13 @@ public class SampleBuilder<P> implements Wrappable<Sample> {
 		}
 		if (blanks != null) {
 			for (BlankBuilder<?> e : blanks) {
-				this.blanks.add(e);
+				CollectionUtils.addItem(this.blanks, e);
 			}
 		}
 		return this;
 	}
 
-	public BlankBuilder<SampleBuilder<P>> blanks$one() {
+	public BlankBuilder<? extends SampleBuilder<P>> blanks$addBlank() {
 		verifyMutable();
 		if (this.blanks == null) {
 			this.blanks = new ArrayList<BlankBuilder<?>>();
@@ -357,37 +372,45 @@ public class SampleBuilder<P> implements Wrappable<Sample> {
 		BlankBuilder<SampleBuilder<P>> result =
 				new BlankBuilder<SampleBuilder<P>>(this);
 		
-		this.blanks.add(result);
+		CollectionUtils.addItem(this.blanks, result);
 		
 		return result;
 	}
+	
 
-	public class Blanks$$$builder {
-		
-		public BlankBuilder<Blanks$$$builder> blank$begin() {
-			BlankBuilder<Blanks$$$builder> result = new BlankBuilder<Blanks$$$builder>(this);
-			SampleBuilder.this.blanks.add(result);
+	public class Blanks$$$builder<P1 extends SampleBuilder<P>> {
+	
+		private final P1 $$$parentBuilder1;
+	
+		protected Blanks$$$builder(P1 parentBuilder) {
+			this.$$$parentBuilder1 = parentBuilder;
+		}
+
+		public BlankBuilder<Blanks$$$builder<P1>> blank$begin() {
+			BlankBuilder<Blanks$$$builder<P1>> result = new BlankBuilder<Blanks$$$builder<P1>>(this);
+			CollectionUtils.addItem(SampleBuilder.this.blanks, result);
 			return result;
 		}
 		
-		public SampleBuilder<P> end() {
-			return SampleBuilder.this;
+
+		public P1 end() {
+			return this.$$$parentBuilder1;
 		}
 	}
 	
-	public Blanks$$$builder blanks$list() {
+	public Blanks$$$builder<? extends SampleBuilder<P>> blanks$list() {
 		verifyMutable();
 		if (this.blanks == null) {
 			this.blanks = new ArrayList<BlankBuilder<?>>();
 		}
-		return new Blanks$$$builder();
+		return new Blanks$$$builder<SampleBuilder<P>>(this);
 	}
 
     public SampleBuilder<P> blanks$wrap(Blank ... blanks) {
     	return blanks$wrap(new ListBuilder<Blank>().add(blanks).toList());
     }
 
-    public SampleBuilder<P> blanks$wrap(Collection<Blank> blanks) {
+    public SampleBuilder<P> blanks$wrap(Collection<? extends Blank> blanks) {
 		verifyMutable();
 
 		if (this.blanks == null) {
@@ -396,7 +419,7 @@ public class SampleBuilder<P> implements Wrappable<Sample> {
 		if (blanks != null) {
 			for (Blank e : blanks) {
 				BlankBuilder<?> wrapped = new WrapConverter(Builders.DESTINATION_CLASS_RESOLVER).convert(e).to(BlankBuilder.class);
-				this.blanks.add(wrapped);
+				CollectionUtils.addItem(this.blanks, wrapped);
 			}
 		}
 		return this;
@@ -419,7 +442,7 @@ public class SampleBuilder<P> implements Wrappable<Sample> {
 	            	if (repo.isSupportLazy()) {
 	            		repo.addObjectStoredListener(builderId, new Procedure() {
 	    					public void execute(Object... arguments) {
-	    						SampleBuilder.this.blanks.add((BlankBuilder<?>)arguments[0]);
+	    						CollectionUtils.addItem(SampleBuilder.this.blanks, arguments[0]);
 	    					}
 	    				});
 	            	}
@@ -431,12 +454,13 @@ public class SampleBuilder<P> implements Wrappable<Sample> {
 	            	throw new IllegalStateException("Type mismatch for id: " + builderId + ". " + BlankBuilder.class.getSimpleName() + " vs " + restoredObject.getClass().getSimpleName());
 	            }
 	            else {
-	                this.blanks.add((BlankBuilder<?>)restoredObject);
+	                CollectionUtils.addItem(this.blanks, restoredObject);
 	            }
 	    	}
 		}
         return this;
     }
+
 
 	private NavigableMap<Class<BlankBuilder>, BlankBuilder<?>> blanksMap;
 	
@@ -457,7 +481,7 @@ public class SampleBuilder<P> implements Wrappable<Sample> {
 		}
 		if (blanksMap != null) {
 			for (Map.Entry<Class<BlankBuilder>, BlankBuilder<?>> e : blanksMap.entrySet()) {
-				this.blanksMap.put(e.getKey(), e.getValue());
+				CollectionUtils.putItem(this.blanksMap, e.getKey(), e.getValue());
 			}
 		}
 		return this;
@@ -468,14 +492,25 @@ public class SampleBuilder<P> implements Wrappable<Sample> {
 		private final P1 $$$parentBuilder;
 		
 		public class Value$builder {
+
 			private Class<BlankBuilder> key;
+
 			private Value$builder(Class<BlankBuilder> key) {
 				this.key = key;
 			}
+
 			public BlanksMap$builder<P1> value(BlankBuilder<?> value) {
-				SampleBuilder.this.blanksMap.put(key, value);
+				CollectionUtils.putItem(SampleBuilder.this.blanksMap, key, value);
 				return BlanksMap$builder.this;
 			}
+
+			public BlankBuilder<BlanksMap$builder<P1>> value$asBlank() {
+				BlankBuilder<BlanksMap$builder<P1>> result = new BlankBuilder<BlanksMap$builder<P1>>(BlanksMap$builder.this);
+				CollectionUtils.putItem(SampleBuilder.this.blanksMap, key, result);
+				return result;
+			}
+			
+
 		}
 		
 		private BlanksMap$builder(P1 parentBuilder) {
@@ -486,6 +521,7 @@ public class SampleBuilder<P> implements Wrappable<Sample> {
 			return new Value$builder(key);
 		}
 		
+
 		public P1 end() {
 			return this.$$$parentBuilder;
 		}
@@ -519,7 +555,7 @@ public class SampleBuilder<P> implements Wrappable<Sample> {
 		}
 		if (blanks2blanks != null) {
 			for (Map.Entry<BlankBuilder<?>, BlankBuilder<?>> e : blanks2blanks.entrySet()) {
-				this.blanks2blanks.put(e.getKey(), e.getValue());
+				CollectionUtils.putItem(this.blanks2blanks, e.getKey(), e.getValue());
 			}
 		}
 		return this;
@@ -530,14 +566,25 @@ public class SampleBuilder<P> implements Wrappable<Sample> {
 		private final P1 $$$parentBuilder;
 		
 		public class Value$builder {
+
 			private BlankBuilder<?> key;
+
 			private Value$builder(BlankBuilder<?> key) {
 				this.key = key;
 			}
+
 			public Blanks2blanks$builder<P1> value(BlankBuilder<?> value) {
-				SampleBuilder.this.blanks2blanks.put(key, value);
+				CollectionUtils.putItem(SampleBuilder.this.blanks2blanks, key, value);
 				return Blanks2blanks$builder.this;
 			}
+
+			public BlankBuilder<Blanks2blanks$builder<P1>> value$asBlank() {
+				BlankBuilder<Blanks2blanks$builder<P1>> result = new BlankBuilder<Blanks2blanks$builder<P1>>(Blanks2blanks$builder.this);
+				CollectionUtils.putItem(SampleBuilder.this.blanks2blanks, key, result);
+				return result;
+			}
+			
+
 		}
 		
 		private Blanks2blanks$builder(P1 parentBuilder) {
@@ -548,6 +595,13 @@ public class SampleBuilder<P> implements Wrappable<Sample> {
 			return new Value$builder(key);
 		}
 		
+		public BlankBuilder<Value$builder> key$asBlank() {
+			BlankBuilder<Value$builder> result = new BlankBuilder<Value$builder>(new Value$builder(null));
+			result.$$$parentBuilder.key = result;
+			return result;
+		}
+		
+
 		public P1 end() {
 			return this.$$$parentBuilder;
 		}

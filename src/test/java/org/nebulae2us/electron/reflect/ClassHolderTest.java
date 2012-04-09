@@ -36,6 +36,11 @@ public class ClassHolderTest {
 		T extends Object & Serializable, 
 		Q extends Map<? extends Integer, T> & Comparable<? super Long> > {}
 
+	public static class Class3<
+		T extends Serializable, 
+		Q extends Map<? extends Integer, T>> {}
+	
+	public static class Class4<A extends List<B>, B extends List<A>> {}
 	
 	@Test
 	public void to_string() {
@@ -52,7 +57,14 @@ public class ClassHolderTest {
 	public void to_builder_type() throws Exception {
 		List<Class<?>> classesToBuild = Arrays.asList(new Class<?>[] {Class1.class, Class2.class});
 		
-		assertEquals("Class1Builder<P, T, Q>", ClassHolder.newInstance(Class1.class).toBuilderClassHolder("Builder", "P", classesToBuild).toString() );
+		assertEquals("Class1Builder<P>", ClassHolder.newInstance(Class1.class).toBuilderClassHolder("Builder", "P", classesToBuild).toString() );
+	}
+	
+	@Test
+	public void erase_type_variables() {
+		assertEquals("Class1<?, ?>", ClassHolder.newInstance(Class1.class).eraseTypeVariables().toString());
+		assertEquals("Class3<? extends Serializable, ? extends Map<? extends Integer, ? extends Serializable>>", ClassHolder.newInstance(Class3.class).eraseTypeVariables().toString());
+		assertEquals("Class4<? extends List<? extends List<?>>, ? extends List<? extends List<?>>>", ClassHolder.newInstance(Class4.class).eraseTypeVariables().toString());
 	}
 	
 	

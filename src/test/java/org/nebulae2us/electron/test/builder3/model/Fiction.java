@@ -17,6 +17,7 @@ package org.nebulae2us.electron.test.builder3.model;
 
 import java.io.Serializable;
 import java.util.List;
+import java.util.Set;
 
 import org.nebulae2us.electron.Mirror;
 
@@ -24,7 +25,7 @@ import org.nebulae2us.electron.Mirror;
  * @author Trung Phan
  *
  */
-public class Fiction<T extends Paper, R extends Recordable, L extends List<? extends Paper>> extends Book<T, R, L> {
+public class Fiction<C extends Color & Serializable, R extends Recordable<C>, S extends Set<? super R>> extends Book<C, Paper<C>, R, List<? extends Paper<C>>> {
 
 	public Fiction(Mirror mirror) {
 		super(mirror);

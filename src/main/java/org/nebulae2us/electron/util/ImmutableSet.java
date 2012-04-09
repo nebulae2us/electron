@@ -31,12 +31,12 @@ public class ImmutableSet<E> extends AbstractImmutableSet<E> implements Set<E> {
     	this(Collections.EMPTY_LIST);
     }
     
-    public ImmutableSet(Collection<E> c, EqualityComparator<E> equalityComparator) {
+    public ImmutableSet(Collection<E> c, EqualityComparator<? super E> equalityComparator) {
         hashes = new ImmutableMap<E, Object>(c, equalityComparator);
     }
 
     public ImmutableSet(Collection<E> c) {
-        this(c, new ObjectEqualityComparator<E>());
+        this(c, ObjectEqualityComparator.getInstance());
     }
 
     public int size() {

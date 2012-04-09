@@ -17,20 +17,60 @@ package org.nebulae2us.electron.test.builder3.model;
 
 import java.io.Serializable;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import org.nebulae2us.electron.Mirror;
+import org.nebulae2us.electron.NullMirror;
 
 /**
  * @author Trung Phan
  *
  */
-public class Book<T extends Paper, R extends Recordable, L extends List<? extends Paper>> {
+public class Book<C extends Color & Serializable, T extends Paper<C>, R extends Recordable<C>, L extends List<? extends T>> {
 	
-	private final T paper;
+	private final int sequence;
+	
+	private final T myPaper;
 
+	private final R myRecordable;
+	
+	private final List<String> keywords;
+	
+	private final List<? extends T> myPapers;
+	
+	private final Set<? extends R> myRecordables;
+	
+	private final Map<? extends Paper, ? extends C> paperColors;
+	
+	public Book() {
+		this(new NullMirror());
+	}
+	
 	public Book(Mirror mirror) {
 		mirror.bind(this);
 		
-		this.paper = (T)mirror.to(Paper.class, "paper");
+		this.myPaper = (T)mirror.to(Paper.class, "myPaper");
+		this.myRecordable = (R)mirror.to(Recordable.class, "myRecordable");
+		this.myPapers = (List<? extends T>)mirror.to(List.class, "myPapers");
+		this.myRecordables = (Set<? extends R>)mirror.to(Set.class, "myRecordables"); 
+		this.keywords = mirror.toListOf(String.class, "keywords");
+		this.sequence = mirror.toIntValue("sequence");
+		this.paperColors = (Map<? extends Paper, ? extends C>)mirror.toObject("paperColors");
 	}
+
+	public T getMyPaper() {
+		return myPaper;
+	}
+
+	public R getMyRecordable() {
+		return myRecordable;
+	}
+
+	public List<? extends T> getMyPapers() {
+		return myPapers;
+	}
+
+	
+	
 }

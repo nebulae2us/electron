@@ -49,6 +49,8 @@ public class PersonBuilder<P> implements Wrappable<Person> {
     	return new Converter(new BuilderAnnotationDestinationClassResolver(), true).convert(this).to(Person.class);
     }
 
+
+
 	private String name;
 	
 	public String getName() {
@@ -117,12 +119,6 @@ public class PersonBuilder<P> implements Wrappable<Person> {
 		return this;
 	}
 
-	public PersonBuilder<? extends PersonBuilder<P>> parent$begin() {
-		PersonBuilder<PersonBuilder<P>> result = new PersonBuilder<PersonBuilder<P>>(this);
-		this.parent = result;
-		return result;
-	}
-
     public PersonBuilder<P> parent$wrap(Person parent) {
     	verifyMutable();
     	this.parent = new WrapConverter(Builders.DESTINATION_CLASS_RESOLVER).convert(parent).to(PersonBuilder.class);
@@ -154,6 +150,27 @@ public class PersonBuilder<P> implements Wrappable<Person> {
         return this;
     }
 
+	public PersonBuilder<? extends PersonBuilder<P>> parent$begin() {
+		verifyMutable();
+		PersonBuilder<PersonBuilder<P>> result = new PersonBuilder<PersonBuilder<P>>(this);
+		this.parent = result;
+		return result;
+	}
+
+	public StudentBuilder<? extends PersonBuilder<P>> parent$asStudent$begin() {
+		verifyMutable();
+		StudentBuilder<PersonBuilder<P>> result = new StudentBuilder<PersonBuilder<P>>(this);
+		this.parent = result;
+		return result;
+	}
+
+	public TeacherBuilder<? extends PersonBuilder<P>> parent$asTeacher$begin() {
+		verifyMutable();
+		TeacherBuilder<PersonBuilder<P>> result = new TeacherBuilder<PersonBuilder<P>>(this);
+		this.parent = result;
+		return result;
+	}
+
 	private List<PersonBuilder<?>> children;
 	
 	public List<PersonBuilder<?>> getChildren() {
@@ -177,13 +194,13 @@ public class PersonBuilder<P> implements Wrappable<Person> {
 		}
 		if (children != null) {
 			for (PersonBuilder<?> e : children) {
-				this.children.add(e);
+				CollectionUtils.addItem(this.children, e);
 			}
 		}
 		return this;
 	}
 
-	public PersonBuilder<PersonBuilder<P>> children$one() {
+	public PersonBuilder<? extends PersonBuilder<P>> children$addPerson() {
 		verifyMutable();
 		if (this.children == null) {
 			this.children = new ArrayList<PersonBuilder<?>>();
@@ -192,37 +209,85 @@ public class PersonBuilder<P> implements Wrappable<Person> {
 		PersonBuilder<PersonBuilder<P>> result =
 				new PersonBuilder<PersonBuilder<P>>(this);
 		
-		this.children.add(result);
+		CollectionUtils.addItem(this.children, result);
 		
 		return result;
 	}
-
-	public class Children$$$builder {
-		
-		public PersonBuilder<Children$$$builder> blank$begin() {
-			PersonBuilder<Children$$$builder> result = new PersonBuilder<Children$$$builder>(this);
-			PersonBuilder.this.children.add(result);
-			return result;
-		}
-		
-		public PersonBuilder<P> end() {
-			return PersonBuilder.this;
-		}
-	}
 	
-	public Children$$$builder children$list() {
+	public StudentBuilder<? extends PersonBuilder<P>> children$addStudent() {
 		verifyMutable();
 		if (this.children == null) {
 			this.children = new ArrayList<PersonBuilder<?>>();
 		}
-		return new Children$$$builder();
+		
+		StudentBuilder<PersonBuilder<P>> result =
+				new StudentBuilder<PersonBuilder<P>>(this);
+		
+		CollectionUtils.addItem(this.children, result);
+		
+		return result;
+	}
+	
+	public TeacherBuilder<? extends PersonBuilder<P>> children$addTeacher() {
+		verifyMutable();
+		if (this.children == null) {
+			this.children = new ArrayList<PersonBuilder<?>>();
+		}
+		
+		TeacherBuilder<PersonBuilder<P>> result =
+				new TeacherBuilder<PersonBuilder<P>>(this);
+		
+		CollectionUtils.addItem(this.children, result);
+		
+		return result;
+	}
+	
+
+	public class Children$$$builder<P1 extends PersonBuilder<P>> {
+	
+		private final P1 $$$parentBuilder1;
+	
+		protected Children$$$builder(P1 parentBuilder) {
+			this.$$$parentBuilder1 = parentBuilder;
+		}
+
+		public PersonBuilder<Children$$$builder<P1>> person$begin() {
+			PersonBuilder<Children$$$builder<P1>> result = new PersonBuilder<Children$$$builder<P1>>(this);
+			CollectionUtils.addItem(PersonBuilder.this.children, result);
+			return result;
+		}
+		
+		public StudentBuilder<Children$$$builder<P1>> student$begin() {
+			StudentBuilder<Children$$$builder<P1>> result = new StudentBuilder<Children$$$builder<P1>>(this);
+			CollectionUtils.addItem(PersonBuilder.this.children, result);
+			return result;
+		}
+		
+		public TeacherBuilder<Children$$$builder<P1>> teacher$begin() {
+			TeacherBuilder<Children$$$builder<P1>> result = new TeacherBuilder<Children$$$builder<P1>>(this);
+			CollectionUtils.addItem(PersonBuilder.this.children, result);
+			return result;
+		}
+		
+
+		public P1 end() {
+			return this.$$$parentBuilder1;
+		}
+	}
+	
+	public Children$$$builder<? extends PersonBuilder<P>> children$list() {
+		verifyMutable();
+		if (this.children == null) {
+			this.children = new ArrayList<PersonBuilder<?>>();
+		}
+		return new Children$$$builder<PersonBuilder<P>>(this);
 	}
 
     public PersonBuilder<P> children$wrap(Person ... children) {
     	return children$wrap(new ListBuilder<Person>().add(children).toList());
     }
 
-    public PersonBuilder<P> children$wrap(Collection<Person> children) {
+    public PersonBuilder<P> children$wrap(Collection<? extends Person> children) {
 		verifyMutable();
 
 		if (this.children == null) {
@@ -231,7 +296,7 @@ public class PersonBuilder<P> implements Wrappable<Person> {
 		if (children != null) {
 			for (Person e : children) {
 				PersonBuilder<?> wrapped = new WrapConverter(Builders.DESTINATION_CLASS_RESOLVER).convert(e).to(PersonBuilder.class);
-				this.children.add(wrapped);
+				CollectionUtils.addItem(this.children, wrapped);
 			}
 		}
 		return this;
@@ -254,7 +319,7 @@ public class PersonBuilder<P> implements Wrappable<Person> {
 	            	if (repo.isSupportLazy()) {
 	            		repo.addObjectStoredListener(builderId, new Procedure() {
 	    					public void execute(Object... arguments) {
-	    						PersonBuilder.this.children.add((PersonBuilder<?>)arguments[0]);
+	    						CollectionUtils.addItem(PersonBuilder.this.children, arguments[0]);
 	    					}
 	    				});
 	            	}
@@ -266,12 +331,13 @@ public class PersonBuilder<P> implements Wrappable<Person> {
 	            	throw new IllegalStateException("Type mismatch for id: " + builderId + ". " + PersonBuilder.class.getSimpleName() + " vs " + restoredObject.getClass().getSimpleName());
 	            }
 	            else {
-	                this.children.add((PersonBuilder<?>)restoredObject);
+	                CollectionUtils.addItem(this.children, restoredObject);
 	            }
 	    	}
 		}
         return this;
     }
+
 
 	private List<HobbyBuilder<?>> hobbies;
 	
@@ -296,13 +362,13 @@ public class PersonBuilder<P> implements Wrappable<Person> {
 		}
 		if (hobbies != null) {
 			for (HobbyBuilder<?> e : hobbies) {
-				this.hobbies.add(e);
+				CollectionUtils.addItem(this.hobbies, e);
 			}
 		}
 		return this;
 	}
 
-	public HobbyBuilder<PersonBuilder<P>> hobbies$one() {
+	public HobbyBuilder<? extends PersonBuilder<P>> hobbies$addHobby() {
 		verifyMutable();
 		if (this.hobbies == null) {
 			this.hobbies = new ArrayList<HobbyBuilder<?>>();
@@ -311,37 +377,45 @@ public class PersonBuilder<P> implements Wrappable<Person> {
 		HobbyBuilder<PersonBuilder<P>> result =
 				new HobbyBuilder<PersonBuilder<P>>(this);
 		
-		this.hobbies.add(result);
+		CollectionUtils.addItem(this.hobbies, result);
 		
 		return result;
 	}
+	
 
-	public class Hobbies$$$builder {
-		
-		public HobbyBuilder<Hobbies$$$builder> blank$begin() {
-			HobbyBuilder<Hobbies$$$builder> result = new HobbyBuilder<Hobbies$$$builder>(this);
-			PersonBuilder.this.hobbies.add(result);
+	public class Hobbies$$$builder<P1 extends PersonBuilder<P>> {
+	
+		private final P1 $$$parentBuilder1;
+	
+		protected Hobbies$$$builder(P1 parentBuilder) {
+			this.$$$parentBuilder1 = parentBuilder;
+		}
+
+		public HobbyBuilder<Hobbies$$$builder<P1>> hobby$begin() {
+			HobbyBuilder<Hobbies$$$builder<P1>> result = new HobbyBuilder<Hobbies$$$builder<P1>>(this);
+			CollectionUtils.addItem(PersonBuilder.this.hobbies, result);
 			return result;
 		}
 		
-		public PersonBuilder<P> end() {
-			return PersonBuilder.this;
+
+		public P1 end() {
+			return this.$$$parentBuilder1;
 		}
 	}
 	
-	public Hobbies$$$builder hobbies$list() {
+	public Hobbies$$$builder<? extends PersonBuilder<P>> hobbies$list() {
 		verifyMutable();
 		if (this.hobbies == null) {
 			this.hobbies = new ArrayList<HobbyBuilder<?>>();
 		}
-		return new Hobbies$$$builder();
+		return new Hobbies$$$builder<PersonBuilder<P>>(this);
 	}
 
     public PersonBuilder<P> hobbies$wrap(Hobby ... hobbies) {
     	return hobbies$wrap(new ListBuilder<Hobby>().add(hobbies).toList());
     }
 
-    public PersonBuilder<P> hobbies$wrap(Collection<Hobby> hobbies) {
+    public PersonBuilder<P> hobbies$wrap(Collection<? extends Hobby> hobbies) {
 		verifyMutable();
 
 		if (this.hobbies == null) {
@@ -350,7 +424,7 @@ public class PersonBuilder<P> implements Wrappable<Person> {
 		if (hobbies != null) {
 			for (Hobby e : hobbies) {
 				HobbyBuilder<?> wrapped = new WrapConverter(Builders.DESTINATION_CLASS_RESOLVER).convert(e).to(HobbyBuilder.class);
-				this.hobbies.add(wrapped);
+				CollectionUtils.addItem(this.hobbies, wrapped);
 			}
 		}
 		return this;
@@ -373,7 +447,7 @@ public class PersonBuilder<P> implements Wrappable<Person> {
 	            	if (repo.isSupportLazy()) {
 	            		repo.addObjectStoredListener(builderId, new Procedure() {
 	    					public void execute(Object... arguments) {
-	    						PersonBuilder.this.hobbies.add((HobbyBuilder<?>)arguments[0]);
+	    						CollectionUtils.addItem(PersonBuilder.this.hobbies, arguments[0]);
 	    					}
 	    				});
 	            	}
@@ -385,12 +459,13 @@ public class PersonBuilder<P> implements Wrappable<Person> {
 	            	throw new IllegalStateException("Type mismatch for id: " + builderId + ". " + HobbyBuilder.class.getSimpleName() + " vs " + restoredObject.getClass().getSimpleName());
 	            }
 	            else {
-	                this.hobbies.add((HobbyBuilder<?>)restoredObject);
+	                CollectionUtils.addItem(this.hobbies, restoredObject);
 	            }
 	    	}
 		}
         return this;
     }
+
 
 	private List<SpeechBuilder<?>> speeches;
 	
@@ -415,13 +490,13 @@ public class PersonBuilder<P> implements Wrappable<Person> {
 		}
 		if (speeches != null) {
 			for (SpeechBuilder<?> e : speeches) {
-				this.speeches.add(e);
+				CollectionUtils.addItem(this.speeches, e);
 			}
 		}
 		return this;
 	}
 
-	public SpeechBuilder<PersonBuilder<P>> speeches$one() {
+	public SpeechBuilder<? extends PersonBuilder<P>> speeches$addSpeech() {
 		verifyMutable();
 		if (this.speeches == null) {
 			this.speeches = new ArrayList<SpeechBuilder<?>>();
@@ -430,37 +505,45 @@ public class PersonBuilder<P> implements Wrappable<Person> {
 		SpeechBuilder<PersonBuilder<P>> result =
 				new SpeechBuilder<PersonBuilder<P>>(this);
 		
-		this.speeches.add(result);
+		CollectionUtils.addItem(this.speeches, result);
 		
 		return result;
 	}
+	
 
-	public class Speeches$$$builder {
-		
-		public SpeechBuilder<Speeches$$$builder> blank$begin() {
-			SpeechBuilder<Speeches$$$builder> result = new SpeechBuilder<Speeches$$$builder>(this);
-			PersonBuilder.this.speeches.add(result);
+	public class Speeches$$$builder<P1 extends PersonBuilder<P>> {
+	
+		private final P1 $$$parentBuilder1;
+	
+		protected Speeches$$$builder(P1 parentBuilder) {
+			this.$$$parentBuilder1 = parentBuilder;
+		}
+
+		public SpeechBuilder<Speeches$$$builder<P1>> speech$begin() {
+			SpeechBuilder<Speeches$$$builder<P1>> result = new SpeechBuilder<Speeches$$$builder<P1>>(this);
+			CollectionUtils.addItem(PersonBuilder.this.speeches, result);
 			return result;
 		}
 		
-		public PersonBuilder<P> end() {
-			return PersonBuilder.this;
+
+		public P1 end() {
+			return this.$$$parentBuilder1;
 		}
 	}
 	
-	public Speeches$$$builder speeches$list() {
+	public Speeches$$$builder<? extends PersonBuilder<P>> speeches$list() {
 		verifyMutable();
 		if (this.speeches == null) {
 			this.speeches = new ArrayList<SpeechBuilder<?>>();
 		}
-		return new Speeches$$$builder();
+		return new Speeches$$$builder<PersonBuilder<P>>(this);
 	}
 
     public PersonBuilder<P> speeches$wrap(Speech ... speeches) {
     	return speeches$wrap(new ListBuilder<Speech>().add(speeches).toList());
     }
 
-    public PersonBuilder<P> speeches$wrap(Collection<Speech> speeches) {
+    public PersonBuilder<P> speeches$wrap(Collection<? extends Speech> speeches) {
 		verifyMutable();
 
 		if (this.speeches == null) {
@@ -469,7 +552,7 @@ public class PersonBuilder<P> implements Wrappable<Person> {
 		if (speeches != null) {
 			for (Speech e : speeches) {
 				SpeechBuilder<?> wrapped = new WrapConverter(Builders.DESTINATION_CLASS_RESOLVER).convert(e).to(SpeechBuilder.class);
-				this.speeches.add(wrapped);
+				CollectionUtils.addItem(this.speeches, wrapped);
 			}
 		}
 		return this;
@@ -492,7 +575,7 @@ public class PersonBuilder<P> implements Wrappable<Person> {
 	            	if (repo.isSupportLazy()) {
 	            		repo.addObjectStoredListener(builderId, new Procedure() {
 	    					public void execute(Object... arguments) {
-	    						PersonBuilder.this.speeches.add((SpeechBuilder<?>)arguments[0]);
+	    						CollectionUtils.addItem(PersonBuilder.this.speeches, arguments[0]);
 	    					}
 	    				});
 	            	}
@@ -504,12 +587,13 @@ public class PersonBuilder<P> implements Wrappable<Person> {
 	            	throw new IllegalStateException("Type mismatch for id: " + builderId + ". " + SpeechBuilder.class.getSimpleName() + " vs " + restoredObject.getClass().getSimpleName());
 	            }
 	            else {
-	                this.speeches.add((SpeechBuilder<?>)restoredObject);
+	                CollectionUtils.addItem(this.speeches, restoredObject);
 	            }
 	    	}
 		}
         return this;
     }
+
 
 	private List<PersonBuilder<?>> friends;
 	
@@ -534,13 +618,13 @@ public class PersonBuilder<P> implements Wrappable<Person> {
 		}
 		if (friends != null) {
 			for (PersonBuilder<?> e : friends) {
-				this.friends.add(e);
+				CollectionUtils.addItem(this.friends, e);
 			}
 		}
 		return this;
 	}
 
-	public PersonBuilder<PersonBuilder<P>> friends$one() {
+	public PersonBuilder<? extends PersonBuilder<P>> friends$addPerson() {
 		verifyMutable();
 		if (this.friends == null) {
 			this.friends = new ArrayList<PersonBuilder<?>>();
@@ -549,37 +633,85 @@ public class PersonBuilder<P> implements Wrappable<Person> {
 		PersonBuilder<PersonBuilder<P>> result =
 				new PersonBuilder<PersonBuilder<P>>(this);
 		
-		this.friends.add(result);
+		CollectionUtils.addItem(this.friends, result);
 		
 		return result;
 	}
-
-	public class Friends$$$builder {
-		
-		public PersonBuilder<Friends$$$builder> blank$begin() {
-			PersonBuilder<Friends$$$builder> result = new PersonBuilder<Friends$$$builder>(this);
-			PersonBuilder.this.friends.add(result);
-			return result;
-		}
-		
-		public PersonBuilder<P> end() {
-			return PersonBuilder.this;
-		}
-	}
 	
-	public Friends$$$builder friends$list() {
+	public StudentBuilder<? extends PersonBuilder<P>> friends$addStudent() {
 		verifyMutable();
 		if (this.friends == null) {
 			this.friends = new ArrayList<PersonBuilder<?>>();
 		}
-		return new Friends$$$builder();
+		
+		StudentBuilder<PersonBuilder<P>> result =
+				new StudentBuilder<PersonBuilder<P>>(this);
+		
+		CollectionUtils.addItem(this.friends, result);
+		
+		return result;
+	}
+	
+	public TeacherBuilder<? extends PersonBuilder<P>> friends$addTeacher() {
+		verifyMutable();
+		if (this.friends == null) {
+			this.friends = new ArrayList<PersonBuilder<?>>();
+		}
+		
+		TeacherBuilder<PersonBuilder<P>> result =
+				new TeacherBuilder<PersonBuilder<P>>(this);
+		
+		CollectionUtils.addItem(this.friends, result);
+		
+		return result;
+	}
+	
+
+	public class Friends$$$builder<P1 extends PersonBuilder<P>> {
+	
+		private final P1 $$$parentBuilder1;
+	
+		protected Friends$$$builder(P1 parentBuilder) {
+			this.$$$parentBuilder1 = parentBuilder;
+		}
+
+		public PersonBuilder<Friends$$$builder<P1>> person$begin() {
+			PersonBuilder<Friends$$$builder<P1>> result = new PersonBuilder<Friends$$$builder<P1>>(this);
+			CollectionUtils.addItem(PersonBuilder.this.friends, result);
+			return result;
+		}
+		
+		public StudentBuilder<Friends$$$builder<P1>> student$begin() {
+			StudentBuilder<Friends$$$builder<P1>> result = new StudentBuilder<Friends$$$builder<P1>>(this);
+			CollectionUtils.addItem(PersonBuilder.this.friends, result);
+			return result;
+		}
+		
+		public TeacherBuilder<Friends$$$builder<P1>> teacher$begin() {
+			TeacherBuilder<Friends$$$builder<P1>> result = new TeacherBuilder<Friends$$$builder<P1>>(this);
+			CollectionUtils.addItem(PersonBuilder.this.friends, result);
+			return result;
+		}
+		
+
+		public P1 end() {
+			return this.$$$parentBuilder1;
+		}
+	}
+	
+	public Friends$$$builder<? extends PersonBuilder<P>> friends$list() {
+		verifyMutable();
+		if (this.friends == null) {
+			this.friends = new ArrayList<PersonBuilder<?>>();
+		}
+		return new Friends$$$builder<PersonBuilder<P>>(this);
 	}
 
     public PersonBuilder<P> friends$wrap(Person ... friends) {
     	return friends$wrap(new ListBuilder<Person>().add(friends).toList());
     }
 
-    public PersonBuilder<P> friends$wrap(Collection<Person> friends) {
+    public PersonBuilder<P> friends$wrap(Collection<? extends Person> friends) {
 		verifyMutable();
 
 		if (this.friends == null) {
@@ -588,7 +720,7 @@ public class PersonBuilder<P> implements Wrappable<Person> {
 		if (friends != null) {
 			for (Person e : friends) {
 				PersonBuilder<?> wrapped = new WrapConverter(Builders.DESTINATION_CLASS_RESOLVER).convert(e).to(PersonBuilder.class);
-				this.friends.add(wrapped);
+				CollectionUtils.addItem(this.friends, wrapped);
 			}
 		}
 		return this;
@@ -611,7 +743,7 @@ public class PersonBuilder<P> implements Wrappable<Person> {
 	            	if (repo.isSupportLazy()) {
 	            		repo.addObjectStoredListener(builderId, new Procedure() {
 	    					public void execute(Object... arguments) {
-	    						PersonBuilder.this.friends.add((PersonBuilder<?>)arguments[0]);
+	    						CollectionUtils.addItem(PersonBuilder.this.friends, arguments[0]);
 	    					}
 	    				});
 	            	}
@@ -623,10 +755,11 @@ public class PersonBuilder<P> implements Wrappable<Person> {
 	            	throw new IllegalStateException("Type mismatch for id: " + builderId + ". " + PersonBuilder.class.getSimpleName() + " vs " + restoredObject.getClass().getSimpleName());
 	            }
 	            else {
-	                this.friends.add((PersonBuilder<?>)restoredObject);
+	                CollectionUtils.addItem(this.friends, restoredObject);
 	            }
 	    	}
 		}
         return this;
     }
+
 }

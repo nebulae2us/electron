@@ -33,12 +33,12 @@ public class DestinationClassResolverByMap implements DestinationClassResolver {
 	private final Map<Class<?>, Class<?>> inverseAssociates;
 	
 	public DestinationClassResolverByMap(Map<Class<?>, Class<?>> associates) {
-		this.associates = new ImmutableMap<Class<?>, Class<?>>(associates, new IdentityEqualityComparator<Class<?>>());
+		this.associates = new ImmutableMap<Class<?>, Class<?>>(associates, IdentityEqualityComparator.getInstance());
 		Map<Class<?>, Class<?>> inverseAssociates = new IdentityHashMap<Class<?>, Class<?>>();
 		for (Entry<Class<?>, Class<?>> entry : associates.entrySet()) {
 			inverseAssociates.put(entry.getValue(), entry.getKey());
 		}
-		this.inverseAssociates = new ImmutableMap<Class<?>, Class<?>>(inverseAssociates, new IdentityEqualityComparator<Class<?>>());
+		this.inverseAssociates = new ImmutableMap<Class<?>, Class<?>>(inverseAssociates, IdentityEqualityComparator.getInstance());
 	}
 	
 	public <T> Class<? extends T> getDestinationClass(Class<?> src, Class<T> expectedDest) {

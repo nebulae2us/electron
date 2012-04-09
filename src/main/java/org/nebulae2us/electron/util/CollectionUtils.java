@@ -16,6 +16,7 @@
 package org.nebulae2us.electron.util;
 
 import java.util.Collection;
+import java.util.Map;
 
 /**
  * @author Trung Phan
@@ -26,6 +27,11 @@ public class CollectionUtils {
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public static void addItem(Collection<?> collection, Object item) {
 		((Collection)collection).add(item);
+	}
+	
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	public static void putItem(Map<?, ?> map, Object key, Object value) {
+		((Map)map).put(key, value);
 	}
 	
 }

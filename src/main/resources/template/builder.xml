@@ -3,31 +3,31 @@
 <properties>
 
 <entry key="builder_constructors"><![CDATA[
-	protected final Sample $$$wrapped;
+	protected final Book<? extends Color, ? extends Paper<? extends Color>, ? extends Recordable<? extends Color>, ? extends List<? extends Paper<? extends Color>>> $$$wrapped;
 
 	protected final P $$$parentBuilder;
 	
-	public SampleBuilderSpec() {
+	public BookBuilderSpec() {
 		this.$$$wrapped = null;
 		this.$$$parentBuilder = null;
 	}
 	
-	public SampleBuilderSpec(P parentBuilder) {
+	public BookBuilderSpec(P parentBuilder) {
 		this.$$$wrapped = null;
 		this.$$$parentBuilder = parentBuilder;
 	}
 
-	protected SampleBuilderSpec(Sample wrapped) {
+	protected BookBuilderSpec(Book<? extends Color, ? extends Paper<? extends Color>, ? extends Recordable<? extends Color>, ? extends List<? extends Paper<? extends Color>>> wrapped) {
 		this.$$$wrapped = wrapped;
 		this.$$$parentBuilder = null;
 	}
 	
-    public SampleBuilderSpec<P> storeTo(BuilderRepository repo, Object builderId) {
+    public BookBuilderSpec<P> storeTo(BuilderRepository repo, Object builderId) {
     	repo.put(builderId, this);
     	return this;
     }
 
-	public Sample getWrappedObject() {
+	public Book<? extends Color, ? extends Paper<? extends Color>, ? extends Recordable<? extends Color>, ? extends List<? extends Paper<? extends Color>>> getWrappedObject() {
 		return this.$$$wrapped;
 	}
 
@@ -40,37 +40,59 @@
 	public P end() {
 		return this.$$$parentBuilder;
 	}
+
+    public Book<? extends Color, ? extends Paper<? extends Color>, ? extends Recordable<? extends Color>, ? extends List<? extends Paper<? extends Color>>> toBook() {
+    	return new Converter(new BuilderAnnotationDestinationClassResolver(), true).convert(this).to(Book.class);
+    }
+
+	//{1 only exist if type variables exist
+    public <C extends Color & Serializable, T extends Paper<C>, R extends Recordable<C>, L extends List<? extends T>> Book<C, T, R, L> toBook(Class<C> C, Class<T> T, Class<R> R, Class<L> L) {
+    	return new Converter(new BuilderAnnotationDestinationClassResolver(), true).convert(this).to(Book.class);
+    }
+    //}1
 ]]></entry>
 
 <entry key="subclass_constructors"><![CDATA[
-	public SubSampleBuilderSpec() {
+	public FictionBuilderSpec() {
 		super();
 	}
 	
-	public SubSampleBuilderSpec(P parentBuilder) {
+	public FictionBuilderSpec(P parentBuilder) {
 		super(parentBuilder);
 	}
 
-	protected SubSampleBuilderSpec(SubSample wrapped) {
+	protected FictionBuilderSpec(Fiction<? extends Color, ? extends Recordable<? extends Color>, ? extends Set<? super Recordable<? extends Color>>> wrapped) {
 		super(wrapped);
 	}
 
 	@Override
-	public SubSample getWrappedObject() {
-		return (SubSample)this.$$$wrapped;
-	}
-
-	@Override
-    public SubSampleBuilderSpec<P> storeTo(BuilderRepository repo, Object builderId) {
+    public FictionBuilderSpec<P> storeTo(BuilderRepository repo, Object builderId) {
     	repo.put(builderId, this);
     	return this;
     }
-]]></entry>
 
-<entry key="build_methods"><![CDATA[
-    public Sample<T> toSample() {
-    	return new Converter(new BuilderAnnotationDestinationClassResolver(), true).convert(this).to(Sample.class);
+	@Override
+	public Fiction<? extends Color, ? extends Recordable<? extends Color>, ? extends Set<? super Recordable<? extends Color>>> getWrappedObject() {
+		return (Fiction<? extends Color, ? extends Recordable<? extends Color>, ? extends Set<? super Recordable<? extends Color>>>)this.$$$wrapped;
+	}
+
+    public Fiction<? extends Color, ? extends Recordable<? extends Color>, ? extends Set<? super Recordable<? extends Color>>> toFiction() {
+    	return new Converter(new BuilderAnnotationDestinationClassResolver(), true).convert(this).to(Fiction.class);
     }
+    
+    //{1 only exist if type variables exist
+    public <C extends Color & Serializable, R extends Recordable<C>, S extends Set<? super R>> Fiction<C, R, S> toFiction(Class<C> C, Class<R> R, Class<S> S) {
+    	return new Converter(new BuilderAnnotationDestinationClassResolver(), true).convert(this).to(Fiction.class);
+    }
+	
+	//}1
+	//{2 only exist if has super class
+	@Override
+    public Fiction<? extends Color, ? extends Recordable<? extends Color>, ? extends Set<? super Recordable<? extends Color>>> toBook() {
+    	return new Converter(new BuilderAnnotationDestinationClassResolver(), true).convert(this).to(Fiction.class);
+    }
+    
+    //}2
 ]]></entry>
 
 <entry key="subclass_build_methods"><![CDATA[
@@ -81,47 +103,59 @@
 ]]></entry>
 
 <entry key="builder_fieldname_getter_settter"><![CDATA[
-	private String name;
+	private PaperBuilderSpec<?> myPaper;
 	
-	public String getName() {
-		return name;
+	public PaperBuilderSpec<?> getMyPaper() {
+		return myPaper;
 	}
 
-	public void setName(String name) {
+	public void setMyPaper(PaperBuilderSpec<?> myPaper) {
 		verifyMutable();
-		this.name = name;
+		this.myPaper = myPaper;
 	}
 ]]></entry>
 
 <entry key="builder_single_type_field"><![CDATA[
-	public SampleBuilderSpec<P> name(String name) {
+	public BookBuilderSpec<P> myPaper(PaperBuilderSpec<?> myPaper) {
 		verifyMutable();
-		this.name = name;
+		this.myPaper = myPaper;
 		return this;
 	}
 ]]></entry>
 
 <entry key="subclass_single_type_field"><![CDATA[
 	@Override
-	public SubSampleBuilderSpec<P> name(String name) {
-		return (SubSampleBuilderSpec<P>)super.name(name);
+	public FictionBuilderSpec<P> myPaper(PaperBuilderSpec<?> myPaper) {
+		return (FictionBuilderSpec<P>)super.myPaper(myPaper);
+	}
+]]></entry>
+
+<entry key="builder_single_type_builder_field_subedit_each_subclass"><![CDATA[
+	public CopyPaperBuilderSpec<? extends BookBuilderSpec<P>> myPaper$asCopyPaper$begin() {
+		verifyMutable();
+		CopyPaperBuilderSpec<BookBuilderSpec<P>> result = new CopyPaperBuilderSpec<BookBuilderSpec<P>>(this);
+		this.myPaper = result;
+		return result;
+	}
+]]></entry>
+
+<entry key="builder_single_type_builder_field_subedit"><![CDATA[
+	public PaperBuilderSpec<? extends BookBuilderSpec<P>> myPaper$begin() {
+		verifyMutable();
+		PaperBuilderSpec<BookBuilderSpec<P>> result = new PaperBuilderSpec<BookBuilderSpec<P>>(this);
+		this.myPaper = result;
+		return result;
 	}
 ]]></entry>
 
 <entry key="builder_single_type_builder_field"><![CDATA[
-	public BlankBuilderSpec<? extends SampleBuilderSpec<P>> blank$begin() {
-		BlankBuilderSpec<SampleBuilderSpec<P>> result = new BlankBuilderSpec<SampleBuilderSpec<P>>(this);
-		this.blank = result;
-		return result;
-	}
-
-    public SampleBuilderSpec<P> blank$wrap(Blank blank) {
+    public BookBuilderSpec<P> myPaper$wrap(Paper myPaper) {
     	verifyMutable();
-    	this.blank = new WrapConverter(Builders.DESTINATION_CLASS_RESOLVER).convert(blank).to(BlankBuilderSpec.class);
+    	this.myPaper = new WrapConverter(BuilderSpecs.DESTINATION_CLASS_RESOLVER).convert(myPaper).to(PaperBuilderSpec.class);
         return this;
     }
     
-    public SampleBuilderSpec<P> blank$restoreFrom(BuilderRepository repo, Object builderId) {
+    public BookBuilderSpec<P> myPaper$restoreFrom(BuilderRepository repo, Object builderId) {
     	verifyMutable();
     	
         Object restoredObject = repo.get(builderId);
@@ -129,7 +163,7 @@
         	if (repo.isSupportLazy()) {
         		repo.addObjectStoredListener(builderId, new Procedure() {
 					public void execute(Object... arguments) {
-						SampleBuilderSpec.this.blank = (BlankBuilderSpec<?>)arguments[0];
+						BookBuilderSpec.this.myPaper = (PaperBuilderSpec<?>)arguments[0];
 					}
 				});
         	}
@@ -137,23 +171,17 @@
                 throw new IllegalStateException("Object does not exist with id " + builderId);
         	}
         }
-        else if (!(restoredObject instanceof BlankBuilderSpec)) {
-        	throw new IllegalStateException("Type mismatch for id: " + builderId + ". " + BlankBuilderSpec.class.getSimpleName() + " vs " + restoredObject.getClass().getSimpleName());
+        else if (!(restoredObject instanceof PaperBuilderSpec)) {
+        	throw new IllegalStateException("Type mismatch for id: " + builderId + ". " + PaperBuilderSpec.class.getSimpleName() + " vs " + restoredObject.getClass().getSimpleName());
         }
         else {
-            this.blank = (BlankBuilderSpec<?>)restoredObject;
+            this.myPaper = (PaperBuilderSpec<?>)restoredObject;
         }
         return this;
     }
 ]]></entry>
 
 <entry key="subclass_single_type_builder_field"><![CDATA[
-	@SuppressWarnings("unchecked")
-	@Override
-	public BlankBuilderSpec<? extends SubSampleBuilderSpec<P>> blank$begin() {
-		return (BlankBuilderSpec<? extends SubSampleBuilderSpec<P>>)super.blank$begin();
-	}
-
 	@Override
     public SubSampleBuilderSpec<P> blank$wrap(Blank blank) {
 		return (SubSampleBuilderSpec<P>)super.blank$wrap(blank);
@@ -165,102 +193,115 @@
     }
 ]]></entry>
 
-<entry key="builder_collection_type_field"><![CDATA[
-	public SampleBuilderSpec<P> names(String ... names) {
+<entry key="subclass_single_type_builder_field_subedit"><![CDATA[
+	@SuppressWarnings("unchecked")
+	@Override
+	public PaperBuilder<? extends FictionBuilder<P>> myPaper$begin() {
+		return (PaperBuilder<? extends FictionBuilder<P>>)super.myPaper$begin();
+	}
+]]></entry>
+
+<entry key="subclass_single_type_builder_field_subedit_each_subclass"><![CDATA[
+	@Override
+	public CopyPaperBuilderSpec<? extends FictionBuilderSpec<P>> myPaper$asCopyPaper$begin() {
+		return (CopyPaperBuilderSpec<? extends FictionBuilderSpec<P>>)super.myPaper$asCopyPaper$begin();
+	}
+]]></entry>
+
+
+<entry key="builder_collection"><![CDATA[
+	public BookBuilderSpec<P> myPapers(PaperBuilderSpec<?> ... myPapers) {
 		verifyMutable();
-		return names(new ListBuilder<String>().add(names).toList());
+		return myPapers(new ListBuilder<PaperBuilderSpec<?>>().add(myPapers).toList());
 	}
 	
-	public SampleBuilderSpec<P> names(Collection<String> names) {
+	public BookBuilderSpec<P> myPapers(Collection<PaperBuilderSpec<?>> myPapers) {
 		verifyMutable();
-		if (this.names == null) {
-			this.names = new ArrayList<String>();
+		if (this.myPapers == null) {
+			this.myPapers = new ArrayList<PaperBuilderSpec<?>>();
 		}
-		if (names != null) {
-			for (String e : names) {
-				this.names.add(e);
+		if (myPapers != null) {
+			for (PaperBuilderSpec<?> e : myPapers) {
+				CollectionUtils.addItem(this.myPapers, e);
 			}
 		}
 		return this;
 	}
-]]></entry>
 
-<entry key="subclass_collection_type_field"><![CDATA[
-	@Override
-	public SubSampleBuilderSpec<P> names(String ... names) {
-		return (SubSampleBuilderSpec<P>)super.names(names);
-	}
-
-	@Override
-	public SubSampleBuilderSpec<P> names(Collection<String> names) {
-		return (SubSampleBuilderSpec<P>)super.names(names);
-	}
-]]></entry>
-
-<entry key="builder_collection_type_builder_field"><![CDATA[
-	public BlankBuilderSpec<SampleBuilderSpec<P>> blanks$one() {
+	//{1 element type is also a builder
+	//{2 repeat this for each class & subclass
+	public CopyPaperBuilderSpec<? extends BookBuilderSpec<P>> myPapers$addCopyPaper() {
 		verifyMutable();
-		if (this.blanks == null) {
-			this.blanks = new ArrayList<BlankBuilderSpec<?>>();
+		if (this.myPapers == null) {
+			this.myPapers = new ArrayList<PaperBuilderSpec<?>>();
 		}
 		
-		BlankBuilderSpec<SampleBuilderSpec<P>> result =
-				new BlankBuilderSpec<SampleBuilderSpec<P>>(this);
+		CopyPaperBuilderSpec<BookBuilderSpec<P>> result =
+				new CopyPaperBuilderSpec<BookBuilderSpec<P>>(this);
 		
-		this.blanks.add(result);
+		CollectionUtils.addItem(this.myPapers, result);
 		
 		return result;
 	}
+	
+	//}2
+	public class MyPapers$$$builder<P1 extends BookBuilderSpec<P>> {
+	
+		private final P1 $$$parentBuilder1;
+	
+		protected MyPapers$$$builder(P1 parentBuilder) {
+			this.$$$parentBuilder1 = parentBuilder;
+		}
 
-	public class Blanks$$$builder {
-		
-		public BlankBuilderSpec<Blanks$$$builder> blank$begin() {
-			BlankBuilderSpec<Blanks$$$builder> result = new BlankBuilderSpec<Blanks$$$builder>(this);
-			SampleBuilderSpec.this.blanks.add(result);
+		//{3 repeat this for each class & subclass	
+		public CopyPaperBuilderSpec<MyPapers$$$builder<P1>> copyPaper$begin() {
+			CopyPaperBuilderSpec<MyPapers$$$builder<P1>> result = new CopyPaperBuilderSpec<MyPapers$$$builder<P1>>(this);
+			CollectionUtils.addItem(BookBuilderSpec.this.myPapers, result);
 			return result;
 		}
 		
-		public SampleBuilderSpec<P> end() {
-			return SampleBuilderSpec.this;
+		//}3
+		public P1 end() {
+			return this.$$$parentBuilder1;
 		}
 	}
 	
-	public Blanks$$$builder blanks$list() {
+	public MyPapers$$$builder<? extends BookBuilderSpec<P>> myPapers$list() {
 		verifyMutable();
-		if (this.blanks == null) {
-			this.blanks = new ArrayList<BlankBuilderSpec<?>>();
+		if (this.myPapers == null) {
+			this.myPapers = new ArrayList<PaperBuilderSpec<?>>();
 		}
-		return new Blanks$$$builder();
+		return new MyPapers$$$builder<BookBuilderSpec<P>>(this);
 	}
 
-    public SampleBuilderSpec<P> blanks$wrap(Blank ... blanks) {
-    	return blanks$wrap(new ListBuilder<Blank>().add(blanks).toList());
+    public BookBuilderSpec<P> myPapers$wrap(Paper ... myPapers) {
+    	return myPapers$wrap(new ListBuilder<Paper>().add(myPapers).toList());
     }
 
-    public SampleBuilderSpec<P> blanks$wrap(Collection<Blank> blanks) {
+    public BookBuilderSpec<P> myPapers$wrap(Collection<? extends Paper> myPapers) {
 		verifyMutable();
 
-		if (this.blanks == null) {
-			this.blanks = new ArrayList<BlankBuilderSpec<?>>();
+		if (this.myPapers == null) {
+			this.myPapers = new ArrayList<PaperBuilderSpec<?>>();
 		}
-		if (blanks != null) {
-			for (Blank e : blanks) {
-				BlankBuilderSpec<?> wrapped = new WrapConverter(Builders.DESTINATION_CLASS_RESOLVER).convert(e).to(BlankBuilderSpec.class);
-				this.blanks.add(wrapped);
+		if (myPapers != null) {
+			for (Paper e : myPapers) {
+				PaperBuilderSpec<?> wrapped = new WrapConverter(BuilderSpecs.DESTINATION_CLASS_RESOLVER).convert(e).to(PaperBuilderSpec.class);
+				CollectionUtils.addItem(this.myPapers, wrapped);
 			}
 		}
 		return this;
     }
     
-    public SampleBuilderSpec<P> blanks$restoreFrom(BuilderRepository repo, Object ... builderIds) {
-    	return blanks$restoreFrom(repo, new ListBuilder<Object>().add(builderIds).toList());
+    public BookBuilderSpec<P> myPapers$restoreFrom(BuilderRepository repo, Object ... builderIds) {
+    	return myPapers$restoreFrom(repo, new ListBuilder<Object>().add(builderIds).toList());
     }
 
-    public SampleBuilderSpec<P> blanks$restoreFrom(BuilderRepository repo, Collection<Object> builderIds) {
+    public BookBuilderSpec<P> myPapers$restoreFrom(BuilderRepository repo, Collection<Object> builderIds) {
 		verifyMutable();
 
-		if (this.blanks == null) {
-			this.blanks = new ArrayList<BlankBuilderSpec<?>>();
+		if (this.myPapers == null) {
+			this.myPapers = new ArrayList<PaperBuilderSpec<?>>();
 		}
 		if (builderIds != null) {
 	    	for (Object builderId : builderIds) {
@@ -269,7 +310,7 @@
 	            	if (repo.isSupportLazy()) {
 	            		repo.addObjectStoredListener(builderId, new Procedure() {
 	    					public void execute(Object... arguments) {
-	    						SampleBuilderSpec.this.blanks.add((BlankBuilderSpec<?>)arguments[0]);
+	    						CollectionUtils.addItem(BookBuilderSpec.this.myPapers, arguments[0]);
 	    					}
 	    				});
 	            	}
@@ -277,38 +318,135 @@
 	                    throw new IllegalStateException("Object does not exist with id " + builderId);
 	            	}
 	            }
-	            else if (!(restoredObject instanceof BlankBuilderSpec)) {
-	            	throw new IllegalStateException("Type mismatch for id: " + builderId + ". " + BlankBuilderSpec.class.getSimpleName() + " vs " + restoredObject.getClass().getSimpleName());
+	            else if (!(restoredObject instanceof PaperBuilderSpec)) {
+	            	throw new IllegalStateException("Type mismatch for id: " + builderId + ". " + PaperBuilderSpec.class.getSimpleName() + " vs " + restoredObject.getClass().getSimpleName());
 	            }
 	            else {
-	                this.blanks.add((BlankBuilderSpec<?>)restoredObject);
+	                CollectionUtils.addItem(this.myPapers, restoredObject);
 	            }
 	    	}
 		}
         return this;
     }
+    //}1
 ]]></entry>
 
-<entry key="subclass_collection_type_builder_field"><![CDATA[
+<entry key="subclass_collection"><![CDATA[
 	@Override
-    public SubSampleBuilderSpec<P> blanks$wrap(Blank ... blanks) {
-		return (SubSampleBuilderSpec<P>)super.blanks$wrap(blanks);
+	public FictionBuilderSpec<P> myPapers(PaperBuilderSpec<?> ... myPapers) {
+		return (FictionBuilderSpec<P>)super.myPapers(myPapers);
+	}
+
+	@Override
+	public FictionBuilderSpec<P> myPapers(Collection<PaperBuilderSpec<?>> myPapers) {
+		return (FictionBuilderSpec<P>)super.myPapers(myPapers);
+	}
+
+	//{1 only exist if field is builder
+	//{2 for each subclass
+	@Override
+	public CopyPaperBuilderSpec<? extends FictionBuilderSpec<P>> myPapers$addCopyPaper() {
+		return (CopyPaperBuilderSpec<? extends FictionBuilderSpec<P>>)super.myPapers$addCopyPaper();
+	}
+	
+	//}2
+	public MyPapers$$$builder<? extends FictionBuilderSpec<P>> myPapers$list() {
+		return (MyPapers$$$builder<? extends FictionBuilderSpec<P>>)super.myPapers$list();
+	}
+	
+	@Override
+    public FictionBuilderSpec<P> myPapers$wrap(Paper ... myPapers) {
+		return (FictionBuilderSpec<P>)super.myPapers$wrap(myPapers);
     }
 
 	@Override
-    public SubSampleBuilderSpec<P> blanks$wrap(Collection<Blank> blanks) {
-		return (SubSampleBuilderSpec<P>)super.blanks$wrap(blanks);
+    public FictionBuilderSpec<P> myPapers$wrap(Collection<? extends Paper> myPapers) {
+		return (FictionBuilderSpec<P>)super.myPapers$wrap(myPapers);
     }
 
 	@Override
-    public SubSampleBuilderSpec<P> blanks$restoreFrom(BuilderRepository repo, Object ... builderIds) {
-		return (SubSampleBuilderSpec<P>)super.blanks$restoreFrom(repo, builderIds);
+    public FictionBuilderSpec<P> myPapers$restoreFrom(BuilderRepository repo, Object ... builderIds) {
+		return (FictionBuilderSpec<P>)super.myPapers$restoreFrom(repo, builderIds);
     }
 
 	@Override
-    public SubSampleBuilderSpec<P> blanks$restoreFrom(BuilderRepository repo, Collection<Object> builderIds) {
-		return (SubSampleBuilderSpec<P>)super.blanks$restoreFrom(repo, builderIds);
+    public FictionBuilderSpec<P> myPapers$restoreFrom(BuilderRepository repo, Collection<Object> builderIds) {
+		return (FictionBuilderSpec<P>)super.myPapers$restoreFrom(repo, builderIds);
     }
+    //}1
+]]></entry>
+
+<entry key="builder_map"><![CDATA[
+	public BookBuilderSpec<P> paperColors(Map<PaperBuilderSpec<?>, ColorBuilderSpec<?>> paperColors) {
+		verifyMutable();
+
+		if (this.paperColors == null) {
+			this.paperColors = new HashMap<PaperBuilderSpec<?>, ColorBuilderSpec<?>>();
+		}
+		if (paperColors != null) {
+			for (Map.Entry<PaperBuilderSpec<?>, ColorBuilderSpec<?>> e : paperColors.entrySet()) {
+				CollectionUtils.putItem(this.paperColors, e.getKey(), e.getValue());
+			}
+		}
+		return this;
+	}
+
+	public class PaperColors$builder<P1 extends BookBuilderSpec<P>> {
+		
+		private final P1 $$$parentBuilder;
+		
+		public class Value$builder {
+
+			private PaperBuilderSpec<?> key;
+
+			private Value$builder(PaperBuilderSpec<?> key) {
+				this.key = key;
+			}
+
+			public PaperColors$builder<P1> value(ColorBuilderSpec<?> value) {
+				CollectionUtils.putItem(BookBuilderSpec.this.paperColors, key, value);
+				return PaperColors$builder.this;
+			}
+
+			//{1 only exist if value is builder, loop through each value's class & subclass
+			public RGBColorBuilderSpec<PaperColors$builder<P1>> value$asRGBColor() {
+				RGBColorBuilderSpec<PaperColors$builder<P1>> result = new RGBColorBuilderSpec<PaperColors$builder<P1>>(PaperColors$builder.this);
+				CollectionUtils.putItem(BookBuilderSpec.this.paperColors, key, result);
+				return result;
+			}
+			
+			//}1
+		}
+		
+		private PaperColors$builder(P1 parentBuilder) {
+			this.$$$parentBuilder = parentBuilder;
+		}
+		
+		public Value$builder key(PaperBuilderSpec<?> key) {
+			return new Value$builder(key);
+		}
+		
+		//{2 only exist if key is also builder, loop through each key's class & subclass;
+		public CopyPaperBuilderSpec<Value$builder> key$asCopyPaper() {
+			CopyPaperBuilderSpec<Value$builder> result = new CopyPaperBuilderSpec<Value$builder>(new Value$builder(null));
+			result.$$$parentBuilder.key = result;
+			return result;
+		}
+		
+		//}2
+		public P1 end() {
+			return this.$$$parentBuilder;
+		}
+	}
+	
+	public PaperColors$builder<? extends BookBuilderSpec<P>> paperColors$map() {
+		verifyMutable();
+
+		if (this.paperColors == null) {
+			this.paperColors = new HashMap<PaperBuilderSpec<?>, ColorBuilderSpec<?>>();
+		}
+		return new PaperColors$builder<BookBuilderSpec<P>>(this);
+	}	
 ]]></entry>
 
 <entry key="builder_map_type_field"><![CDATA[
@@ -320,7 +458,7 @@
 		}
 		if (keywordCounts != null) {
 			for (Map.Entry<String, Integer> e : keywordCounts.entrySet()) {
-				this.keywordCounts.put(e.getKey(), e.getValue());
+				CollectionUtils.putItem(this.keywordCounts, e.getKey(), e.getValue());
 			}
 		}
 		return this;
@@ -336,7 +474,7 @@
 				this.key = key;
 			}
 			public KeywordCounts$builder<P1> value(Integer value) {
-				SampleBuilderSpec.this.keywordCounts.put(key, value);
+				CollectionUtils.putItem(SampleBuilderSpec.this.keywordCounts, key, value);
 				return KeywordCounts$builder.this;
 			}
 		}
@@ -404,7 +542,7 @@ package packageName;
 import org.nebulae2us.electron.*;
 import org.nebulae2us.electron.util.*;
 import Person;
-public class Builders {
+public class BuilderSpecs {
 
 	public static final DestinationClassResolver DESTINATION_CLASS_RESOLVER = new DestinationClassResolverByMap(
 			new MapBuilder<Class<?>, Class<?>> ()
@@ -415,24 +553,23 @@ public class Builders {
 ]]></entry>
 
 <entry key="builders_each_model_class"><![CDATA[
-    public static PersonBuilder<?> person() {
-        return new PersonBuilder<Object>();
+    public static BookBuilderSpec<?> book() {
+        return new BookBuilderSpec<Object>();
     }
 
-    public static PersonBuilder<?> person$restoreFrom(BuilderRepository repo, int builderId) {
-        return (PersonBuilder<?>)repo.get(builderId);
+    public static BookBuilderSpec<?> book$restoreFrom(BuilderRepository repo, int builderId) {
+        return (BookBuilderSpec<?>)repo.get(builderId);
     }
 
-    public static PersonBuilder<?> person$copyFrom(Person person) {
-    	PersonBuilder<?> result = new Converter(DESTINATION_CLASS_RESOLVER, false).convert(person).to(PersonBuilder.class);
+    public static BookBuilderSpec<?> book$copyFrom(Book book) {
+    	BookBuilderSpec<?> result = new Converter(DESTINATION_CLASS_RESOLVER, false).convert(book).to(BookBuilderSpec.class);
     	return result;
     }
     
-    public static PersonBuilder<?> wrap(Person person) {
-    	return new WrapConverter(DESTINATION_CLASS_RESOLVER).convert(person).to(PersonBuilder.class);
+    public static BookBuilderSpec<?> wrap(Book book) {
+    	return new WrapConverter(DESTINATION_CLASS_RESOLVER).convert(book).to(BookBuilderSpec.class);
     }
 ]]></entry>
-
 
 
 </properties>

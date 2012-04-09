@@ -32,10 +32,13 @@ public class GenerateBuilders {
 			.buildersClassName("org.nebulae2us.electron.test.builder3.model.Builders")
 			.builderSuffix("Builder")
 			.generate(
+					Recordable.class,
 					Book.class,
 					Fiction.class,
 					Paper.class,
-					CopyPaper.class
+					CopyPaper.class,
+					Color.class,
+					RGBColor.class
 					);
 		
 	}

@@ -19,6 +19,6 @@ package org.nebulae2us.electron.test.builder3.model;
  * @author Trung Phan
  *
  */
-public class CopyPaper extends Paper {
+public class CopyPaper<C extends Color> extends Paper<C> {
 
 }

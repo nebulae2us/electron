@@ -22,6 +22,6 @@ import java.util.Collection;
  */
 public class ImmutableIdentitySet<E> extends ImmutableSet<E> {
     public ImmutableIdentitySet(Collection<E> c) {
-        super(c, new IdentityEqualityComparator<E>());
+        super(c, IdentityEqualityComparator.getInstance());
     }
 }

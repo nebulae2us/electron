@@ -20,24 +20,27 @@ public class SubSampleBuilderSpec<P> extends SampleBuilderSpec<P> {
 	}
 
 	@Override
-	public SubSample getWrappedObject() {
-		return (SubSample)this.$$$wrapped;
-	}
-
-	@Override
     public SubSampleBuilderSpec<P> storeTo(BuilderRepository repo, Object builderId) {
     	repo.put(builderId, this);
     	return this;
     }
-	
+
+	@Override
+	public SubSample getWrappedObject() {
+		return (SubSample)this.$$$wrapped;
+	}
+
     public SubSample toSubSample() {
     	return new Converter(new BuilderAnnotationDestinationClassResolver(), true).convert(this).to(SubSample.class);
     }
+    
 
-    @Override
+	@Override
     public SubSample toSample() {
     	return new Converter(new BuilderAnnotationDestinationClassResolver(), true).convert(this).to(SubSample.class);
     }
+    
+
 
 	@Override
 	public SubSampleBuilderSpec<P> name(String name) {
@@ -54,6 +57,8 @@ public class SubSampleBuilderSpec<P> extends SampleBuilderSpec<P> {
 		return (SubSampleBuilderSpec<P>)super.names(names);
 	}
 
+
+
 	@Override
 	public SubSampleBuilderSpec<P> keywords(String ... keywords) {
 		return (SubSampleBuilderSpec<P>)super.keywords(keywords);
@@ -63,6 +68,8 @@ public class SubSampleBuilderSpec<P> extends SampleBuilderSpec<P> {
 	public SubSampleBuilderSpec<P> keywords(Collection<String> keywords) {
 		return (SubSampleBuilderSpec<P>)super.keywords(keywords);
 	}
+
+
 
 	@Override
 	public SubSampleBuilderSpec<P> keywordCounts(Map<String, Integer> keywordCounts) {
@@ -76,29 +83,25 @@ public class SubSampleBuilderSpec<P> extends SampleBuilderSpec<P> {
 	}
 
 	@Override
-	public SubSampleBuilderSpec<P> myClass(Class<Object> myClass) {
+	public SubSampleBuilderSpec<P> myClass(Class<?> myClass) {
 		return (SubSampleBuilderSpec<P>)super.myClass(myClass);
 	}
 
 	@Override
-	public SubSampleBuilderSpec<P> otherClasses(Class<Object> ... otherClasses) {
+	public SubSampleBuilderSpec<P> otherClasses(Class<?> ... otherClasses) {
 		return (SubSampleBuilderSpec<P>)super.otherClasses(otherClasses);
 	}
 
 	@Override
-	public SubSampleBuilderSpec<P> otherClasses(Collection<Class<Object>> otherClasses) {
+	public SubSampleBuilderSpec<P> otherClasses(Collection<Class<?>> otherClasses) {
 		return (SubSampleBuilderSpec<P>)super.otherClasses(otherClasses);
 	}
+
+
 
 	@Override
 	public SubSampleBuilderSpec<P> blank(BlankBuilderSpec<?> blank) {
 		return (SubSampleBuilderSpec<P>)super.blank(blank);
-	}
-
-	@SuppressWarnings("unchecked")
-	@Override
-	public BlankBuilderSpec<? extends SubSampleBuilderSpec<P>> blank$begin() {
-		return (BlankBuilderSpec<? extends SubSampleBuilderSpec<P>>)super.blank$begin();
 	}
 
 	@Override
@@ -111,6 +114,12 @@ public class SubSampleBuilderSpec<P> extends SampleBuilderSpec<P> {
 		return (SubSampleBuilderSpec<P>)super.blank$restoreFrom(repo, builderId);
     }
 
+	@SuppressWarnings("unchecked")
+	@Override
+	public BlankBuilderSpec<? extends SubSampleBuilderSpec<P>> blank$begin() {
+		return (BlankBuilderSpec<? extends SubSampleBuilderSpec<P>>)super.blank$begin();
+	}
+
 	@Override
 	public SubSampleBuilderSpec<P> blanks(BlankBuilderSpec<?> ... blanks) {
 		return (SubSampleBuilderSpec<P>)super.blanks(blanks);
@@ -122,12 +131,22 @@ public class SubSampleBuilderSpec<P> extends SampleBuilderSpec<P> {
 	}
 
 	@Override
+	public BlankBuilderSpec<? extends SubSampleBuilderSpec<P>> blanks$addBlank() {
+		return (BlankBuilderSpec<? extends SubSampleBuilderSpec<P>>)super.blanks$addBlank();
+	}
+	
+
+	public Blanks$$$builder<? extends SubSampleBuilderSpec<P>> blanks$list() {
+		return (Blanks$$$builder<? extends SubSampleBuilderSpec<P>>)super.blanks$list();
+	}
+	
+	@Override
     public SubSampleBuilderSpec<P> blanks$wrap(Blank ... blanks) {
 		return (SubSampleBuilderSpec<P>)super.blanks$wrap(blanks);
     }
 
 	@Override
-    public SubSampleBuilderSpec<P> blanks$wrap(Collection<Blank> blanks) {
+    public SubSampleBuilderSpec<P> blanks$wrap(Collection<? extends Blank> blanks) {
 		return (SubSampleBuilderSpec<P>)super.blanks$wrap(blanks);
     }
 
@@ -140,6 +159,7 @@ public class SubSampleBuilderSpec<P> extends SampleBuilderSpec<P> {
     public SubSampleBuilderSpec<P> blanks$restoreFrom(BuilderRepository repo, Collection<Object> builderIds) {
 		return (SubSampleBuilderSpec<P>)super.blanks$restoreFrom(repo, builderIds);
     }
+
 
 	@Override
 	public SubSampleBuilderSpec<P> blanksMap(Map<Class<BlankBuilderSpec>, BlankBuilderSpec<?>> blanksMap) {

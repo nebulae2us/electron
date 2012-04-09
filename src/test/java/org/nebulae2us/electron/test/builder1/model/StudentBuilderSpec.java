@@ -20,24 +20,27 @@ public class StudentBuilderSpec<P> extends PersonBuilderSpec<P> {
 	}
 
 	@Override
-	public Student getWrappedObject() {
-		return (Student)this.$$$wrapped;
-	}
-
-	@Override
     public StudentBuilderSpec<P> storeTo(BuilderRepository repo, Object builderId) {
     	repo.put(builderId, this);
     	return this;
     }
-	
+
+	@Override
+	public Student getWrappedObject() {
+		return (Student)this.$$$wrapped;
+	}
+
     public Student toStudent() {
     	return new Converter(new BuilderAnnotationDestinationClassResolver(), true).convert(this).to(Student.class);
     }
+    
 
-    @Override
+	@Override
     public Student toPerson() {
     	return new Converter(new BuilderAnnotationDestinationClassResolver(), true).convert(this).to(Student.class);
     }
+    
+
 
 	private boolean partTime;
 	
@@ -79,13 +82,13 @@ public class StudentBuilderSpec<P> extends PersonBuilderSpec<P> {
 		}
 		if (teachers != null) {
 			for (TeacherBuilderSpec<?> e : teachers) {
-				this.teachers.add(e);
+				CollectionUtils.addItem(this.teachers, e);
 			}
 		}
 		return this;
 	}
 
-	public TeacherBuilderSpec<StudentBuilderSpec<P>> teachers$one() {
+	public TeacherBuilderSpec<? extends StudentBuilderSpec<P>> teachers$addTeacher() {
 		verifyMutable();
 		if (this.teachers == null) {
 			this.teachers = new ArrayList<TeacherBuilderSpec<?>>();
@@ -94,37 +97,45 @@ public class StudentBuilderSpec<P> extends PersonBuilderSpec<P> {
 		TeacherBuilderSpec<StudentBuilderSpec<P>> result =
 				new TeacherBuilderSpec<StudentBuilderSpec<P>>(this);
 		
-		this.teachers.add(result);
+		CollectionUtils.addItem(this.teachers, result);
 		
 		return result;
 	}
+	
 
-	public class Teachers$$$builder {
-		
-		public TeacherBuilderSpec<Teachers$$$builder> blank$begin() {
-			TeacherBuilderSpec<Teachers$$$builder> result = new TeacherBuilderSpec<Teachers$$$builder>(this);
-			StudentBuilderSpec.this.teachers.add(result);
+	public class Teachers$$$builder<P1 extends StudentBuilderSpec<P>> {
+	
+		private final P1 $$$parentBuilder1;
+	
+		protected Teachers$$$builder(P1 parentBuilder) {
+			this.$$$parentBuilder1 = parentBuilder;
+		}
+
+		public TeacherBuilderSpec<Teachers$$$builder<P1>> teacher$begin() {
+			TeacherBuilderSpec<Teachers$$$builder<P1>> result = new TeacherBuilderSpec<Teachers$$$builder<P1>>(this);
+			CollectionUtils.addItem(StudentBuilderSpec.this.teachers, result);
 			return result;
 		}
 		
-		public StudentBuilderSpec<P> end() {
-			return StudentBuilderSpec.this;
+
+		public P1 end() {
+			return this.$$$parentBuilder1;
 		}
 	}
 	
-	public Teachers$$$builder teachers$list() {
+	public Teachers$$$builder<? extends StudentBuilderSpec<P>> teachers$list() {
 		verifyMutable();
 		if (this.teachers == null) {
 			this.teachers = new ArrayList<TeacherBuilderSpec<?>>();
 		}
-		return new Teachers$$$builder();
+		return new Teachers$$$builder<StudentBuilderSpec<P>>(this);
 	}
 
     public StudentBuilderSpec<P> teachers$wrap(Teacher ... teachers) {
     	return teachers$wrap(new ListBuilder<Teacher>().add(teachers).toList());
     }
 
-    public StudentBuilderSpec<P> teachers$wrap(Collection<Teacher> teachers) {
+    public StudentBuilderSpec<P> teachers$wrap(Collection<? extends Teacher> teachers) {
 		verifyMutable();
 
 		if (this.teachers == null) {
@@ -133,7 +144,7 @@ public class StudentBuilderSpec<P> extends PersonBuilderSpec<P> {
 		if (teachers != null) {
 			for (Teacher e : teachers) {
 				TeacherBuilderSpec<?> wrapped = new WrapConverter(BuilderSpecs.DESTINATION_CLASS_RESOLVER).convert(e).to(TeacherBuilderSpec.class);
-				this.teachers.add(wrapped);
+				CollectionUtils.addItem(this.teachers, wrapped);
 			}
 		}
 		return this;
@@ -156,7 +167,7 @@ public class StudentBuilderSpec<P> extends PersonBuilderSpec<P> {
 	            	if (repo.isSupportLazy()) {
 	            		repo.addObjectStoredListener(builderId, new Procedure() {
 	    					public void execute(Object... arguments) {
-	    						StudentBuilderSpec.this.teachers.add((TeacherBuilderSpec<?>)arguments[0]);
+	    						CollectionUtils.addItem(StudentBuilderSpec.this.teachers, arguments[0]);
 	    					}
 	    				});
 	            	}
@@ -168,12 +179,13 @@ public class StudentBuilderSpec<P> extends PersonBuilderSpec<P> {
 	            	throw new IllegalStateException("Type mismatch for id: " + builderId + ". " + TeacherBuilderSpec.class.getSimpleName() + " vs " + restoredObject.getClass().getSimpleName());
 	            }
 	            else {
-	                this.teachers.add((TeacherBuilderSpec<?>)restoredObject);
+	                CollectionUtils.addItem(this.teachers, restoredObject);
 	            }
 	    	}
 		}
         return this;
     }
+
 
 	@Override
 	public StudentBuilderSpec<P> name(String name) {
@@ -205,6 +217,22 @@ public class StudentBuilderSpec<P> extends PersonBuilderSpec<P> {
 		return (StudentBuilderSpec<P>)super.parent$restoreFrom(repo, builderId);
     }
 
+	@SuppressWarnings("unchecked")
+	@Override
+	public PersonBuilderSpec<? extends StudentBuilderSpec<P>> parent$begin() {
+		return (PersonBuilderSpec<? extends StudentBuilderSpec<P>>)super.parent$begin();
+	}
+
+	@Override
+	public StudentBuilderSpec<? extends StudentBuilderSpec<P>> parent$asStudent$begin() {
+		return (StudentBuilderSpec<? extends StudentBuilderSpec<P>>)super.parent$asStudent$begin();
+	}
+
+	@Override
+	public TeacherBuilderSpec<? extends StudentBuilderSpec<P>> parent$asTeacher$begin() {
+		return (TeacherBuilderSpec<? extends StudentBuilderSpec<P>>)super.parent$asTeacher$begin();
+	}
+
 	@Override
 	public StudentBuilderSpec<P> children(PersonBuilderSpec<?> ... children) {
 		return (StudentBuilderSpec<P>)super.children(children);
@@ -216,12 +244,32 @@ public class StudentBuilderSpec<P> extends PersonBuilderSpec<P> {
 	}
 
 	@Override
+	public PersonBuilderSpec<? extends StudentBuilderSpec<P>> children$addPerson() {
+		return (PersonBuilderSpec<? extends StudentBuilderSpec<P>>)super.children$addPerson();
+	}
+	
+	@Override
+	public StudentBuilderSpec<? extends StudentBuilderSpec<P>> children$addStudent() {
+		return (StudentBuilderSpec<? extends StudentBuilderSpec<P>>)super.children$addStudent();
+	}
+	
+	@Override
+	public TeacherBuilderSpec<? extends StudentBuilderSpec<P>> children$addTeacher() {
+		return (TeacherBuilderSpec<? extends StudentBuilderSpec<P>>)super.children$addTeacher();
+	}
+	
+
+	public Children$$$builder<? extends StudentBuilderSpec<P>> children$list() {
+		return (Children$$$builder<? extends StudentBuilderSpec<P>>)super.children$list();
+	}
+	
+	@Override
     public StudentBuilderSpec<P> children$wrap(Person ... children) {
 		return (StudentBuilderSpec<P>)super.children$wrap(children);
     }
 
 	@Override
-    public StudentBuilderSpec<P> children$wrap(Collection<Person> children) {
+    public StudentBuilderSpec<P> children$wrap(Collection<? extends Person> children) {
 		return (StudentBuilderSpec<P>)super.children$wrap(children);
     }
 
@@ -235,6 +283,7 @@ public class StudentBuilderSpec<P> extends PersonBuilderSpec<P> {
 		return (StudentBuilderSpec<P>)super.children$restoreFrom(repo, builderIds);
     }
 
+
 	@Override
 	public StudentBuilderSpec<P> hobbies(HobbyBuilderSpec<?> ... hobbies) {
 		return (StudentBuilderSpec<P>)super.hobbies(hobbies);
@@ -246,12 +295,22 @@ public class StudentBuilderSpec<P> extends PersonBuilderSpec<P> {
 	}
 
 	@Override
+	public HobbyBuilderSpec<? extends StudentBuilderSpec<P>> hobbies$addHobby() {
+		return (HobbyBuilderSpec<? extends StudentBuilderSpec<P>>)super.hobbies$addHobby();
+	}
+	
+
+	public Hobbies$$$builder<? extends StudentBuilderSpec<P>> hobbies$list() {
+		return (Hobbies$$$builder<? extends StudentBuilderSpec<P>>)super.hobbies$list();
+	}
+	
+	@Override
     public StudentBuilderSpec<P> hobbies$wrap(Hobby ... hobbies) {
 		return (StudentBuilderSpec<P>)super.hobbies$wrap(hobbies);
     }
 
 	@Override
-    public StudentBuilderSpec<P> hobbies$wrap(Collection<Hobby> hobbies) {
+    public StudentBuilderSpec<P> hobbies$wrap(Collection<? extends Hobby> hobbies) {
 		return (StudentBuilderSpec<P>)super.hobbies$wrap(hobbies);
     }
 
@@ -265,6 +324,7 @@ public class StudentBuilderSpec<P> extends PersonBuilderSpec<P> {
 		return (StudentBuilderSpec<P>)super.hobbies$restoreFrom(repo, builderIds);
     }
 
+
 	@Override
 	public StudentBuilderSpec<P> speeches(SpeechBuilderSpec<?> ... speeches) {
 		return (StudentBuilderSpec<P>)super.speeches(speeches);
@@ -276,12 +336,22 @@ public class StudentBuilderSpec<P> extends PersonBuilderSpec<P> {
 	}
 
 	@Override
+	public SpeechBuilderSpec<? extends StudentBuilderSpec<P>> speeches$addSpeech() {
+		return (SpeechBuilderSpec<? extends StudentBuilderSpec<P>>)super.speeches$addSpeech();
+	}
+	
+
+	public Speeches$$$builder<? extends StudentBuilderSpec<P>> speeches$list() {
+		return (Speeches$$$builder<? extends StudentBuilderSpec<P>>)super.speeches$list();
+	}
+	
+	@Override
     public StudentBuilderSpec<P> speeches$wrap(Speech ... speeches) {
 		return (StudentBuilderSpec<P>)super.speeches$wrap(speeches);
     }
 
 	@Override
-    public StudentBuilderSpec<P> speeches$wrap(Collection<Speech> speeches) {
+    public StudentBuilderSpec<P> speeches$wrap(Collection<? extends Speech> speeches) {
 		return (StudentBuilderSpec<P>)super.speeches$wrap(speeches);
     }
 
@@ -295,6 +365,7 @@ public class StudentBuilderSpec<P> extends PersonBuilderSpec<P> {
 		return (StudentBuilderSpec<P>)super.speeches$restoreFrom(repo, builderIds);
     }
 
+
 	@Override
 	public StudentBuilderSpec<P> friends(PersonBuilderSpec<?> ... friends) {
 		return (StudentBuilderSpec<P>)super.friends(friends);
@@ -306,12 +377,32 @@ public class StudentBuilderSpec<P> extends PersonBuilderSpec<P> {
 	}
 
 	@Override
+	public PersonBuilderSpec<? extends StudentBuilderSpec<P>> friends$addPerson() {
+		return (PersonBuilderSpec<? extends StudentBuilderSpec<P>>)super.friends$addPerson();
+	}
+	
+	@Override
+	public StudentBuilderSpec<? extends StudentBuilderSpec<P>> friends$addStudent() {
+		return (StudentBuilderSpec<? extends StudentBuilderSpec<P>>)super.friends$addStudent();
+	}
+	
+	@Override
+	public TeacherBuilderSpec<? extends StudentBuilderSpec<P>> friends$addTeacher() {
+		return (TeacherBuilderSpec<? extends StudentBuilderSpec<P>>)super.friends$addTeacher();
+	}
+	
+
+	public Friends$$$builder<? extends StudentBuilderSpec<P>> friends$list() {
+		return (Friends$$$builder<? extends StudentBuilderSpec<P>>)super.friends$list();
+	}
+	
+	@Override
     public StudentBuilderSpec<P> friends$wrap(Person ... friends) {
 		return (StudentBuilderSpec<P>)super.friends$wrap(friends);
     }
 
 	@Override
-    public StudentBuilderSpec<P> friends$wrap(Collection<Person> friends) {
+    public StudentBuilderSpec<P> friends$wrap(Collection<? extends Person> friends) {
 		return (StudentBuilderSpec<P>)super.friends$wrap(friends);
     }
 
@@ -324,4 +415,5 @@ public class StudentBuilderSpec<P> extends PersonBuilderSpec<P> {
     public StudentBuilderSpec<P> friends$restoreFrom(BuilderRepository repo, Collection<Object> builderIds) {
 		return (StudentBuilderSpec<P>)super.friends$restoreFrom(repo, builderIds);
     }
+
 }

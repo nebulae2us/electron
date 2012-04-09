@@ -49,6 +49,8 @@ public class SpeechBuilder<P> implements Wrappable<Speech> {
     	return new Converter(new BuilderAnnotationDestinationClassResolver(), true).convert(this).to(Speech.class);
     }
 
+
+
 	private String name;
 	
 	public String getName() {
@@ -83,12 +85,6 @@ public class SpeechBuilder<P> implements Wrappable<Speech> {
 		return this;
 	}
 
-	public PersonBuilder<? extends SpeechBuilder<P>> owner$begin() {
-		PersonBuilder<SpeechBuilder<P>> result = new PersonBuilder<SpeechBuilder<P>>(this);
-		this.owner = result;
-		return result;
-	}
-
     public SpeechBuilder<P> owner$wrap(Person owner) {
     	verifyMutable();
     	this.owner = new WrapConverter(Builders.DESTINATION_CLASS_RESOLVER).convert(owner).to(PersonBuilder.class);
@@ -120,6 +116,27 @@ public class SpeechBuilder<P> implements Wrappable<Speech> {
         return this;
     }
 
+	public PersonBuilder<? extends SpeechBuilder<P>> owner$begin() {
+		verifyMutable();
+		PersonBuilder<SpeechBuilder<P>> result = new PersonBuilder<SpeechBuilder<P>>(this);
+		this.owner = result;
+		return result;
+	}
+
+	public StudentBuilder<? extends SpeechBuilder<P>> owner$asStudent$begin() {
+		verifyMutable();
+		StudentBuilder<SpeechBuilder<P>> result = new StudentBuilder<SpeechBuilder<P>>(this);
+		this.owner = result;
+		return result;
+	}
+
+	public TeacherBuilder<? extends SpeechBuilder<P>> owner$asTeacher$begin() {
+		verifyMutable();
+		TeacherBuilder<SpeechBuilder<P>> result = new TeacherBuilder<SpeechBuilder<P>>(this);
+		this.owner = result;
+		return result;
+	}
+
 	private List<String> keywords;
 	
 	public List<String> getKeywords() {
@@ -143,11 +160,13 @@ public class SpeechBuilder<P> implements Wrappable<Speech> {
 		}
 		if (keywords != null) {
 			for (String e : keywords) {
-				this.keywords.add(e);
+				CollectionUtils.addItem(this.keywords, e);
 			}
 		}
 		return this;
 	}
+
+
 
 	private Map<HobbyBuilder<?>, List<String>> hobbyKeywords;
 	

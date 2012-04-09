@@ -41,7 +41,7 @@ public class ImmutableUniqueList<E> extends ImmutableList<E> {
     }
 	
 	public ImmutableUniqueList(E ... elements) {
-		super(Arrays.asList(elements), new ObjectEqualityComparator<E>(), true);
+		super(Arrays.asList(elements), ObjectEqualityComparator.getInstance(), true);
 	}
 
     public ImmutableUniqueList(Collection<? extends E> c, EqualityComparator<E> equalityComparator) {
@@ -53,7 +53,7 @@ public class ImmutableUniqueList<E> extends ImmutableList<E> {
     }
 
     public ImmutableUniqueList(Collection<? extends E> c) {
-        super(c, new ObjectEqualityComparator<E>(), true);
+        super(c, ObjectEqualityComparator.getInstance(), true);
     }
     
     protected ImmutableUniqueList(ImmutableUniqueList<E> cloned, int fromIndex, int toIndex) {

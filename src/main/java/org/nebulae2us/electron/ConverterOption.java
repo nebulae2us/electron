@@ -45,13 +45,13 @@ public class ConverterOption {
 	}
 	
 	public ConverterOption(Map<Class<?>, Class<?>> associates) {
-		this.associates = new ImmutableMap<Class<?>, Class<?>>(associates, new IdentityEqualityComparator<Class<?>>());
+		this.associates = new ImmutableMap<Class<?>, Class<?>>(associates, IdentityEqualityComparator.getInstance());
 		
 		Map<Class<?>, Class<?>> inverseAssociates = new IdentityHashMap<Class<?>, Class<?>>();
 		for (Entry<Class<?>, Class<?>> entry : associates.entrySet()) {
 			inverseAssociates.put(entry.getValue(), entry.getKey());
 		}
-		this.inverseAssociates = new ImmutableMap<Class<?>, Class<?>>(inverseAssociates, new IdentityEqualityComparator<Class<?>>());
+		this.inverseAssociates = new ImmutableMap<Class<?>, Class<?>>(inverseAssociates, IdentityEqualityComparator.getInstance());
 	}
 
 	public Map<Class<?>, Class<?>> getAssociates() {

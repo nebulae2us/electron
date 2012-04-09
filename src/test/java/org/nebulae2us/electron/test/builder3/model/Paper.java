@@ -19,6 +19,6 @@ package org.nebulae2us.electron.test.builder3.model;
  * @author Trung Phan
  *
  */
-public class Paper implements Recordable {
+public class Paper<C extends Color> implements Recordable<C> {
 
 }

@@ -22,6 +22,6 @@ import java.util.Map;
  */
 public class ImmutableIdentityMap<K, V> extends ImmutableMap<K, V> {
     public ImmutableIdentityMap(Map<? extends K, ? extends V> m) {
-        super(m, new IdentityEqualityComparator<K>());
+        super(m, IdentityEqualityComparator.getInstance());
     }
 }
