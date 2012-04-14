@@ -152,7 +152,6 @@ public class TypeHolder {
 			newBuilderTypeParams.add(builderTypeParam);
 		}
 		
-		
 		/**
 		 * Class is a special class where Class<? extends |x|> is the result of x.getClass(). |x| is the erasure of all static types
 		 */
@@ -163,7 +162,17 @@ public class TypeHolder {
 			}
 		}
 		
-		return new TypeHolder(name, packageName, rawClass, wildcardBound, newBuilderTypeParams);
+		Class<?> newRawClass = rawClass;
+		String newName = name; /* nullable */
+		String newPackageName = packageName;
+		if (ImmutableList.class.isAssignableFrom(rawClass)) {
+			newRawClass = List.class;
+			newName = newRawClass.getSimpleName();
+			newPackageName = newRawClass.getPackage().getName();
+		}
+		
+		
+		return new TypeHolder(newName, newPackageName, newRawClass, wildcardBound, newBuilderTypeParams);
 	}
 	
 	@Override

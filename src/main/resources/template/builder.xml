@@ -516,7 +516,16 @@
 ]]></entry>
 
 
-
+<entry key="custom_code_marker"><![CDATA[
+    /* CUSTOM CODE *********************************
+     * 
+     * Put your own custom code below. These codes won't be discarded during generation.
+     * 
+     */
+     
+     
+     
+]]></entry>
 
 
 
@@ -550,6 +559,9 @@ public class BuilderSpecs {
 			.toMap()
 			);
 
+	public static Converter converter() {
+		return new Converter(DESTINATION_CLASS_RESOLVER, true);
+	}
 ]]></entry>
 
 <entry key="builders_each_model_class"><![CDATA[

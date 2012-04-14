@@ -13,23 +13,27 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.nebulae2us.electron.util;
+package org.nebulae2us.electron.function;
 
-import java.util.List;
+import java.util.Locale;
+
+import org.nebulae2us.electron.ElementContext;
+import org.nebulae2us.electron.Function1;
 
 /**
  * @author Trung Phan
  *
  */
-public class Immutables {
+public class ElementToLowerCase<E> implements Function1<String, ElementContext<E>> {
 
-	public static final <E> ImmutableList<E> $(List<E> list) {
-		return list instanceof ImmutableList ? (ImmutableList<E>)list : new ImmutableList<E>(list);
+	private final Locale locale;
+	
+	public ElementToLowerCase(Locale locale) {
+		this.locale = locale;
 	}
 	
-	public static final <E> ImmutableList<E> $(E ... elements) {
-		return new ImmutableList<E>(elements);
+	public String execute(ElementContext<E> context) {
+		return context.getElement() == null ? "" : context.getElement().toString().toLowerCase(this.locale == null ? Locale.getDefault() : this.locale);
 	}
-	
-	
+
 }

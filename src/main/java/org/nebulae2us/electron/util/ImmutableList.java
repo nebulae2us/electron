@@ -17,15 +17,20 @@ package org.nebulae2us.electron.util;
 
 import java.io.Serializable;
 import java.util.*;
+import java.util.regex.Pattern;
 
 import org.nebulae2us.electron.ElementContext;
 import org.nebulae2us.electron.Function1;
 import org.nebulae2us.electron.function.ChainedAction;
 import org.nebulae2us.electron.function.DenullifyElement;
+import org.nebulae2us.electron.function.ElementToLowerCase;
+import org.nebulae2us.electron.function.ElementToUpperCase;
+import org.nebulae2us.electron.function.ExtractMatchFromElement;
 import org.nebulae2us.electron.function.RemoveNullElement;
 import org.nebulae2us.electron.function.FormatElement;
 import org.nebulae2us.electron.function.ReplaceElement;
 import org.nebulae2us.electron.function.SubstringElement;
+import org.nebulae2us.electron.function.TrimElement;
 
 /**
  * @author Trung Phan
@@ -149,9 +154,9 @@ public class ImmutableList<E> extends AbstractImmutableList<E> implements List<E
     }
 
     protected ImmutableList(ImmutableList<E> cloned, int fromIndex, int toIndex) {
-        if (fromIndex < 0 || fromIndex >= cloned.size ||
+        if (fromIndex < 0 || fromIndex > cloned.size ||
             toIndex < 0 || toIndex > cloned.size || toIndex < fromIndex  ) {
-            throw new IllegalArgumentException("fromIndex or toIndex is not valid.");
+            throw new IllegalArgumentException("fromIndex or toIndex is not valid. FromIndex: " + fromIndex + ", toIndex" + toIndex);
         }
 
         this.size = toIndex - fromIndex;
@@ -332,6 +337,17 @@ public class ImmutableList<E> extends AbstractImmutableList<E> implements List<E
     public ImmutableList<E> changeComparator(Comparator<? super E> comparator) {
     	return sort(comparator);
     }
+
+    public ImmutableList<E> changeComparator(EqualityComparator<? super E> equalityComparator) {
+    	if (equalityComparator == null) {
+    		throw new NullPointerException();
+    	}
+    	
+    	if (this.equalityComparator == equalityComparator) {
+    		return this;
+    	}
+    	return new ImmutableList<E>(this.data, this.fromIndex, this.size, this.descending, null, (EqualityComparator<Object>)equalityComparator);
+    }
     
 	public ImmutableList<E> sort(Comparator<? super E> comparator) {
     	Object[] newData = new Object[this.size];
@@ -344,6 +360,41 @@ public class ImmutableList<E> extends AbstractImmutableList<E> implements List<E
     	return new ImmutableList<E>(newData, 0, this.size, false, (Comparator<Object>)comparator, null);
     }
     
+	public boolean isUnique(EqualityComparator<? super E> comparator) {
+		
+		for (int i = 0; i < this.size; i++) {
+			for (int j = i + 1; j < this.size; j++) {
+				if (comparator.compare(get(i), get(j))) {
+					return false;
+				}
+			}
+		}
+		
+		return true;
+	}
+	
+	public boolean isUnique() {
+		if (this.equalityComparator != null) {
+			return isUnique(this.equalityComparator);
+		}
+		return isUnique(ObjectEqualityComparator.getInstance());
+	}
+	
+	public ImmutableList<E> unique(EqualityComparator<? super E> comparator) {
+		if (isUnique(comparator)) {
+			return this;
+		}
+		
+		return new ImmutableList<E>(this, comparator, true);
+	}
+	
+	public ImmutableList<E> unique() {
+		if (this.equalityComparator != null) {
+			return unique(this.equalityComparator);
+		}
+		return unique(ObjectEqualityComparator.getInstance());
+	}
+	
     public <T> ImmutableList<T> toList(Function1<T, ElementContext<E>> function) {
     	if (function == null) {
     		throw new NullPointerException();
@@ -405,6 +456,30 @@ public class ImmutableList<E> extends AbstractImmutableList<E> implements List<E
     	return toList(new ReplaceElement<E>(substring, newString, 1, true));
     }
     
+    public ImmutableList<String> elementToLowerCase() {
+    	return toList(new ElementToLowerCase<E>(Locale.getDefault()));
+    }
+    
+    public ImmutableList<String> elementToLowerCase(Locale locale) {
+    	return toList(new ElementToLowerCase<E>(locale));
+    }
+
+    public ImmutableList<String> elementToUpperCase() {
+    	return toList(new ElementToUpperCase<E>(Locale.getDefault()));
+    }
+
+    public ImmutableList<String> elementToUpperCase(Locale locale) {
+    	return toList(new ElementToUpperCase<E>(locale));
+    }
+    
+    public ImmutableList<String> trimElement() {
+    	return toList(new TrimElement<E>());
+    }
+    
+    public ImmutableList<String> extractMatchFromElement(Pattern pattern, int group) {
+    	return toList(new ExtractMatchFromElement<E>(pattern, group));
+    }
+    
     public ImmutableList<E> denullify(E nullValue) {
     	return toList(new DenullifyElement<E>(nullValue));
     }
@@ -433,6 +508,34 @@ public class ImmutableList<E> extends AbstractImmutableList<E> implements List<E
     	result.append(suffix);
     	
     	return result.toString();
+    }
+    
+    public ImmutableList<E> unionAll(Collection<? extends E> collection) {
+    	List<E> result = new ArrayList<E>(this);
+    	result.addAll(collection);
+    	return this.comparator != null ? new ImmutableList<E>(result, this.comparator, false) : new ImmutableList<E>(result, this.equalityComparator, false);
+    }
+    
+    public ImmutableList<E> union(Collection<? extends E> collection) {
+    	List<E> result = new ArrayList<E>(this);
+    	for (E element : collection) {
+    		if (!this.contains(element)) {
+    			result.add(element);
+    		}
+    	}
+    	return this.comparator != null ? new ImmutableList<E>(result, this.comparator, false) : new ImmutableList<E>(result, this.equalityComparator, false);
+    }
+    
+    public ImmutableList<E> minus(Collection<? extends E> collection) {
+    	ImmutableList<E> temp = this.comparator != null ? new ImmutableList<E>(collection, this.comparator, false) : new ImmutableList<E>(collection, this.equalityComparator, false);
+    	
+    	List<E> result = new ArrayList<E>();
+    	for (E element : this) {
+    		if (!temp.contains(element)) {
+    			result.add(element);
+    		}
+    	}
+    	return this.comparator != null ? new ImmutableList<E>(result, this.comparator, false) : new ImmutableList<E>(result, this.equalityComparator, false);
     }
     
 }

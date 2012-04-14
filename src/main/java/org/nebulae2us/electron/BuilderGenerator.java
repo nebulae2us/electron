@@ -17,7 +17,10 @@ package org.nebulae2us.electron;
 
 import static org.nebulae2us.electron.util.Immutables.$;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.lang.reflect.Field;
@@ -158,8 +161,11 @@ public class BuilderGenerator {
 			classDeclare.append(" implements Wrappable<").append(srcTypeNoVariable.toString()).append(">");
 			for (Class<?> classToBuild : classesToBuild) {
 				if (classToBuild.isInterface() && classToBuild.isAssignableFrom(srcClass)) {
+					ClassHolder builderInterface = ClassHolder.newInstance(classToBuild).toBuilderClassHolder(this.builderSuffix, "P", classesToBuild);
 					classDeclare.append(", ")
-						.append(ClassHolder.newInstance(classToBuild).toBuilderClassHolder(this.builderSuffix, "P", classesToBuild));
+						.append(builderInterface);
+
+					importGenerator.importClasses(builderInterface);
 				}
 			}
 			
@@ -416,12 +422,16 @@ public class BuilderGenerator {
 						for (Class<?> classToBuild : classesToBuild) {
 							if (!classToBuild.isInterface() && collectionElementTypeHolder.getRawClass().isAssignableFrom(classToBuild)) {
 								ClassHolder subSrcClassHolder = ClassHolder.newInstance(classToBuild);
+								ClassHolder subBuilderClassHolder = subSrcClassHolder.toBuilderClassHolder(this.builderSuffix, "?", classesToBuild);
 								
+								importGenerator.importClasses(subSrcClassHolder);
+								importGenerator.importClasses(subBuilderClassHolder);
+
 								block2.append(
 										new StringReplacer(block2template)
 										.replace("PaperBuilderSpec<?>", collectionElementBuilderTypeHolder.toString())
 										.replace("PaperBuilderSpec", collectionElementBuilderTypeHolder.getName())
-										.replace("CopyPaperBuilderSpec", subSrcClassHolder.toBuilderClassHolder(this.builderSuffix, "?", classesToBuild).getName())
+										.replace("CopyPaperBuilderSpec", subBuilderClassHolder.getName())
 										.replace("myPapers", fieldName)
 										.replace("MyPapers", fieldNameTitleCase)
 										.replace("CopyPaper", subSrcClassHolder.getName())
@@ -437,7 +447,7 @@ public class BuilderGenerator {
 										new StringReplacer(block3template)
 										.replace("PaperBuilderSpec<?>", collectionElementBuilderTypeHolder.toString())
 										.replace("PaperBuilderSpec", collectionElementBuilderTypeHolder.getName())
-										.replace("CopyPaperBuilderSpec", subSrcClassHolder.toBuilderClassHolder(this.builderSuffix, "?", classesToBuild).getName())
+										.replace("CopyPaperBuilderSpec", subBuilderClassHolder.getName())
 										.replace("myPapers", fieldName)
 										.replace("MyPapers", fieldNameTitleCase)
 										.replace("CopyPaper", subSrcClassHolder.getName())
@@ -502,11 +512,16 @@ public class BuilderGenerator {
 						for (Class<?> classToBuild : classesToBuild) {
 							if (!classToBuild.isInterface() && collectionElementTypeHolder.getRawClass().isAssignableFrom(classToBuild)) {
 								ClassHolder subSrcClassHolder = ClassHolder.newInstance(classToBuild);
+								ClassHolder subBuilderClassHolder = subSrcClassHolder.toBuilderClassHolder(this.builderSuffix, "?", classesToBuild);
+								
+								importGenerator.importClasses(subSrcClassHolder);
+								importGenerator.importClasses(subBuilderClassHolder);
+								
 								block2.append(
 										new StringReplacer(block2template)
 										.replace("PaperBuilderSpec<?>", collectionElementBuilderTypeHolder.toString())
 										.replace("PaperBuilderSpec", collectionElementBuilderTypeHolder.getName())
-										.replace("CopyPaperBuilderSpec", subSrcClassHolder.toBuilderClassHolder(this.builderSuffix, "?", classesToBuild).getName())
+										.replace("CopyPaperBuilderSpec", subBuilderClassHolder.getName())
 										.replace("myPapers", fieldName)
 										.replace("MyPapers", fieldNameTitleCase)
 										.replace("CopyPaper", subSrcClassHolder.getName())
@@ -543,7 +558,6 @@ public class BuilderGenerator {
 					TypeHolder mapValueBuilderTypeHolder = mapValueTypeHolder.toBuilderTypeHolder(this.builderSuffix, "?", classesToBuild);
 					String mutableCollectionName = getMutableCollectionType(typeHolder.getRawClass()).getSimpleName();
 
-					
 					textBlocks.put(0, new StringBuilder(
 							new StringReplacer(textBlocks.get(0).toString())
 							.replace("PaperBuilderSpec<?>", mapKeyBuilderTypeHolder.toString())
@@ -567,6 +581,8 @@ public class BuilderGenerator {
 							if (!classToBuild.isInterface() && mapValueTypeHolder.getRawClass().isAssignableFrom(classToBuild)) {
 								ClassHolder valueSrcClassHolder = ClassHolder.newInstance(classToBuild);
 								ClassHolder valueSrcBuilderClassHolder = valueSrcClassHolder.toBuilderClassHolder(this.builderSuffix, "?", classesToBuild);
+								importGenerator.importClasses(valueSrcClassHolder);
+								importGenerator.importClasses(valueSrcBuilderClassHolder);
 								
 								block1.append(new StringReplacer(block1template)
 										.replace("RGBColor", valueSrcClassHolder.getName())
@@ -593,6 +609,9 @@ public class BuilderGenerator {
 								ClassHolder keySrcClassHolder = ClassHolder.newInstance(classToBuild);
 								ClassHolder keySrcBuilderClassHolder = keySrcClassHolder.toBuilderClassHolder(this.builderSuffix, "?", classesToBuild);
 								
+								importGenerator.importClasses(keySrcClassHolder);
+								importGenerator.importClasses(keySrcBuilderClassHolder);
+
 								block2.append(new StringReplacer(block2template)
 										.replace("CopyPaper", keySrcClassHolder.getName())
 										.replace("CopyPaperBuilderSpec", keySrcBuilderClassHolder.getName())
@@ -636,6 +655,7 @@ public class BuilderGenerator {
 			.append(annotationDeclare).append("\n")
 			.append(classDeclare).append(" {\n")
 			.append(classContent.toString())
+			.append(getTemplates().getProperty("custom_code_marker"))
 			.append("}\n");
 		
 		generateJavaFile(baseFolder, packageName, destClassName, result.toString());
@@ -735,6 +755,41 @@ public class BuilderGenerator {
 		}
 		
 		File javaFile = new File(folder, destClassName + ".java");
+		
+		if (javaFile.exists()) {
+			try {
+				StringBuilder customCode = new StringBuilder();
+				BufferedReader br = new BufferedReader(new FileReader(javaFile));
+				
+				String marker = "/* CUSTOM CODE *";
+				boolean markerFound = false;
+				int index = 0;
+				String line = null;
+				while ((line = br.readLine()) != null) {
+					if (markerFound) {
+						customCode.append(line).append('\n');
+					} else {
+						if ((index = line.indexOf(marker)) > -1) {
+							markerFound = true;
+							customCode.append(line.substring(index)).append('\n');
+						}
+					}
+				}
+				
+				if (markerFound) {
+					index = content.indexOf(marker);
+					if (index > -1) {
+						content = content.substring(0, index) + customCode.toString();
+					}
+				}
+				
+				br.close();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+			
+		}
+		
 		try {
 			FileWriter fw = new FileWriter(javaFile);
 			fw.write(content);
@@ -796,6 +851,8 @@ public class BuilderGenerator {
 					.replace("book", classCamelCase));
 				
 		}
+
+		builder.append(getTemplates().getProperty("custom_code_marker"));
 		
 		builder.append("}\n");
 

@@ -13,23 +13,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.nebulae2us.electron.util;
+package org.nebulae2us.electron.function;
 
-import java.util.List;
+import org.nebulae2us.electron.ElementContext;
+import org.nebulae2us.electron.Function1;
 
 /**
  * @author Trung Phan
  *
  */
-public class Immutables {
+public class TrimElement<E> implements Function1<String, ElementContext<E>> {
 
-	public static final <E> ImmutableList<E> $(List<E> list) {
-		return list instanceof ImmutableList ? (ImmutableList<E>)list : new ImmutableList<E>(list);
+	/* (non-Javadoc)
+	 * @see org.nebulae2us.electron.Function1#execute(java.lang.Object)
+	 */
+	public String execute(ElementContext<E> context) {
+		return context.getElement() == null ? "" : context.getElement().toString().trim();
 	}
-	
-	public static final <E> ImmutableList<E> $(E ... elements) {
-		return new ImmutableList<E>(elements);
-	}
-	
-	
+
 }

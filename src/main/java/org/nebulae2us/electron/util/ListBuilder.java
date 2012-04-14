@@ -28,10 +28,13 @@ public class ListBuilder<E> {
 	private List<E> result = new ArrayList<E>();
 	
 	public ListBuilder() {
-		
+	}
+
+	public ListBuilder(E ...elements) {
+		add(elements);
 	}
 	
-	public ListBuilder(E ...elements) {
+	public ListBuilder(Collection<? extends E> elements) {
 		add(elements);
 	}
 	
@@ -44,7 +47,18 @@ public class ListBuilder<E> {
 		return this;
 	}
 	
-	public ListBuilder<E> add(Collection<E> elements) {
+	public ListBuilder<E> addNonNullElements(E ... elements) {
+		if (elements != null) {
+			for (E element : elements) {
+				if (element != null) {
+					result.add(element);
+				}
+			}
+		}
+		return this;
+	}
+	
+	public ListBuilder<E> add(Collection<? extends E> elements) {
 		if (elements != null) {
 			for (E element : elements) {
 				result.add(element);
@@ -53,11 +67,22 @@ public class ListBuilder<E> {
 		return this;
 	}
 	
-	public List<E> toList() {
+	public ListBuilder<E> addNonNullElements(Collection<? extends E> elements) {
+		if (elements != null) {
+			for (E element : elements) {
+				if (element != null) {
+					result.add(element);
+				}
+			}
+		}
+		return this;
+	}
+
+	public ImmutableList<E> toList() {
 		return new ImmutableList<E>(result);
 	}
 	
-	public List<E> toMutableList() {
+	public ArrayList<E> toMutableList() {
 		return new ArrayList<E>(result);
 	}
 }
