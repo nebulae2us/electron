@@ -182,4 +182,13 @@ public class SubSampleBuilderSpec<P> extends SampleBuilderSpec<P> {
 	public Blanks2blanks$builder<? extends SubSampleBuilderSpec<P>> blanks2blanks$map() {
 		return (Blanks2blanks$builder<? extends SubSampleBuilderSpec<P>>)super.blanks2blanks$map();
 	}
+
+    /* CUSTOM CODE *********************************
+     * 
+     * Put your own custom code below. These codes won't be discarded during generation.
+     * 
+     */
+     
+     
+     
 }

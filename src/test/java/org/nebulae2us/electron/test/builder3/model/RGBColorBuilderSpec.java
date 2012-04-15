@@ -41,4 +41,13 @@ public class RGBColorBuilderSpec<P> extends ColorBuilderSpec<P> {
     }
     
 
+
+    /* CUSTOM CODE *********************************
+     * 
+     * Put your own custom code below. These codes won't be discarded during generation.
+     * 
+     */
+     
+     
+     
 }

@@ -45,6 +45,11 @@ public class StudentBuilder<P> extends PersonBuilder<P> {
 	private boolean partTime;
 	
 	public boolean getPartTime() {
+		if (this.$$$wrapped != null && WrapHelper.valueNotSet(this.partTime, boolean.class)) {
+			Object o = WrapHelper.getValue(this.$$$wrapped, Student.class, "partTime");
+			this.partTime = new WrapConverter(Builders.DESTINATION_CLASS_RESOLVER).convert(o).to(boolean.class);
+		}
+
 		return partTime;
 	}
 
@@ -62,6 +67,11 @@ public class StudentBuilder<P> extends PersonBuilder<P> {
 	private List<TeacherBuilder<?>> teachers;
 	
 	public List<TeacherBuilder<?>> getTeachers() {
+		if (this.$$$wrapped != null && WrapHelper.valueNotSet(this.teachers, List.class)) {
+			Object o = WrapHelper.getValue(this.$$$wrapped, Student.class, "teachers");
+			this.teachers = new WrapConverter(Builders.DESTINATION_CLASS_RESOLVER).convert(o).to(List.class);
+		}
+
 		return teachers;
 	}
 

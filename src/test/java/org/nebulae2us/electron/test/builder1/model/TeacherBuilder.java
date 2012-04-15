@@ -45,6 +45,11 @@ public class TeacherBuilder<P> extends PersonBuilder<P> {
 	private double salary;
 	
 	public double getSalary() {
+		if (this.$$$wrapped != null && WrapHelper.valueNotSet(this.salary, double.class)) {
+			Object o = WrapHelper.getValue(this.$$$wrapped, Teacher.class, "salary");
+			this.salary = new WrapConverter(Builders.DESTINATION_CLASS_RESOLVER).convert(o).to(double.class);
+		}
+
 		return salary;
 	}
 
@@ -62,6 +67,11 @@ public class TeacherBuilder<P> extends PersonBuilder<P> {
 	private List<StudentBuilder<?>> students;
 	
 	public List<StudentBuilder<?>> getStudents() {
+		if (this.$$$wrapped != null && WrapHelper.valueNotSet(this.students, List.class)) {
+			Object o = WrapHelper.getValue(this.$$$wrapped, Teacher.class, "students");
+			this.students = new WrapConverter(Builders.DESTINATION_CLASS_RESOLVER).convert(o).to(List.class);
+		}
+
 		return students;
 	}
 

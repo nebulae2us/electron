@@ -109,6 +109,11 @@
 	private PaperBuilderSpec<?> myPaper;
 	
 	public PaperBuilderSpec<?> getMyPaper() {
+		if (this.$$$wrapped != null && WrapHelper.valueNotSet(this.myPaper, PaperBuilderSpec.class)) {
+			Object o = WrapHelper.getValue(this.$$$wrapped, Book.class, "myPaper");
+			this.myPaper = new WrapConverter(Builders.DESTINATION_CLASS_RESOLVER).convert(o).to(PaperBuilderSpec.class);
+		}
+
 		return myPaper;
 	}
 

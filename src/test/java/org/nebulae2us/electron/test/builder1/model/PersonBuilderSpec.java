@@ -22,6 +22,9 @@ public class PersonBuilderSpec<P> implements Wrappable<Person> {
 	}
 
 	protected PersonBuilderSpec(Person wrapped) {
+		if (wrapped == null) {
+			throw new NullPointerException();
+		}
 		this.$$$wrapped = wrapped;
 		this.$$$parentBuilder = null;
 	}
@@ -54,6 +57,11 @@ public class PersonBuilderSpec<P> implements Wrappable<Person> {
 	private String name;
 	
 	public String getName() {
+		if (this.$$$wrapped != null && WrapHelper.valueNotSet(this.name, String.class)) {
+			Object o = WrapHelper.getValue(this.$$$wrapped, Person.class, "name");
+			this.name = new WrapConverter(Builders.DESTINATION_CLASS_RESOLVER).convert(o).to(String.class);
+		}
+
 		return name;
 	}
 
@@ -71,6 +79,11 @@ public class PersonBuilderSpec<P> implements Wrappable<Person> {
 	private int age;
 	
 	public int getAge() {
+		if (this.$$$wrapped != null && WrapHelper.valueNotSet(this.age, int.class)) {
+			Object o = WrapHelper.getValue(this.$$$wrapped, Person.class, "age");
+			this.age = new WrapConverter(Builders.DESTINATION_CLASS_RESOLVER).convert(o).to(int.class);
+		}
+
 		return age;
 	}
 
@@ -88,6 +101,11 @@ public class PersonBuilderSpec<P> implements Wrappable<Person> {
 	private Gender gender;
 	
 	public Gender getGender() {
+		if (this.$$$wrapped != null && WrapHelper.valueNotSet(this.gender, Gender.class)) {
+			Object o = WrapHelper.getValue(this.$$$wrapped, Person.class, "gender");
+			this.gender = new WrapConverter(Builders.DESTINATION_CLASS_RESOLVER).convert(o).to(Gender.class);
+		}
+
 		return gender;
 	}
 
@@ -105,6 +123,11 @@ public class PersonBuilderSpec<P> implements Wrappable<Person> {
 	private PersonBuilderSpec<?> parent;
 	
 	public PersonBuilderSpec<?> getParent() {
+		if (this.$$$wrapped != null && WrapHelper.valueNotSet(this.parent, PersonBuilderSpec.class)) {
+			Object o = WrapHelper.getValue(this.$$$wrapped, Person.class, "parent");
+			this.parent = new WrapConverter(Builders.DESTINATION_CLASS_RESOLVER).convert(o).to(PersonBuilderSpec.class);
+		}
+
 		return parent;
 	}
 
@@ -174,6 +197,11 @@ public class PersonBuilderSpec<P> implements Wrappable<Person> {
 	private List<PersonBuilderSpec<?>> children;
 	
 	public List<PersonBuilderSpec<?>> getChildren() {
+		if (this.$$$wrapped != null && WrapHelper.valueNotSet(this.children, List.class)) {
+			Object o = WrapHelper.getValue(this.$$$wrapped, Person.class, "children");
+			this.children = new WrapConverter(Builders.DESTINATION_CLASS_RESOLVER).convert(o).to(List.class);
+		}
+
 		return children;
 	}
 
@@ -342,6 +370,11 @@ public class PersonBuilderSpec<P> implements Wrappable<Person> {
 	private List<HobbyBuilderSpec<?>> hobbies;
 	
 	public List<HobbyBuilderSpec<?>> getHobbies() {
+		if (this.$$$wrapped != null && WrapHelper.valueNotSet(this.hobbies, List.class)) {
+			Object o = WrapHelper.getValue(this.$$$wrapped, Person.class, "hobbies");
+			this.hobbies = new WrapConverter(Builders.DESTINATION_CLASS_RESOLVER).convert(o).to(List.class);
+		}
+
 		return hobbies;
 	}
 
@@ -470,6 +503,11 @@ public class PersonBuilderSpec<P> implements Wrappable<Person> {
 	private List<SpeechBuilderSpec<?>> speeches;
 	
 	public List<SpeechBuilderSpec<?>> getSpeeches() {
+		if (this.$$$wrapped != null && WrapHelper.valueNotSet(this.speeches, List.class)) {
+			Object o = WrapHelper.getValue(this.$$$wrapped, Person.class, "speeches");
+			this.speeches = new WrapConverter(Builders.DESTINATION_CLASS_RESOLVER).convert(o).to(List.class);
+		}
+
 		return speeches;
 	}
 
@@ -598,6 +636,11 @@ public class PersonBuilderSpec<P> implements Wrappable<Person> {
 	private List<PersonBuilderSpec<?>> friends;
 	
 	public List<PersonBuilderSpec<?>> getFriends() {
+		if (this.$$$wrapped != null && WrapHelper.valueNotSet(this.friends, List.class)) {
+			Object o = WrapHelper.getValue(this.$$$wrapped, Person.class, "friends");
+			this.friends = new WrapConverter(Builders.DESTINATION_CLASS_RESOLVER).convert(o).to(List.class);
+		}
+
 		return friends;
 	}
 
@@ -762,4 +805,13 @@ public class PersonBuilderSpec<P> implements Wrappable<Person> {
         return this;
     }
 
+
+    /* CUSTOM CODE *********************************
+     * 
+     * Put your own custom code below. These codes won't be discarded during generation.
+     * 
+     */
+     
+     
+     
 }

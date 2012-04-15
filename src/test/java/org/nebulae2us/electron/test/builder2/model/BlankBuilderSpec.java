@@ -22,6 +22,9 @@ public class BlankBuilderSpec<P> implements Wrappable<Blank> {
 	}
 
 	protected BlankBuilderSpec(Blank wrapped) {
+		if (wrapped == null) {
+			throw new NullPointerException();
+		}
 		this.$$$wrapped = wrapped;
 		this.$$$parentBuilder = null;
 	}
@@ -54,6 +57,11 @@ public class BlankBuilderSpec<P> implements Wrappable<Blank> {
 	private String name;
 	
 	public String getName() {
+		if (this.$$$wrapped != null && WrapHelper.valueNotSet(this.name, String.class)) {
+			Object o = WrapHelper.getValue(this.$$$wrapped, Blank.class, "name");
+			this.name = new WrapConverter(Builders.DESTINATION_CLASS_RESOLVER).convert(o).to(String.class);
+		}
+
 		return name;
 	}
 
@@ -67,4 +75,13 @@ public class BlankBuilderSpec<P> implements Wrappable<Blank> {
 		this.name = name;
 		return this;
 	}
+
+    /* CUSTOM CODE *********************************
+     * 
+     * Put your own custom code below. These codes won't be discarded during generation.
+     * 
+     */
+     
+     
+     
 }

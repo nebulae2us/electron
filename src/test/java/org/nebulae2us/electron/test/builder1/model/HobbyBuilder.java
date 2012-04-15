@@ -1,9 +1,7 @@
 package org.nebulae2us.electron.test.builder1.model;
 
-import java.lang.reflect.Field;
 import java.util.*;
 import org.nebulae2us.electron.*;
-import org.nebulae2us.electron.internal.util.ClassUtils;
 import org.nebulae2us.electron.util.*;
 
 @Builder(destination=Hobby.class)
@@ -59,14 +57,9 @@ public class HobbyBuilder<P> implements Wrappable<Hobby> {
 	private String name;
 	
 	public String getName() {
-		if (this.$$$wrapped != null) {
-			if (this.name != null) {
-				return this.name;
-			}
-			else {
-				this.name = (String)WrapHelper.getValue(this.$$$wrapped, Hobby.class, "name");
-				return this.name;
-			}
+		if (this.$$$wrapped != null && WrapHelper.valueNotSet(this.name, String.class)) {
+			Object o = WrapHelper.getValue(this.$$$wrapped, Hobby.class, "name");
+			this.name = new WrapConverter(Builders.DESTINATION_CLASS_RESOLVER).convert(o).to(String.class);
 		}
 
 		return name;
@@ -86,6 +79,11 @@ public class HobbyBuilder<P> implements Wrappable<Hobby> {
 	private List<PersonBuilder<?>> people;
 	
 	public List<PersonBuilder<?>> getPeople() {
+		if (this.$$$wrapped != null && WrapHelper.valueNotSet(this.people, List.class)) {
+			Object o = WrapHelper.getValue(this.$$$wrapped, Hobby.class, "people");
+			this.people = new WrapConverter(Builders.DESTINATION_CLASS_RESOLVER).convert(o).to(List.class);
+		}
+
 		return people;
 	}
 

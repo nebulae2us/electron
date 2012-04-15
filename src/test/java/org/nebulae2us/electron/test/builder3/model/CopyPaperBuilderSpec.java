@@ -45,4 +45,13 @@ public class CopyPaperBuilderSpec<P> extends PaperBuilderSpec<P> {
     }
     
 
+
+    /* CUSTOM CODE *********************************
+     * 
+     * Put your own custom code below. These codes won't be discarded during generation.
+     * 
+     */
+     
+     
+     
 }

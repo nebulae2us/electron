@@ -22,6 +22,9 @@ public class SpeechBuilderSpec<P> implements Wrappable<Speech> {
 	}
 
 	protected SpeechBuilderSpec(Speech wrapped) {
+		if (wrapped == null) {
+			throw new NullPointerException();
+		}
 		this.$$$wrapped = wrapped;
 		this.$$$parentBuilder = null;
 	}
@@ -54,6 +57,11 @@ public class SpeechBuilderSpec<P> implements Wrappable<Speech> {
 	private String name;
 	
 	public String getName() {
+		if (this.$$$wrapped != null && WrapHelper.valueNotSet(this.name, String.class)) {
+			Object o = WrapHelper.getValue(this.$$$wrapped, Speech.class, "name");
+			this.name = new WrapConverter(Builders.DESTINATION_CLASS_RESOLVER).convert(o).to(String.class);
+		}
+
 		return name;
 	}
 
@@ -71,6 +79,11 @@ public class SpeechBuilderSpec<P> implements Wrappable<Speech> {
 	private PersonBuilderSpec<?> owner;
 	
 	public PersonBuilderSpec<?> getOwner() {
+		if (this.$$$wrapped != null && WrapHelper.valueNotSet(this.owner, PersonBuilderSpec.class)) {
+			Object o = WrapHelper.getValue(this.$$$wrapped, Speech.class, "owner");
+			this.owner = new WrapConverter(Builders.DESTINATION_CLASS_RESOLVER).convert(o).to(PersonBuilderSpec.class);
+		}
+
 		return owner;
 	}
 
@@ -140,6 +153,11 @@ public class SpeechBuilderSpec<P> implements Wrappable<Speech> {
 	private List<String> keywords;
 	
 	public List<String> getKeywords() {
+		if (this.$$$wrapped != null && WrapHelper.valueNotSet(this.keywords, List.class)) {
+			Object o = WrapHelper.getValue(this.$$$wrapped, Speech.class, "keywords");
+			this.keywords = new WrapConverter(Builders.DESTINATION_CLASS_RESOLVER).convert(o).to(List.class);
+		}
+
 		return keywords;
 	}
 
@@ -171,6 +189,11 @@ public class SpeechBuilderSpec<P> implements Wrappable<Speech> {
 	private Map<HobbyBuilderSpec<?>, List<String>> hobbyKeywords;
 	
 	public Map<HobbyBuilderSpec<?>, List<String>> getHobbyKeywords() {
+		if (this.$$$wrapped != null && WrapHelper.valueNotSet(this.hobbyKeywords, Map.class)) {
+			Object o = WrapHelper.getValue(this.$$$wrapped, Speech.class, "hobbyKeywords");
+			this.hobbyKeywords = new WrapConverter(Builders.DESTINATION_CLASS_RESOLVER).convert(o).to(Map.class);
+		}
+
 		return hobbyKeywords;
 	}
 
@@ -178,4 +201,13 @@ public class SpeechBuilderSpec<P> implements Wrappable<Speech> {
 		verifyMutable();
 		this.hobbyKeywords = hobbyKeywords;
 	}
+
+    /* CUSTOM CODE *********************************
+     * 
+     * Put your own custom code below. These codes won't be discarded during generation.
+     * 
+     */
+     
+     
+     
 }

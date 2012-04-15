@@ -709,10 +709,11 @@ public class BuilderGenerator {
 		return textBlocks.get(0).toString();
 	}
 
-	private StringReplacer generateGetterSetter(Field field,
-			TypeHolder typeHolder) {
+	private StringReplacer generateGetterSetter(Field field, TypeHolder typeHolder) {
 		return new StringReplacer(getTemplates().getProperty("builder_fieldname_getter_settter"))
 				.replace("PaperBuilderSpec<?>", typeHolder.toBuilderTypeHolder(this.builderSuffix, "?", classesToBuild).toString())
+				.replace("PaperBuilderSpec", typeHolder.toBuilderTypeHolder(this.builderSuffix, "?", classesToBuild).getName())
+				.replace("Book", field.getDeclaringClass().getSimpleName())
 				.replace("myPaper", field.getName())
 				.replace("MyPaper", StringUtils.toUpperCamelCase(field.getName()));
 	}	

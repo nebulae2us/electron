@@ -42,7 +42,7 @@ public class WrapConverter extends Converter {
 		T result;
 		try {
 			result = (T)constructor.newInstance(srcObject);
-			return new Pair<T, Boolean>(result, Boolean.FALSE);
+			return new Pair<T, Boolean>(result, Boolean.TRUE);
 		} catch (Exception e) {
 			throw new RuntimeException("Failed to create object", e);
 		}

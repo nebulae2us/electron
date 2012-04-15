@@ -22,6 +22,9 @@ public class PaperBuilderSpec<P> implements Wrappable<Paper<? extends Color>>, R
 	}
 
 	protected PaperBuilderSpec(Paper<? extends Color> wrapped) {
+		if (wrapped == null) {
+			throw new NullPointerException();
+		}
 		this.$$$wrapped = wrapped;
 		this.$$$parentBuilder = null;
 	}
@@ -53,4 +56,13 @@ public class PaperBuilderSpec<P> implements Wrappable<Paper<? extends Color>>, R
     	return new Converter(new BuilderAnnotationDestinationClassResolver(), true).convert(this).to(Paper.class);
     }
 
+
+    /* CUSTOM CODE *********************************
+     * 
+     * Put your own custom code below. These codes won't be discarded during generation.
+     * 
+     */
+     
+     
+     
 }

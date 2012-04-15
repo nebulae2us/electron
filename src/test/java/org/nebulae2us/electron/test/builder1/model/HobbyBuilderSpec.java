@@ -22,6 +22,9 @@ public class HobbyBuilderSpec<P> implements Wrappable<Hobby> {
 	}
 
 	protected HobbyBuilderSpec(Hobby wrapped) {
+		if (wrapped == null) {
+			throw new NullPointerException();
+		}
 		this.$$$wrapped = wrapped;
 		this.$$$parentBuilder = null;
 	}
@@ -54,6 +57,11 @@ public class HobbyBuilderSpec<P> implements Wrappable<Hobby> {
 	private String name;
 	
 	public String getName() {
+		if (this.$$$wrapped != null && WrapHelper.valueNotSet(this.name, String.class)) {
+			Object o = WrapHelper.getValue(this.$$$wrapped, Hobby.class, "name");
+			this.name = new WrapConverter(Builders.DESTINATION_CLASS_RESOLVER).convert(o).to(String.class);
+		}
+
 		return name;
 	}
 
@@ -71,6 +79,11 @@ public class HobbyBuilderSpec<P> implements Wrappable<Hobby> {
 	private List<PersonBuilderSpec<?>> people;
 	
 	public List<PersonBuilderSpec<?>> getPeople() {
+		if (this.$$$wrapped != null && WrapHelper.valueNotSet(this.people, List.class)) {
+			Object o = WrapHelper.getValue(this.$$$wrapped, Hobby.class, "people");
+			this.people = new WrapConverter(Builders.DESTINATION_CLASS_RESOLVER).convert(o).to(List.class);
+		}
+
 		return people;
 	}
 
@@ -235,4 +248,13 @@ public class HobbyBuilderSpec<P> implements Wrappable<Hobby> {
         return this;
     }
 
+
+    /* CUSTOM CODE *********************************
+     * 
+     * Put your own custom code below. These codes won't be discarded during generation.
+     * 
+     */
+     
+     
+     
 }

@@ -57,6 +57,11 @@ public class SpeechBuilder<P> implements Wrappable<Speech> {
 	private String name;
 	
 	public String getName() {
+		if (this.$$$wrapped != null && WrapHelper.valueNotSet(this.name, String.class)) {
+			Object o = WrapHelper.getValue(this.$$$wrapped, Speech.class, "name");
+			this.name = new WrapConverter(Builders.DESTINATION_CLASS_RESOLVER).convert(o).to(String.class);
+		}
+
 		return name;
 	}
 
@@ -74,6 +79,11 @@ public class SpeechBuilder<P> implements Wrappable<Speech> {
 	private PersonBuilder<?> owner;
 	
 	public PersonBuilder<?> getOwner() {
+		if (this.$$$wrapped != null && WrapHelper.valueNotSet(this.owner, PersonBuilder.class)) {
+			Object o = WrapHelper.getValue(this.$$$wrapped, Speech.class, "owner");
+			this.owner = new WrapConverter(Builders.DESTINATION_CLASS_RESOLVER).convert(o).to(PersonBuilder.class);
+		}
+
 		return owner;
 	}
 
@@ -143,6 +153,11 @@ public class SpeechBuilder<P> implements Wrappable<Speech> {
 	private List<String> keywords;
 	
 	public List<String> getKeywords() {
+		if (this.$$$wrapped != null && WrapHelper.valueNotSet(this.keywords, List.class)) {
+			Object o = WrapHelper.getValue(this.$$$wrapped, Speech.class, "keywords");
+			this.keywords = new WrapConverter(Builders.DESTINATION_CLASS_RESOLVER).convert(o).to(List.class);
+		}
+
 		return keywords;
 	}
 
@@ -174,6 +189,11 @@ public class SpeechBuilder<P> implements Wrappable<Speech> {
 	private Map<HobbyBuilder<?>, List<String>> hobbyKeywords;
 	
 	public Map<HobbyBuilder<?>, List<String>> getHobbyKeywords() {
+		if (this.$$$wrapped != null && WrapHelper.valueNotSet(this.hobbyKeywords, Map.class)) {
+			Object o = WrapHelper.getValue(this.$$$wrapped, Speech.class, "hobbyKeywords");
+			this.hobbyKeywords = new WrapConverter(Builders.DESTINATION_CLASS_RESOLVER).convert(o).to(Map.class);
+		}
+
 		return hobbyKeywords;
 	}
 

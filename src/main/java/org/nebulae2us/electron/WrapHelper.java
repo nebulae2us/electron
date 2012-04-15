@@ -23,14 +23,34 @@ import java.lang.reflect.Field;
  */
 public class WrapHelper {
 
-	public static Object getValue(Object target, Class<?> clazz, String fieldName) {
+	public static Object getValue(Object target, Class<?> type, String fieldName) {
 		try {
-			Field field = clazz.getDeclaredField(fieldName);
+			Field field = type.getDeclaredField(fieldName);
 			field.setAccessible(true);
 			return field.get(target);
 		} catch (Exception e) {
-			return null;
+			throw new IllegalStateException("Cannot get value from field " + fieldName);
 		}
+	}
+	
+	public static boolean valueNotSet(Object target, Class<?> type) {
+		if (target == null) {
+			return true;
+		}
+		
+		if (type.isPrimitive()) {
+			return target == Boolean.FALSE ||
+					target == Integer.valueOf(0) ||
+					target == Long.valueOf(0L) ||
+					target == Short.valueOf((short)0) ||
+					target == Byte.valueOf((byte)0) ||
+					target == Double.valueOf(0.0) ||
+					target == Float.valueOf(0.0f) ||
+					target == Character.valueOf((char)0);
+					
+		}
+		
+		return false;
 	}
 	
 }

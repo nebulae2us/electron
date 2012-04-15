@@ -45,6 +45,11 @@ public class TeacherBuilderSpec<P> extends PersonBuilderSpec<P> {
 	private double salary;
 	
 	public double getSalary() {
+		if (this.$$$wrapped != null && WrapHelper.valueNotSet(this.salary, double.class)) {
+			Object o = WrapHelper.getValue(this.$$$wrapped, Teacher.class, "salary");
+			this.salary = new WrapConverter(Builders.DESTINATION_CLASS_RESOLVER).convert(o).to(double.class);
+		}
+
 		return salary;
 	}
 
@@ -62,6 +67,11 @@ public class TeacherBuilderSpec<P> extends PersonBuilderSpec<P> {
 	private List<StudentBuilderSpec<?>> students;
 	
 	public List<StudentBuilderSpec<?>> getStudents() {
+		if (this.$$$wrapped != null && WrapHelper.valueNotSet(this.students, List.class)) {
+			Object o = WrapHelper.getValue(this.$$$wrapped, Teacher.class, "students");
+			this.students = new WrapConverter(Builders.DESTINATION_CLASS_RESOLVER).convert(o).to(List.class);
+		}
+
 		return students;
 	}
 
@@ -416,4 +426,13 @@ public class TeacherBuilderSpec<P> extends PersonBuilderSpec<P> {
 		return (TeacherBuilderSpec<P>)super.friends$restoreFrom(repo, builderIds);
     }
 
+
+    /* CUSTOM CODE *********************************
+     * 
+     * Put your own custom code below. These codes won't be discarded during generation.
+     * 
+     */
+     
+     
+     
 }
