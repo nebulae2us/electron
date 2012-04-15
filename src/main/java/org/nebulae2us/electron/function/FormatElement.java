@@ -27,6 +27,9 @@ public class FormatElement<E> implements Function1<String, ElementContext<E>> {
 	private final String format;
 	
 	public FormatElement(String format) {
+		if (format == null) {
+			throw new NullPointerException();
+		}
 		this.format = format;
 	}
 	

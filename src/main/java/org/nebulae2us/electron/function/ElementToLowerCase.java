@@ -28,7 +28,14 @@ public class ElementToLowerCase<E> implements Function1<String, ElementContext<E
 
 	private final Locale locale;
 	
+	public ElementToLowerCase() {
+		this(Locale.getDefault());
+	}
+	
 	public ElementToLowerCase(Locale locale) {
+		if (locale == null) {
+			throw new NullPointerException();
+		}
 		this.locale = locale;
 	}
 	

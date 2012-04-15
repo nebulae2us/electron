@@ -13,34 +13,44 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.nebulae2us.electron.function;
+package org.nebulae2us.electron.util;
 
-import java.util.Locale;
-
-import org.nebulae2us.electron.ElementContext;
-import org.nebulae2us.electron.Function1;
+import java.util.Iterator;
 
 /**
  * @author Trung Phan
  *
  */
-public class ElementToUpperCase<E> implements Function1<String, ElementContext<E>> {
+public class ImmutableIterator<E> implements Iterator<E> {
 
-	private final Locale locale;
-
-	public ElementToUpperCase() {
-		this(Locale.getDefault());
-	}
+	private final Iterator<E> iterator;
 	
-	public ElementToUpperCase(Locale locale) {
-		if (locale == null) {
+	public ImmutableIterator(Iterator<E> iterator) {
+		if (iterator == null) {
 			throw new NullPointerException();
 		}
-		this.locale = locale;
+		this.iterator = iterator;
 	}
 	
-	public String execute(ElementContext<E> context) {
-		return context.getElement() == null ? "" : context.getElement().toString().toUpperCase(this.locale == null ? Locale.getDefault() : this.locale);
+	/* (non-Javadoc)
+	 * @see java.util.Iterator#hasNext()
+	 */
+	public boolean hasNext() {
+		return iterator.hasNext();
+	}
+
+	/* (non-Javadoc)
+	 * @see java.util.Iterator#next()
+	 */
+	public E next() {
+		return iterator.next();
+	}
+
+	/* (non-Javadoc)
+	 * @see java.util.Iterator#remove()
+	 */
+	public void remove() {
+		throw new UnsupportedOperationException();
 	}
 
 }

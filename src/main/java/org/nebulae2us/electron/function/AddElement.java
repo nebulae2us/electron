@@ -31,6 +31,9 @@ public class AddElement<E extends Number> implements Function1<E, ElementContext
 	private final Number number;
 	
 	public AddElement(Number number) {
+		if (number == null) {
+			throw new NullPointerException();
+		}
 		this.number = number;
 	}
 	

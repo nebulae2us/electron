@@ -33,6 +33,12 @@ public class ReplaceElement<E> implements Function1<String, ElementContext<E>> {
 	private final boolean reverse;
 	
 	public ReplaceElement(String substring, String newString, int replacementCount, boolean reverse) {
+		if (substring == null) {
+			throw new NullPointerException();
+		}
+		if (newString == null) {
+			throw new NullPointerException();
+		}
 		this.substring = substring;
 		this.newString = newString;
 		this.replacementCount = replacementCount;

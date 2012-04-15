@@ -27,6 +27,9 @@ public class DenullifyElement<E> implements Function1<E, ElementContext<E>> {
 	private final E nullValue;
 	
 	public DenullifyElement(E nullValue) {
+		if (nullValue == null) {
+			throw new NullPointerException();
+		}
 		this.nullValue = nullValue;
 	}
 	

@@ -34,6 +34,10 @@ public class ImmutableSortedSet<E> extends ImmutableSortedList<E>
     	super(c, comparator, true);
     }
     
+    public ImmutableSortedSet(SortedSet<E> sortedSet) {
+    	this(sortedSet, sortedSet.comparator());
+    }
+    
     public ImmutableSortedSet(Collection<E> c) {
     	this(c, new NaturalComparator<E>());
     }
