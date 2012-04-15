@@ -32,10 +32,13 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.nebulae2us.electron.Pair;
 import org.nebulae2us.electron.internal.util.ClassHolderType;
 import org.nebulae2us.electron.util.ImmutableList;
+import org.nebulae2us.electron.util.ImmutableMap;
+import org.nebulae2us.electron.util.ImmutableSet;
 
 /**
  * @author Trung Phan
@@ -167,6 +170,16 @@ public class TypeHolder {
 		String newPackageName = packageName;
 		if (ImmutableList.class.isAssignableFrom(rawClass)) {
 			newRawClass = List.class;
+			newName = newRawClass.getSimpleName();
+			newPackageName = newRawClass.getPackage().getName();
+		}
+		else if (ImmutableSet.class.isAssignableFrom(rawClass)) {
+			newRawClass = Set.class;
+			newName = newRawClass.getSimpleName();
+			newPackageName = newRawClass.getPackage().getName();
+		}
+		else if (ImmutableMap.class.isAssignableFrom(rawClass)) {
+			newRawClass = Map.class;
 			newName = newRawClass.getSimpleName();
 			newPackageName = newRawClass.getPackage().getName();
 		}

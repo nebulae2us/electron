@@ -416,4 +416,13 @@ public class StudentBuilder<P> extends PersonBuilder<P> {
 		return (StudentBuilder<P>)super.friends$restoreFrom(repo, builderIds);
     }
 
+
+    /* CUSTOM CODE *********************************
+     * 
+     * Put your own custom code below. These codes won't be discarded during generation.
+     * 
+     */
+     
+     
+     
 }

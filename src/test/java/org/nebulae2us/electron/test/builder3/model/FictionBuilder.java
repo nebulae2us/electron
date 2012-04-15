@@ -217,4 +217,13 @@ public class FictionBuilder<P> extends BookBuilder<P> {
 	public PaperColors$builder<? extends FictionBuilder<P>> paperColors$map() {
 		return (PaperColors$builder<? extends FictionBuilder<P>>)super.paperColors$map();
 	}
+
+    /* CUSTOM CODE *********************************
+     * 
+     * Put your own custom code below. These codes won't be discarded during generation.
+     * 
+     */
+     
+     
+     
 }

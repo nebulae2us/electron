@@ -26,6 +26,9 @@ public class Builders {
 			.toMap()
 			);
 
+	public static Converter converter() {
+		return new Converter(DESTINATION_CLASS_RESOLVER, true);
+	}
 
     public static HobbyBuilder<?> hobby() {
         return new HobbyBuilder<Object>();
@@ -111,4 +114,13 @@ public class Builders {
     public static TeacherBuilder<?> wrap(Teacher teacher) {
     	return new WrapConverter(DESTINATION_CLASS_RESOLVER).convert(teacher).to(TeacherBuilder.class);
     }
+
+    /* CUSTOM CODE *********************************
+     * 
+     * Put your own custom code below. These codes won't be discarded during generation.
+     * 
+     */
+     
+     
+     
 }

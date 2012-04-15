@@ -22,6 +22,9 @@ public class SpeechBuilder<P> implements Wrappable<Speech> {
 	}
 
 	protected SpeechBuilder(Speech wrapped) {
+		if (wrapped == null) {
+			throw new NullPointerException();
+		}
 		this.$$$wrapped = wrapped;
 		this.$$$parentBuilder = null;
 	}
@@ -178,4 +181,13 @@ public class SpeechBuilder<P> implements Wrappable<Speech> {
 		verifyMutable();
 		this.hobbyKeywords = hobbyKeywords;
 	}
+
+    /* CUSTOM CODE *********************************
+     * 
+     * Put your own custom code below. These codes won't be discarded during generation.
+     * 
+     */
+     
+     
+     
 }

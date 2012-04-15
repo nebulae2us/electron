@@ -22,6 +22,9 @@ public class ColorBuilder<P> implements Wrappable<Color> {
 	}
 
 	protected ColorBuilder(Color wrapped) {
+		if (wrapped == null) {
+			throw new NullPointerException();
+		}
 		this.$$$wrapped = wrapped;
 		this.$$$parentBuilder = null;
 	}
@@ -50,4 +53,13 @@ public class ColorBuilder<P> implements Wrappable<Color> {
     }
 
 
+
+    /* CUSTOM CODE *********************************
+     * 
+     * Put your own custom code below. These codes won't be discarded during generation.
+     * 
+     */
+     
+     
+     
 }

@@ -1,7 +1,9 @@
 package org.nebulae2us.electron.test.builder1.model;
 
+import java.lang.reflect.Field;
 import java.util.*;
 import org.nebulae2us.electron.*;
+import org.nebulae2us.electron.internal.util.ClassUtils;
 import org.nebulae2us.electron.util.*;
 
 @Builder(destination=Hobby.class)
@@ -22,6 +24,9 @@ public class HobbyBuilder<P> implements Wrappable<Hobby> {
 	}
 
 	protected HobbyBuilder(Hobby wrapped) {
+		if (wrapped == null) {
+			throw new NullPointerException();
+		}
 		this.$$$wrapped = wrapped;
 		this.$$$parentBuilder = null;
 	}
@@ -54,6 +59,16 @@ public class HobbyBuilder<P> implements Wrappable<Hobby> {
 	private String name;
 	
 	public String getName() {
+		if (this.$$$wrapped != null) {
+			if (this.name != null) {
+				return this.name;
+			}
+			else {
+				this.name = (String)WrapHelper.getValue(this.$$$wrapped, Hobby.class, "name");
+				return this.name;
+			}
+		}
+
 		return name;
 	}
 
@@ -235,4 +250,13 @@ public class HobbyBuilder<P> implements Wrappable<Hobby> {
         return this;
     }
 
+
+    /* CUSTOM CODE *********************************
+     * 
+     * Put your own custom code below. These codes won't be discarded during generation.
+     * 
+     */
+     
+     
+     
 }

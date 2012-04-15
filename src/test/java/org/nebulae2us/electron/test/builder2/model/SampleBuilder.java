@@ -22,6 +22,9 @@ public class SampleBuilder<P> implements Wrappable<Sample> {
 	}
 
 	protected SampleBuilder(Sample wrapped) {
+		if (wrapped == null) {
+			throw new NullPointerException();
+		}
 		this.$$$wrapped = wrapped;
 		this.$$$parentBuilder = null;
 	}
@@ -615,4 +618,13 @@ public class SampleBuilder<P> implements Wrappable<Sample> {
 		}
 		return new Blanks2blanks$builder<SampleBuilder<P>>(this);
 	}	
+
+    /* CUSTOM CODE *********************************
+     * 
+     * Put your own custom code below. These codes won't be discarded during generation.
+     * 
+     */
+     
+     
+     
 }

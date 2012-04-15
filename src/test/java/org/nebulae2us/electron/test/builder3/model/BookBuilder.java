@@ -23,6 +23,9 @@ public class BookBuilder<P> implements Wrappable<Book<? extends Color, ? extends
 	}
 
 	protected BookBuilder(Book<? extends Color, ? extends Paper<? extends Color>, ? extends Recordable<? extends Color>, ? extends List<? extends Paper<? extends Color>>> wrapped) {
+		if (wrapped == null) {
+			throw new NullPointerException();
+		}
 		this.$$$wrapped = wrapped;
 		this.$$$parentBuilder = null;
 	}
@@ -614,4 +617,13 @@ public class BookBuilder<P> implements Wrappable<Book<? extends Color, ? extends
 		}
 		return new PaperColors$builder<BookBuilder<P>>(this);
 	}	
+
+    /* CUSTOM CODE *********************************
+     * 
+     * Put your own custom code below. These codes won't be discarded during generation.
+     * 
+     */
+     
+     
+     
 }

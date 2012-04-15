@@ -22,6 +22,9 @@ public class BlankBuilder<P> implements Wrappable<Blank> {
 	}
 
 	protected BlankBuilder(Blank wrapped) {
+		if (wrapped == null) {
+			throw new NullPointerException();
+		}
 		this.$$$wrapped = wrapped;
 		this.$$$parentBuilder = null;
 	}
@@ -67,4 +70,13 @@ public class BlankBuilder<P> implements Wrappable<Blank> {
 		this.name = name;
 		return this;
 	}
+
+    /* CUSTOM CODE *********************************
+     * 
+     * Put your own custom code below. These codes won't be discarded during generation.
+     * 
+     */
+     
+     
+     
 }

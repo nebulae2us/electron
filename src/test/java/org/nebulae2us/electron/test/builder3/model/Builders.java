@@ -32,6 +32,9 @@ public class Builders {
 			.toMap()
 			);
 
+	public static Converter converter() {
+		return new Converter(DESTINATION_CLASS_RESOLVER, true);
+	}
 
     public static BookBuilder<?> book() {
         return new BookBuilder<Object>();
@@ -134,4 +137,13 @@ public class Builders {
     public static RGBColorBuilder<?> wrap(RGBColor rGBColor) {
     	return new WrapConverter(DESTINATION_CLASS_RESOLVER).convert(rGBColor).to(RGBColorBuilder.class);
     }
+
+    /* CUSTOM CODE *********************************
+     * 
+     * Put your own custom code below. These codes won't be discarded during generation.
+     * 
+     */
+     
+     
+     
 }

@@ -20,6 +20,9 @@ public class Builders {
 			.toMap()
 			);
 
+	public static Converter converter() {
+		return new Converter(DESTINATION_CLASS_RESOLVER, true);
+	}
 
     public static BlankBuilder<?> blank() {
         return new BlankBuilder<Object>();
@@ -71,4 +74,13 @@ public class Builders {
     public static SubSampleBuilder<?> wrap(SubSample subSample) {
     	return new WrapConverter(DESTINATION_CLASS_RESOLVER).convert(subSample).to(SubSampleBuilder.class);
     }
+
+    /* CUSTOM CODE *********************************
+     * 
+     * Put your own custom code below. These codes won't be discarded during generation.
+     * 
+     */
+     
+     
+     
 }

@@ -22,6 +22,9 @@ public class PersonBuilder<P> implements Wrappable<Person> {
 	}
 
 	protected PersonBuilder(Person wrapped) {
+		if (wrapped == null) {
+			throw new NullPointerException();
+		}
 		this.$$$wrapped = wrapped;
 		this.$$$parentBuilder = null;
 	}
@@ -762,4 +765,13 @@ public class PersonBuilder<P> implements Wrappable<Person> {
         return this;
     }
 
+
+    /* CUSTOM CODE *********************************
+     * 
+     * Put your own custom code below. These codes won't be discarded during generation.
+     * 
+     */
+     
+     
+     
 }
