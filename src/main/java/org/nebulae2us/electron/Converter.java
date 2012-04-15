@@ -27,7 +27,6 @@ import java.util.Map.Entry;
 import org.nebulae2us.electron.reflect.TypeHolder;
 import org.nebulae2us.electron.internal.util.ClassUtils;
 import org.nebulae2us.electron.util.IdentityEqualityComparator;
-import org.nebulae2us.electron.util.ImmutableIdentityMap;
 import org.nebulae2us.electron.util.ImmutableList;
 import org.nebulae2us.electron.util.ImmutableMap;
 import org.nebulae2us.electron.util.ImmutableSet;
@@ -559,9 +558,6 @@ public class Converter {
 				else if (requestedClass.isAssignableFrom(ImmutableMap.class)) {
 					result = new HashMap();
 				}
-				else if (requestedClass.isAssignableFrom(ImmutableIdentityMap.class)) {
-					result = new IdentityHashMap();
-				}
 				else if (requestedClass.isAssignableFrom(ImmutableSortedMap.class)) {
 					result = new TreeMap();
 				}
@@ -582,7 +578,7 @@ public class Converter {
 
 				if (immutable) {
 					if (result instanceof SortedMap) {
-						result = new ImmutableSortedMap<Object, Object>(result, new NaturalComparator<Object>());
+						result = new ImmutableSortedMap<Object, Object>(result, NaturalComparator.getInstance());
 					}
 					else if (result instanceof IdentityHashMap) {
 						result = new ImmutableMap<Object, Object>(result, IdentityEqualityComparator.getInstance());
@@ -715,21 +711,6 @@ public class Converter {
 			return result;
 		}
 
-		public <K, V> Map<K, V> toIdentityMapOf(Class<K> keyClass, Class<V> valueClass, String fieldName) {
-			Field field = getField(srcObject.getClass(), fieldName);
-			verifyFieldExist(fieldName, field);
-			
-			Object value = getValue(field, srcObject);
-
-			if (value == null) {
-				return immutable ? new ImmutableMap<K, V>() : new IdentityHashMap<K, V>();
-			}
-			
-			Map<K, V> result = (Map<K, V>)new MirrorImpl(this.converter, this.convertedObjects, value, destinationClassResolver, immutable).to(
-					TypeHolder.newInstance(immutable ? ImmutableIdentityMap.class : IdentityHashMap.class, keyClass, valueClass));
-			return result;
-		}
-
 		public <K, V> Map<K, List<V>> toMultiValueMapOf(Class<K> keyClass, Class<V> valueClass, String fieldName) {
 			Field field = getField(srcObject.getClass(), fieldName);
 			verifyFieldExist(fieldName, field);
@@ -747,22 +728,6 @@ public class Converter {
 			return result;
 		}
 
-		public <K, V> Map<K, List<V>> toMultiValueIdentityMapOf(Class<K> keyClass, Class<V> valueClass, String fieldName) {
-			Field field = getField(srcObject.getClass(), fieldName);
-			verifyFieldExist(fieldName, field);
-			
-			Object value = getValue(field, srcObject);
-
-			if (value == null) {
-				return immutable ? new ImmutableMap<K, List<V>>() : new HashMap<K, List<V>>();
-			}
-			
-			Map<K, List<V>> result = (Map<K, List<V>>)new MirrorImpl(this.converter, this.convertedObjects, value, destinationClassResolver, immutable).to(
-					TypeHolder.newInstance(immutable ? ImmutableIdentityMap.class : IdentityHashMap.class,
-					TypeHolder.newInstance(keyClass),
-					TypeHolder.newInstance(List.class, valueClass)));
-			return result;
-		}		
 		public boolean exists(String fieldName) {
 			return getField(srcObject.getClass(), fieldName) != null;
 		}

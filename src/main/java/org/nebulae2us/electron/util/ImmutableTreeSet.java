@@ -25,7 +25,7 @@ import java.util.TreeSet;
  * @author Trung Phan
  *
  */
-public class ImmutableTreeSet<E> extends TreeSet<E> {
+public final class ImmutableTreeSet<E> extends TreeSet<E> {
 
 	private static final long serialVersionUID = 1555011942707861208L;
 
@@ -59,17 +59,17 @@ public class ImmutableTreeSet<E> extends TreeSet<E> {
 
 	@Override
 	public NavigableSet<E> descendingSet() {
-		return new ImmutableTreeSet<E>(super.descendingSet());
+		return new ImmutableSortedSet<E>(super.descendingSet());
 	}
 
 	@Override
 	public NavigableSet<E> headSet(E toElement, boolean inclusive) {
-		return new ImmutableTreeSet<E>(super.headSet(toElement, inclusive));
+		return new ImmutableSortedSet<E>(super.headSet(toElement, inclusive));
 	}
 
 	@Override
 	public SortedSet<E> headSet(E toElement) {
-		return new ImmutableTreeSet<E>(super.headSet(toElement));
+		return new ImmutableSortedSet<E>(super.headSet(toElement));
 	}
 
 	@Override
@@ -94,22 +94,22 @@ public class ImmutableTreeSet<E> extends TreeSet<E> {
 
 	@Override
 	public NavigableSet<E> subSet(E fromElement, boolean fromInclusive, E toElement, boolean toInclusive) {
-		return new ImmutableTreeSet<E>(super.subSet(fromElement, fromInclusive, toElement, toInclusive));
+		return new ImmutableSortedSet<E>(super.subSet(fromElement, fromInclusive, toElement, toInclusive));
 	}
 
 	@Override
 	public SortedSet<E> subSet(E fromElement, E toElement) {
-		return new ImmutableTreeSet<E>(super.subSet(fromElement, toElement));
+		return new ImmutableSortedSet<E>(super.subSet(fromElement, toElement));
 	}
 
 	@Override
 	public NavigableSet<E> tailSet(E fromElement, boolean inclusive) {
-		return new ImmutableTreeSet<E>(super.tailSet(fromElement, inclusive));
+		return new ImmutableSortedSet<E>(super.tailSet(fromElement, inclusive));
 	}
 
 	@Override
 	public SortedSet<E> tailSet(E fromElement) {
-		return new ImmutableTreeSet<E>(super.tailSet(fromElement));
+		return new ImmutableSortedSet<E>(super.tailSet(fromElement));
 	}
 
 	@Override

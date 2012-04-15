@@ -15,41 +15,41 @@
  */
 package org.nebulae2us.electron.util;
 
-import java.util.Iterator;
+import java.util.Map.Entry;
 
 /**
  * @author Trung Phan
  *
  */
-public final class ImmutableIterator<E> implements Iterator<E> {
+public final class ImmutableEntry<K, V> implements Entry<K, V> {
 
-	private final Iterator<E> iterator;
+	private final Entry<K, V> entry;
 	
-	public ImmutableIterator(Iterator<E> iterator) {
-		if (iterator == null) {
+	public ImmutableEntry(Entry<K, V> entry) {
+		if (entry == null) {
 			throw new NullPointerException();
 		}
-		this.iterator = iterator;
+		this.entry = entry;
 	}
 	
 	/* (non-Javadoc)
-	 * @see java.util.Iterator#hasNext()
+	 * @see java.util.Map.Entry#getKey()
 	 */
-	public boolean hasNext() {
-		return iterator.hasNext();
+	public K getKey() {
+		return entry.getKey();
 	}
 
 	/* (non-Javadoc)
-	 * @see java.util.Iterator#next()
+	 * @see java.util.Map.Entry#getValue()
 	 */
-	public E next() {
-		return iterator.next();
+	public V getValue() {
+		return entry.getValue();
 	}
 
 	/* (non-Javadoc)
-	 * @see java.util.Iterator#remove()
+	 * @see java.util.Map.Entry#setValue(java.lang.Object)
 	 */
-	public void remove() {
+	public V setValue(V arg0) {
 		throw new UnsupportedOperationException();
 	}
 

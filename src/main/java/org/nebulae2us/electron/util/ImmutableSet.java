@@ -23,7 +23,7 @@ import java.util.Set;
 /**
  * @author Trung Phan
  */
-public class ImmutableSet<E> extends AbstractImmutableSet<E> implements Set<E> {
+public final class ImmutableSet<E> extends AbstractImmutableSet<E> implements Set<E> {
 
     private final ImmutableMap<E, ?> hashes;
 

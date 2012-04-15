@@ -21,7 +21,7 @@ import java.util.ListIterator;
  * @author Trung Phan
  *
  */
-public class ImmutableListIterator<E> implements ListIterator<E> {
+public final class ImmutableListIterator<E> implements ListIterator<E> {
 
 	private final ListIterator<E> listIterator;
 	

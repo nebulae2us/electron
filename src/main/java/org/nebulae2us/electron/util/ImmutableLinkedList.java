@@ -24,7 +24,7 @@ import java.util.ListIterator;
  * @author Trung Phan
  *
  */
-public class ImmutableLinkedList<E> extends LinkedList<E> {
+public final class ImmutableLinkedList<E> extends LinkedList<E> {
 
 	private static final long serialVersionUID = -3581086529474852600L;
 

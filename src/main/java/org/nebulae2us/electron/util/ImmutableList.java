@@ -35,7 +35,7 @@ import org.nebulae2us.electron.function.TrimElement;
 /**
  * @author Trung Phan
  */
-public class ImmutableList<E> extends AbstractImmutableList<E> implements List<E>, RandomAccess, Cloneable, Serializable {
+public final class ImmutableList<E> extends AbstractImmutableList<E> implements List<E>, RandomAccess, Cloneable, Serializable {
 
 	private static final long serialVersionUID = -2955135267976316366L;
 
@@ -119,7 +119,7 @@ public class ImmutableList<E> extends AbstractImmutableList<E> implements List<E
     }
 
     @SuppressWarnings("unchecked")
-	protected ImmutableList(Collection<? extends E> c, Comparator<? super E> comparator, boolean unique) {
+	public ImmutableList(Collection<? extends E> c, Comparator<? super E> comparator, boolean unique) {
         this.fromIndex = 0;
         this.descending = false;
         this.comparator = (Comparator<Object>)comparator;

@@ -23,7 +23,7 @@ import java.util.Iterator;
  * @author Trung Phan
  *
  */
-public class ImmutableHashSet<E> extends HashSet<E> {
+public final class ImmutableHashSet<E> extends HashSet<E> {
 
 	private static final long serialVersionUID = 8186739625543562496L;
 

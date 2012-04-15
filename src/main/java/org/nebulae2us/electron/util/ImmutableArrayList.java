@@ -24,7 +24,7 @@ import java.util.ListIterator;
  * @author Trung Phan
  *
  */
-public class ImmutableArrayList<E> extends ArrayList<E> {
+public final class ImmutableArrayList<E> extends ArrayList<E> {
 
 	private static final long serialVersionUID = -68339846306694866L;
 
@@ -53,22 +53,22 @@ public class ImmutableArrayList<E> extends ArrayList<E> {
 	}
 
 	@Override
-	public boolean add(E arg0) {
+	public boolean add(E e) {
 		throw new UnsupportedOperationException();
 	}
 
 	@Override
-	public void add(int arg0, E arg1) {
+	public void add(int index, E e) {
 		throw new UnsupportedOperationException();
 	}
 
 	@Override
-	public boolean addAll(Collection<? extends E> arg0) {
+	public boolean addAll(Collection<? extends E> c) {
 		throw new UnsupportedOperationException();
 	}
 
 	@Override
-	public boolean addAll(int arg0, Collection<? extends E> arg1) {
+	public boolean addAll(int index, Collection<? extends E> c) {
 		throw new UnsupportedOperationException();
 	}
 
@@ -78,27 +78,27 @@ public class ImmutableArrayList<E> extends ArrayList<E> {
 	}
 
 	@Override
-	public void ensureCapacity(int arg0) {
+	public void ensureCapacity(int capacity) {
 		throw new UnsupportedOperationException();
 	}
 
 	@Override
-	public E remove(int arg0) {
+	public E remove(int index) {
 		throw new UnsupportedOperationException();
 	}
 
 	@Override
-	public boolean remove(Object arg0) {
+	public boolean remove(Object o) {
 		throw new UnsupportedOperationException();
 	}
 
 	@Override
-	protected void removeRange(int arg0, int arg1) {
+	protected void removeRange(int fromIndex, int toIndex) {
 		throw new UnsupportedOperationException();
 	}
 
 	@Override
-	public E set(int arg0, E arg1) {
+	public E set(int index, E e) {
 		throw new UnsupportedOperationException();
 	}
 
@@ -108,12 +108,12 @@ public class ImmutableArrayList<E> extends ArrayList<E> {
 	}
 
 	@Override
-	public boolean removeAll(Collection<?> arg0) {
+	public boolean removeAll(Collection<?> c) {
 		throw new UnsupportedOperationException();
 	}
 
 	@Override
-	public boolean retainAll(Collection<?> arg0) {
+	public boolean retainAll(Collection<?> c) {
 		throw new UnsupportedOperationException();
 	}
 

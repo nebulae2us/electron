@@ -20,7 +20,7 @@ import java.util.*;
 /**
  * @author Trung Phan
  */
-public class ImmutableSortedMap<K, V> extends AbstractImmutableMap<K, V> implements NavigableMap<K, V> {
+public final class ImmutableSortedMap<K, V> extends AbstractImmutableMap<K, V> implements NavigableMap<K, V> {
 
     private final List<InternalEntry>  data;
 
@@ -50,7 +50,7 @@ public class ImmutableSortedMap<K, V> extends AbstractImmutableMap<K, V> impleme
 
     public ImmutableSortedMap(ImmutableSortedMap<K, V> cloned, boolean descending) {
         this.data = cloned.data;
-        this.keys = descending ? cloned.keys.descendingList() : cloned.keys;
+        this.keys = descending ? cloned.keys.descendingSet() : cloned.keys;
     }
 
     public Entry<K, V> lowerEntry(K key) {

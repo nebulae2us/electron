@@ -70,7 +70,7 @@ public class Sample {
 		this.blanks = mirror.toListOf(Blank.class, "blanks");
 		this.blanksMap = new ImmutableSortedMap<Class<Blank>, Blank>(
 				(Map<Class<Blank>, Blank>)(Object)mirror.toMapOf(Class.class, Blank.class, "blanksMap"),
-				new NaturalComparator<Class<Blank>>()
+				NaturalComparator.getInstance()
 				);
 		
 		this.blanks2blanks = (Map<Blank, Blank>)mirror.toObject("blanks2blanks");

@@ -21,46 +21,50 @@ import java.util.*;
 /**
  * @author Trung Phan
  */
-public class ImmutableSortedSet<E> extends ImmutableSortedList<E>
-    implements List<E>, NavigableSet<E>, RandomAccess, Cloneable, Serializable {
+public final class ImmutableSortedSet<E> extends AbstractImmutableSortedSet<E> implements NavigableSet<E>, RandomAccess, Cloneable, Serializable {
 
 	private static final long serialVersionUID = 1804056996695224851L;
+	
+	private final ImmutableList<E> data;
 
     public ImmutableSortedSet() {
-    	super();
+    	this.data = new ImmutableList<E>();
     }
 	
     public ImmutableSortedSet(Collection<E> c, Comparator<? super E> comparator) {
-    	super(c, comparator, true);
+    	this.data = new ImmutableList<E>(c, comparator, true);
     }
     
     public ImmutableSortedSet(SortedSet<E> sortedSet) {
-    	this(sortedSet, sortedSet.comparator());
+    	Comparator<? super E> comparator = sortedSet.comparator();
+    	if (comparator == null) {
+    		comparator = NaturalComparator.getInstance();
+    	}
+    	this.data = new ImmutableList<E>(sortedSet, comparator, false);
     }
     
     public ImmutableSortedSet(Collection<E> c) {
-    	this(c, new NaturalComparator<E>());
+    	this(c, NaturalComparator.getInstance());
     }
     
     public ImmutableSortedSet(E ... elements) {
-    	this(Arrays.asList(elements));
+    	this(NaturalComparator.getInstance(), elements);
     }
     
     public ImmutableSortedSet(Comparator<? super E> comparator, E ... elements) {
     	this(Arrays.asList(elements), comparator);
     }
     
-
-    protected ImmutableSortedSet(ImmutableSortedSet<E> cloned, boolean descending) {
-    	super(cloned, descending);
-    }
-
-    protected ImmutableSortedSet(ImmutableSortedSet<E> cloned, int fromIndex, int toIndex) {
-    	super(cloned, fromIndex, toIndex);
+    private ImmutableSortedSet(ImmutableList<E> internalData) {
+    	this.data = internalData;
     }
     
-    public ImmutableSortedSet<E> subList(int fromIndex, int toIndex) {
-        return new ImmutableSortedSet<E>(this, fromIndex, toIndex);
+    public int indexOf(Object o) {
+    	return data.indexOf(o);
+    }
+    
+    public E get(int index) {
+    	return data.get(index);
     }
 
     private int lowerIndex(E e) {
@@ -68,7 +72,7 @@ public class ImmutableSortedSet<E> extends ImmutableSortedList<E>
     		return -1;
     	}
     	
-    	int idx = binarySearch(e);
+    	int idx = data.binarySearch(e);
     	if (idx == -1 || idx == 0) {
     		return -1;
     	}
@@ -82,7 +86,7 @@ public class ImmutableSortedSet<E> extends ImmutableSortedList<E>
     
     public E lower(E e) {
     	int idx = lowerIndex(e);
-    	return idx < 0 ? null : get(idx);
+    	return idx < 0 ? null : data.get(idx);
     }
 
     private int floorIndex(E e) {
@@ -90,7 +94,7 @@ public class ImmutableSortedSet<E> extends ImmutableSortedList<E>
     		return -1;
     	}
     	
-    	int idx = binarySearch(e);
+    	int idx = data.binarySearch(e);
     	if (idx == -1) {
     		return -1;
     	}
@@ -104,7 +108,7 @@ public class ImmutableSortedSet<E> extends ImmutableSortedList<E>
     
     public E floor(E e) {
     	int idx = floorIndex(e);
-    	return idx < 0 ? null : get(idx);
+    	return idx < 0 ? null : data.get(idx);
     }
 
     private int ceilingIndex(E e) {
@@ -112,7 +116,7 @@ public class ImmutableSortedSet<E> extends ImmutableSortedList<E>
     		return -1;
     	}
     	
-    	int idx = binarySearch(e);
+    	int idx = data.binarySearch(e);
     	if (idx == -1 - size()) {
     		return -1;
     	}
@@ -121,12 +125,12 @@ public class ImmutableSortedSet<E> extends ImmutableSortedList<E>
     	}
     	else {
     		return idx;
-    	}    	
+    	}
     }
     
     public E ceiling(E e) {
     	int idx = ceilingIndex(e);
-    	return idx < 0 ? null : get(idx);
+    	return idx < 0 ? null : data.get(idx);
     }
 
     private int higherIndex(E e) {
@@ -134,7 +138,7 @@ public class ImmutableSortedSet<E> extends ImmutableSortedList<E>
     		return -1;
     	}
     	
-    	int idx = binarySearch(e);
+    	int idx = data.binarySearch(e);
     	if (idx == size() - 1 || idx == -1 - size()) {
     		return -1;
     	}
@@ -148,25 +152,13 @@ public class ImmutableSortedSet<E> extends ImmutableSortedList<E>
     
     public E higher(E e) {
     	int idx = higherIndex(e);
-    	return idx < 0 ? null : get(idx);
-    }
-
-    public E pollFirst() {
-        throw new UnsupportedOperationException();
-    }
-
-    public E pollLast() {
-        throw new UnsupportedOperationException();
+    	return idx < 0 ? null : data.get(idx);
     }
 
     public ImmutableSortedSet<E> descendingSet() {
-        return descendingList();
+        return new ImmutableSortedSet<E>(data.descendingList());
     }
 
-    public ImmutableSortedSet<E> descendingList() {
-        return new ImmutableSortedSet<E>(this, true);
-    }
-    
     public ImmutableSortedSet<E> subSet(E fromElement, boolean fromInclusive, E toElement, boolean toInclusive) {
     	
     	int lowerIndex = fromInclusive ? floorIndex(fromElement) : lowerIndex(fromElement);
@@ -178,7 +170,7 @@ public class ImmutableSortedSet<E> extends ImmutableSortedList<E>
     		return new ImmutableSortedSet<E>();
     	}
     	
-    	return subList(lowerIndex, higherIndex);
+    	return new ImmutableSortedSet<E>(data.subList(lowerIndex, higherIndex));
     }
 
     public ImmutableSortedSet<E> headSet(E toElement, boolean inclusive) {
@@ -191,7 +183,7 @@ public class ImmutableSortedSet<E> extends ImmutableSortedList<E>
     		return new ImmutableSortedSet<E>();
     	}
 
-        return subList(0, higherIndex);
+        return new ImmutableSortedSet<E>(data.subList(0, higherIndex));
     }
 
     public ImmutableSortedSet<E> tailSet(E fromElement, boolean inclusive) {
@@ -203,7 +195,7 @@ public class ImmutableSortedSet<E> extends ImmutableSortedList<E>
     	if (lowerIndex < 0) {
     		return new ImmutableSortedSet<E>();
     	}
-    	return subList(lowerIndex, size());
+    	return new ImmutableSortedSet<E>(data.subList(lowerIndex, size()));
     }
 
     public ImmutableSortedSet<E> subSet(E fromElement, E toElement) {
@@ -219,11 +211,11 @@ public class ImmutableSortedSet<E> extends ImmutableSortedList<E>
     }
 
     public E first() {
-        return size() == 0 ? null : get(0);
+        return size() == 0 ? null : data.get(0);
     }
 
     public E last() {
-        return size() == 0 ? null : get(size() - 1);
+        return size() == 0 ? null : data.get(size() - 1);
     }
 
 	@Override
@@ -259,6 +251,27 @@ public class ImmutableSortedSet<E> extends ImmutableSortedList<E>
 	                h += obj.hashCode();
 	        }
 		return h;
-	}    
-    
+	}
+
+	public Comparator<? super E> comparator() {
+		return data.comparator();
+	}
+
+	public boolean contains(Object o) {
+		return data.contains(o);
+	}
+
+	public int size() {
+		return data.size();
+	}
+
+	public Iterator<E> descendingIterator() {
+		return data.descendingIterator();
+	}
+
+	public Iterator<E> iterator() {
+		return data.iterator();
+	}
+
+
 }

@@ -23,7 +23,7 @@ import java.util.LinkedHashSet;
  * @author Trung Phan
  *
  */
-public class ImmutableLinkedHashSet<E> extends LinkedHashSet<E> {
+public final class ImmutableLinkedHashSet<E> extends LinkedHashSet<E> {
 
 	private static final long serialVersionUID = 5718771109469218056L;
 

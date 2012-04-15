@@ -35,12 +35,8 @@ public interface Mirror {
 	
 	public <K, V> Map<K, V> toMapOf(Class<K> keyClass, Class<V> valueClass, String fieldName);
 	
-	public <K, V> Map<K, V> toIdentityMapOf(Class<K> keyClass, Class<V> valueClass, String fieldName);
-	
 	public <K, V> Map<K, List<V>> toMultiValueMapOf(Class<K> keyClass, Class<V> valueClass, String fieldName);
 
-	public <K, V> Map<K, List<V>> toMultiValueIdentityMapOf(Class<K> keyClass, Class<V> valueClass, String fieldName);
-	
 	public Object toObject(String fieldName);
 
 	public String toString(String fieldName);

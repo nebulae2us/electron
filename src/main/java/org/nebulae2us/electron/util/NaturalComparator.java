@@ -22,17 +22,26 @@ import java.util.Comparator;
  * @author Trung Phan
  *
  */
-public class NaturalComparator<E> implements Comparator<E> {
+public class NaturalComparator implements Comparator<Object> {
 
-	@SuppressWarnings("unchecked")
-	public int compare(E e1, E e2) {
+	private NaturalComparator() {
+	}
+	
+	private static final NaturalComparator instance = new NaturalComparator();
+	
+	public static NaturalComparator getInstance() {
+		return instance;
+	}
+	
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	public int compare(Object e1, Object e2) {
 		if (!(e1 instanceof Comparable)) {
 			throw new IllegalArgumentException("Elements are not comparable.");
 		}
 		if (!(e2 instanceof Comparable)) {
 			throw new IllegalArgumentException("Elements are not comparable.");
 		}
-		Comparable<E> c1 = (Comparable<E>) e1;
+		Comparable c1 = (Comparable) e1;
 		return c1.compareTo(e2);
 	}
 
