@@ -17,19 +17,26 @@ package org.nebulae2us.electron.util;
 
 import java.util.*;
 
+
 /**
  * @author Trung Phan
  */
 public final class ImmutableSortedMap<K, V> extends AbstractImmutableMap<K, V> implements NavigableMap<K, V> {
 
-    private final List<InternalEntry>  data;
+    private final ImmutableSortedSet<ImmutableEntry<K, V>>  data;
+	
+    private final Comparator<Object> keyComparator;
 
-    private final ImmutableSortedSet<K> keys;
 
-    public ImmutableSortedMap(Map<K, V> data, Comparator<? super K> comparator) {
-        keys = new ImmutableSortedSet<K>(data.keySet(), comparator);
-
-        ArrayList<InternalEntry> _data = new ArrayList<ImmutableSortedMap<K,V>.InternalEntry>(keys.size());
+    public ImmutableSortedMap() {
+    	this.data = new ImmutableSortedSet<ImmutableEntry<K, V>>();
+    	this.keyComparator = NaturalComparator.getInstance();
+    }
+    
+    public ImmutableSortedMap(Map<K, V> data, final Comparator<? super K> comparator) {
+    	this.keyComparator = comparator == null ? NaturalComparator.getInstance() : (Comparator<Object>)comparator;
+    	
+        ArrayList<ImmutableEntry<K,V>> _data = new ArrayList<ImmutableEntry<K,V>>();
         
         for (Entry<K, V> entry : data.entrySet()) {
         	
@@ -37,11 +44,17 @@ public final class ImmutableSortedMap<K, V> extends AbstractImmutableMap<K, V> i
         		continue;
         	}
         	
-            InternalEntry newEntry = new InternalEntry(entry.getKey(), entry.getValue());
-            _data.add(keys.indexOf(entry.getKey()), newEntry);
+            ImmutableEntry<K, V> newEntry = new ImmutableEntry<K, V>(entry.getKey(), entry.getValue());
+            _data.add(newEntry);
         }
+
+        Comparator<ImmutableEntry<K, V>> entryComparator = new Comparator<ImmutableEntry<K,V>>() {
+    		public int compare(ImmutableEntry<K, V> entry1, ImmutableEntry<K, V> entry2) {
+    			return keyComparator.compare(entry1.getKey(), entry2.getKey());
+    		}
+    	};
         
-        this.data = new ImmutableList<ImmutableSortedMap<K,V>.InternalEntry>(_data);
+        this.data = new ImmutableSortedSet<ImmutableEntry<K,V>>(_data, entryComparator);
     }
 
     public ImmutableSortedMap(SortedMap<K, V> map) {
@@ -49,44 +62,49 @@ public final class ImmutableSortedMap<K, V> extends AbstractImmutableMap<K, V> i
     }
 
     public ImmutableSortedMap(ImmutableSortedMap<K, V> cloned, boolean descending) {
-        this.data = cloned.data;
-        this.keys = descending ? cloned.keys.descendingSet() : cloned.keys;
+        this.data = descending ? cloned.data.descendingSet() : cloned.data;
+        this.keyComparator = cloned.keyComparator;
+    }
+    
+    private ImmutableSortedMap(ImmutableSortedSet<ImmutableEntry<K,V>> data, Comparator<Object> keyComparator) {
+    	this.data = data;
+    	this.keyComparator = keyComparator;
     }
 
     public Entry<K, V> lowerEntry(K key) {
-    	K lowerKey = keys.lower(key);
-    	return lowerKey == null ? null : this.data.get(this.keys.indexOf(lowerKey));
+    	return this.data.lower(new ImmutableEntry<K, V>(key, null));
     }
 
     public K lowerKey(K key) {
-        return keys.lower(key);
+    	Entry<K, V> lowerEntry = lowerEntry(key);
+    	return lowerEntry != null ? lowerEntry.getKey() : null;
     }
 
     public Entry<K, V> floorEntry(K key) {
-    	K floorKey = keys.floor(key);
-    	return floorKey == null ? null : this.data.get(this.keys.indexOf(floorKey));
+    	return this.data.floor(new ImmutableEntry<K, V>(key, null));
     }
 
     public K floorKey(K key) {
-        return keys.floor(key);
+    	Entry<K, V> floorEntry = floorEntry(key);
+    	return floorEntry != null ? floorEntry.getKey() : null;
     }
 
     public Entry<K, V> ceilingEntry(K key) {
-    	K ceilingKey = keys.ceiling(key);
-    	return ceilingKey == null ? null : this.data.get(this.keys.indexOf(ceilingKey));
+    	return this.data.ceiling(new ImmutableEntry<K, V>(key, null));
     }
 
     public K ceilingKey(K key) {
-        return keys.ceiling(key);
+    	Entry<K, V> ceilingEntry = ceilingEntry(key);
+        return ceilingEntry != null ? ceilingEntry.getKey() : null;
     }
 
     public Entry<K, V> higherEntry(K key) {
-    	K higherKey = keys.higher(key);
-    	return higherKey == null ? null : this.data.get(this.keys.indexOf(higherKey));
+    	return this.data.higher(new ImmutableEntry<K, V>(key, null));
     }
 
     public K higherKey(K key) {
-    	return keys.higher(key);
+    	Entry<K, V> higherEntry = higherEntry(key);
+    	return higherEntry != null ? higherEntry.getKey() : null;
     }
 
     public Entry<K, V> firstEntry() {
@@ -94,7 +112,7 @@ public final class ImmutableSortedMap<K, V> extends AbstractImmutableMap<K, V> i
     }
 
     public Entry<K, V> lastEntry() {
-        return data.size() == 0 ? null : data.get(keys.size() - 1);
+        return data.size() == 0 ? null : data.get(data.size() - 1);
     }
 
     public final Entry<K, V> pollFirstEntry() {
@@ -105,131 +123,128 @@ public final class ImmutableSortedMap<K, V> extends AbstractImmutableMap<K, V> i
         throw new UnsupportedOperationException();
     }
 
-    public NavigableMap<K, V> descendingMap() {
+    public ImmutableSortedMap<K, V> descendingMap() {
     	return new ImmutableSortedMap<K, V>(this, true);
     }
 
     public NavigableSet<K> navigableKeySet() {
-        return keys;
+    	return new InternalSortedSet();
     }
 
     public NavigableSet<K> descendingKeySet() {
-        return keys.descendingSet();
+        return new ImmutableSortedMap<K, V>(this, true).navigableKeySet();
     }
 
-    public NavigableMap<K, V> subMap(K fromKey, boolean fromInclusive, K toKey, boolean toInclusive) {
+    public ImmutableSortedMap<K, V> subMap(K fromKey, boolean fromInclusive, K toKey, boolean toInclusive) {
+    	int fromIndex = fromInclusive ? data.ceilingIndex(new ImmutableEntry<K, V>(fromKey, null)) : data.higherIndex(new ImmutableEntry<K, V>(fromKey, null));
+    	if (fromIndex < 0) {
+    		return new ImmutableSortedMap<K, V>();
+    	}
     	
+    	int toIndex = toInclusive ? data.floorIndex(new ImmutableEntry<K, V>(toKey, null)) : data.lowerIndex(new ImmutableEntry<K, V>(toKey, null));
+    	if (toIndex < 0 || toIndex + 1 < fromIndex) {
+    		return new ImmutableSortedMap<K, V>();
+    	}
     	
-    	
-    	
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        return new ImmutableSortedMap<K, V>(this.data.subSet(fromIndex, toIndex), this.keyComparator);
     }
 
-    public NavigableMap<K, V> headMap(K toKey, boolean inclusive) {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    public ImmutableSortedMap<K, V> headMap(K toKey, boolean inclusive) {
+    	int toIndex = inclusive ? data.floorIndex(new ImmutableEntry<K, V>(toKey, null)) : data.lowerIndex(new ImmutableEntry<K, V>(toKey, null));
+    	if (toIndex < 0) {
+    		return new ImmutableSortedMap<K, V>();
+    	}
+    	return new ImmutableSortedMap<K, V>(this.data.subSet(0, toIndex), this.keyComparator);
     }
 
-    public NavigableMap<K, V> tailMap(K fromKey, boolean inclusive) {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    public ImmutableSortedMap<K, V> tailMap(K fromKey, boolean inclusive) {
+    	int fromIndex = inclusive ? data.ceilingIndex(new ImmutableEntry<K, V>(fromKey, null)) : data.higherIndex(new ImmutableEntry<K, V>(fromKey, null));
+    	if (fromIndex < 0) {
+    		return new ImmutableSortedMap<K, V>();
+    	}
+    	return new ImmutableSortedMap<K, V>(this.data.subSet(fromIndex), this.keyComparator);
     }
 
     public Comparator<? super K> comparator() {
-        return keys.comparator();
+        return this.keyComparator == NaturalComparator.getInstance() ? null : this.keyComparator;
     }
 
-    public SortedMap<K, V> subMap(K fromKey, K toKey) {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    public ImmutableSortedMap<K, V> subMap(K fromKey, K toKey) {
+    	return subMap(fromKey, true, toKey, false);
     }
 
-    public SortedMap<K, V> headMap(K toKey) {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    public ImmutableSortedMap<K, V> headMap(K toKey) {
+    	return headMap(toKey, false);
     }
 
-    public SortedMap<K, V> tailMap(K fromKey) {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    public ImmutableSortedMap<K, V> tailMap(K fromKey) {
+    	return tailMap(fromKey, true);
     }
 
     public K firstKey() {
-        return keys.size() == 0 ? null : keys.get(0);
+        return data.size() == 0 ? null : data.get(0).getKey();
     }
 
     public K lastKey() {
-        return keys.size() == 0 ? null : keys.get(keys.size() - 1);
+        return data.size() == 0 ? null : data.get(data.size() - 1).getKey();
     }
 
     public int size() {
-        return keys.size();
+        return data.size();
     }
 
     public boolean isEmpty() {
-        return keys.isEmpty();
+        return data.isEmpty();
     }
 
     public boolean containsKey(Object key) {
-        return keys.contains(key);
+        return data.contains(new ImmutableEntry<K, V>((K)key, null));
     }
 
     public boolean containsValue(Object value) {
-        return false;  //To change body of implemented methods use File | Settings | File Templates.
+    	for (ImmutableEntry<K, V> entry : this.data) {
+    		if (value == null) {
+    			if (entry.getValue() == null) {
+    				return true;
+    			}
+    		}
+    		else if (value.equals(entry.getValue())) {
+    			return true;
+    		}
+    	}
+    	return false;
     }
 
     public V get(Object key) {
-    	int idx = keys.indexOf(key);
+    	int idx = data.indexOf(new ImmutableEntry<K, V>((K)key, null));
     	return idx < 0 ? null : this.data.get(idx).getValue();
     }
 
-    public Set<K> keySet() {
-        return keys;
+    public NavigableSet<K> keySet() {
+        return navigableKeySet();
     }
 
     public Collection<V> values() {
         return new ValueCollection();
     }
 
-    public Set<Entry<K, V>> entrySet() {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    private class InternalEntry implements Entry<K, V> {
-
-        private final K key;
-
-        private final V value;
-
-        private InternalEntry(K key, V value) {
-        	if (key == null) {
-        		throw new NullPointerException();
-        	}
-        	
-            this.key = key;
-            this.value = value;
-        }
-
-        public K getKey() {
-            return key;
-        }
-
-        public V getValue() {
-            return value;
-        }
-
-        public V setValue(V value) {
-            throw new UnsupportedOperationException();
-        }
+    @SuppressWarnings("unchecked")
+	public ImmutableSortedSet<Entry<K, V>> entrySet() {
+    	return (ImmutableSortedSet<Entry<K, V>>)(ImmutableSortedSet<? extends Entry<K, V>>)this.data;
     }
 
     private class ValueCollection extends AbstractImmutableCollection<V> implements Collection<V> {
 
         public int size() {
-            return keys.size();
+            return data.size();
         }
 
         public boolean isEmpty() {
-            return keys.isEmpty();
+            return data.isEmpty();
         }
 
         public boolean contains(Object o) {
-            return false;  //To change body of implemented methods use File | Settings | File Templates.
+        	return ImmutableSortedMap.this.containsValue(o);
         }
 
         public Iterator<V> iterator() {
@@ -246,7 +261,7 @@ public final class ImmutableSortedMap<K, V> extends AbstractImmutableMap<K, V> i
         }
 
         public boolean hasNext() {
-            return this.index < keys.size();
+            return this.index < data.size();
         }
 
         public Entry<K, V> next() {
@@ -273,5 +288,107 @@ public final class ImmutableSortedMap<K, V> extends AbstractImmutableMap<K, V> i
         public void remove() {
             throw new UnsupportedOperationException();
         }
+    }
+    
+    private static class InternalIterator<K, V> implements Iterator<K> {
+
+    	private final Iterator<ImmutableEntry<K, V>> entryIterator;
+    	
+		private InternalIterator(Iterator<ImmutableEntry<K, V>> entryIterator) {
+			this.entryIterator = entryIterator;
+		}
+
+		public boolean hasNext() {
+			return entryIterator.hasNext();
+		}
+
+		public K next() {
+			return entryIterator.next().getKey();
+		}
+
+		public void remove() {
+			throw new UnsupportedOperationException();
+		}
+		
+    }
+    
+    private class InternalSortedSet extends AbstractImmutableSortedSet<K> {
+
+		public Comparator<? super K> comparator() {
+			return ImmutableSortedMap.this.keyComparator;
+		}
+
+		public K first() {
+			return ImmutableSortedMap.this.firstKey();
+		}
+
+		public K last() {
+			return ImmutableSortedMap.this.lastKey();
+		}
+
+		public int size() {
+			return ImmutableSortedMap.this.size();
+		}
+
+		public boolean isEmpty() {
+			return ImmutableSortedMap.this.isEmpty();
+		}
+
+		public boolean contains(Object o) {
+			return ImmutableSortedMap.this.containsKey(o);
+		}
+
+		public K lower(K e) {
+			return ImmutableSortedMap.this.lowerKey(e);
+		}
+
+		public K floor(K e) {
+			return ImmutableSortedMap.this.floorKey(e);
+		}
+
+		public K ceiling(K e) {
+			return ImmutableSortedMap.this.ceilingKey(e);
+		}
+
+		public K higher(K e) {
+			return ImmutableSortedMap.this.higherKey(e);
+		}
+
+		public Iterator<K> iterator() {
+			return new InternalIterator<K, V>(ImmutableSortedMap.this.data.iterator());
+		}
+
+		public NavigableSet<K> descendingSet() {
+			return ImmutableSortedMap.this.descendingKeySet();
+		}
+
+		public Iterator<K> descendingIterator() {
+			return new InternalIterator<K, V>(ImmutableSortedMap.this.data.descendingIterator());
+		}
+
+		public NavigableSet<K> subSet(K fromElement, boolean fromInclusive, K toElement, boolean toInclusive) {
+			return ImmutableSortedMap.this.subMap(fromElement, fromInclusive, toElement, toInclusive).keySet();
+		}
+
+		public NavigableSet<K> headSet(K toElement, boolean inclusive) {
+			return ImmutableSortedMap.this.headMap(toElement, inclusive).keySet();
+		}
+
+		public NavigableSet<K> tailSet(K fromElement, boolean inclusive) {
+			return ImmutableSortedMap.this.tailMap(fromElement, inclusive).keySet();
+		}
+
+		public SortedSet<K> subSet(K fromElement, K toElement) {
+			return ImmutableSortedMap.this.subMap(fromElement, toElement).keySet();
+		}
+
+		public SortedSet<K> headSet(K toElement) {
+			return ImmutableSortedMap.this.headMap(toElement).keySet();
+		}
+
+		public SortedSet<K> tailSet(K fromElement) {
+			return ImmutableSortedMap.this.tailMap(fromElement).keySet();
+		}
+    	
     }
 }

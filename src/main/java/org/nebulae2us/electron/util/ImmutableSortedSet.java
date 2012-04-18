@@ -35,12 +35,12 @@ public final class ImmutableSortedSet<E> extends AbstractImmutableSortedSet<E> i
     	this.data = new ImmutableList<E>(c, comparator, true);
     }
     
-    public ImmutableSortedSet(SortedSet<E> sortedSet) {
-    	Comparator<? super E> comparator = sortedSet.comparator();
+    public ImmutableSortedSet(SortedSet<? extends E> sortedSet) {
+    	Comparator<?> comparator = sortedSet.comparator();
     	if (comparator == null) {
     		comparator = NaturalComparator.getInstance();
     	}
-    	this.data = new ImmutableList<E>(sortedSet, comparator, false);
+    	this.data = new ImmutableList<E>(sortedSet, (Comparator<? super E>)comparator, false);
     }
     
     public ImmutableSortedSet(Collection<E> c) {
@@ -67,7 +67,7 @@ public final class ImmutableSortedSet<E> extends AbstractImmutableSortedSet<E> i
     	return data.get(index);
     }
 
-    private int lowerIndex(E e) {
+    public int lowerIndex(E e) {
     	if (e == null) {
     		return -1;
     	}
@@ -89,7 +89,7 @@ public final class ImmutableSortedSet<E> extends AbstractImmutableSortedSet<E> i
     	return idx < 0 ? null : data.get(idx);
     }
 
-    private int floorIndex(E e) {
+    public int floorIndex(E e) {
     	if (e == null) {
     		return -1;
     	}
@@ -111,7 +111,7 @@ public final class ImmutableSortedSet<E> extends AbstractImmutableSortedSet<E> i
     	return idx < 0 ? null : data.get(idx);
     }
 
-    private int ceilingIndex(E e) {
+    public int ceilingIndex(E e) {
     	if (e == null) {
     		return -1;
     	}
@@ -133,7 +133,7 @@ public final class ImmutableSortedSet<E> extends AbstractImmutableSortedSet<E> i
     	return idx < 0 ? null : data.get(idx);
     }
 
-    private int higherIndex(E e) {
+    public int higherIndex(E e) {
     	if (e == null) {
     		return -1;
     	}
@@ -157,6 +157,14 @@ public final class ImmutableSortedSet<E> extends AbstractImmutableSortedSet<E> i
 
     public ImmutableSortedSet<E> descendingSet() {
         return new ImmutableSortedSet<E>(data.descendingList());
+    }
+
+    public ImmutableSortedSet<E> subSet(int fromIndex) {
+    	return new ImmutableSortedSet<E>(data.subList(fromIndex));
+    }
+    
+    public ImmutableSortedSet<E> subSet(int fromIndex, int toIndex) {
+    	return new ImmutableSortedSet<E>(data.subList(fromIndex, toIndex));
     }
 
     public ImmutableSortedSet<E> subSet(E fromElement, boolean fromInclusive, E toElement, boolean toInclusive) {

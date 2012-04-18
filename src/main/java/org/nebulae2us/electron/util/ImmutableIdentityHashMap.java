@@ -16,23 +16,22 @@
 package org.nebulae2us.electron.util;
 
 import java.util.Collection;
-import java.util.LinkedHashMap;
+import java.util.IdentityHashMap;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Set;
 
 /**
  * @author Trung Phan
  *
  */
-public final class ImmutableLinkedHashMap<K, V> extends LinkedHashMap<K, V> {
+public final class ImmutableIdentityHashMap<K, V> extends IdentityHashMap<K, V> {
 
-	private static final long serialVersionUID = 8070724328849837500L;
+	private static final long serialVersionUID = 1593227809905738117L;
 	
 	private final ImmutableMap<K, V> data;
-
-	public ImmutableLinkedHashMap(Map<? extends K, ? extends V> m) {
-		this.data = new ImmutableMap<K, V>(m, ObjectEqualityComparator.getInstance());
+	
+	public ImmutableIdentityHashMap(Map<? extends K, ? extends V> m) {
+		this.data = new ImmutableMap<K, V>(m, IdentityEqualityComparator.getInstance());
 	}
 	
 	@Override
@@ -41,44 +40,55 @@ public final class ImmutableLinkedHashMap<K, V> extends LinkedHashMap<K, V> {
 	}
 
 	@Override
-	public boolean containsValue(Object value) {
-		// TODO Auto-generated method stub
-		return super.containsValue(value);
-	}
-
-	@Override
-	public V get(Object key) {
-		// TODO Auto-generated method stub
-		return super.get(key);
-	}
-
-	@Override
 	public Object clone() {
 		return super.clone();
 	}
 
 	@Override
-	public boolean containsKey(Object arg0) {
-		// TODO Auto-generated method stub
-		return super.containsKey(arg0);
+	public boolean containsKey(Object key) {
+		return data.containsKey(key);
 	}
 
 	@Override
-	public Set<Entry<K, V>> entrySet() {
-		// TODO Auto-generated method stub
-		return super.entrySet();
+	public boolean containsValue(Object o) {
+		return data.containsValue(o);
+	}
+
+	@Override
+	public Set<java.util.Map.Entry<K, V>> entrySet() {
+		return data.entrySet();
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) {
+			return true;
+		}
+		if (o == null || o.getClass() != this.getClass()) {
+			return false;
+		}
+		
+		return data.equals(((ImmutableIdentityHashMap<?, ?>)o).data);
+	}
+
+	@Override
+	public V get(Object key) {
+		return data.get(key);
+	}
+
+	@Override
+	public int hashCode() {
+		return data.hashCode();
 	}
 
 	@Override
 	public boolean isEmpty() {
-		// TODO Auto-generated method stub
-		return super.isEmpty();
+		return data.isEmpty();
 	}
 
 	@Override
 	public Set<K> keySet() {
-		// TODO Auto-generated method stub
-		return super.keySet();
+		return data.keySet();
 	}
 
 	@Override
@@ -107,26 +117,8 @@ public final class ImmutableLinkedHashMap<K, V> extends LinkedHashMap<K, V> {
 	}
 
 	@Override
-	public boolean equals(Object o) {
-		if (o == this) {
-			return true;
-		}
-		if (o == null || o.getClass() != this.getClass()) {
-			return false;
-		}
-		return this.data.equals(((ImmutableLinkedHashMap<?, ?>)o).data);
-	}
-
-	@Override
-	public int hashCode() {
-		return data.hashCode();
-	}
-
-	@Override
 	public String toString() {
 		return data.toString();
 	}
-
-	
 
 }

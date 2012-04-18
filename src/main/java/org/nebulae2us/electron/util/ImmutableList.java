@@ -208,6 +208,16 @@ public final class ImmutableList<E> extends AbstractImmutableList<E> implements 
         if (comparator != null) {
             int idx = Arrays.binarySearch(data, fromIndex, fromIndex + size, o, comparator);
             if (idx >= 0) {
+            	if (!realDesc) {
+                	while (idx > fromIndex && this.comparator.compare(data[idx], data[idx-1]) == 0) {
+                		idx--;
+                	}
+            	}
+            	else {
+                	while (idx < fromIndex + size - 1 && this.comparator.compare(data[idx], data[idx+1]) == 0) {
+                		idx++;
+                	}
+            	}
                 return this.descending ? fromIndex + this.size - idx - 1 : idx - fromIndex;
             }
         }
@@ -228,6 +238,10 @@ public final class ImmutableList<E> extends AbstractImmutableList<E> implements 
         return indexOf(o, true);
     }
 
+    public ImmutableList<E> subList(int fromIndex) {
+    	return subList(fromIndex, size);
+    }
+    
     public ImmutableList<E> subList(int fromIndex, int toIndex) {
     	
     	if (fromIndex == 0 && toIndex == size) {
@@ -349,15 +363,63 @@ public final class ImmutableList<E> extends AbstractImmutableList<E> implements 
     	return new ImmutableList<E>(this.data, this.fromIndex, this.size, this.descending, null, (EqualityComparator<Object>)equalityComparator);
     }
     
+    public boolean isSorted() {
+    	return isSorted(null);
+    }
+    
+    public boolean isSorted(Comparator<? super E> comparator) {
+		Comparator<Object> _comparator = comparator == null ? NaturalComparator.getInstance() : (Comparator<Object>)comparator;
+		
+		if (this.comparator == _comparator && !this.descending) {
+			return true;
+		}
+		
+		boolean isSorted = true;
+		if (!this.descending) {
+			for (int i = 1; i < this.size; i++) {
+				if (_comparator.compare(get(i-1), get(i)) > 0) {
+					isSorted = false;
+					break;
+				}
+			}
+		}
+		else {
+			for (int i = 1; i < this.size; i++) {
+				if (_comparator.compare(get(i-1), get(i)) < 0) {
+					isSorted = false;
+					break;
+				}
+			}
+		}
+    	
+		return isSorted;
+    }
+    
+    public ImmutableList<E> sort() {
+    	return sort(null);
+    }
+    
 	public ImmutableList<E> sort(Comparator<? super E> comparator) {
+		
+		Comparator<Object> _comparator = comparator == null ? NaturalComparator.getInstance() : (Comparator<Object>)comparator;
+
+		if (isSorted(comparator)) {
+			return new ImmutableList<E>(this.data, this.fromIndex, this.size, this.descending, _comparator, null);
+		}
+		
     	Object[] newData = new Object[this.size];
     	int i = 0;
     	for (E e : this) {
     		newData[i++] = e;
     	}
-    	Arrays.sort(newData, (Comparator<Object>)comparator);
+    	if (comparator == null) {
+    		Arrays.sort(newData);
+    	}
+    	else {
+        	Arrays.sort(newData, _comparator);
+    	}
     	
-    	return new ImmutableList<E>(newData, 0, this.size, false, (Comparator<Object>)comparator, null);
+    	return new ImmutableList<E>(newData, 0, this.size, false, _comparator, null);
     }
     
 	public boolean isUnique(EqualityComparator<? super E> comparator) {
@@ -379,7 +441,7 @@ public final class ImmutableList<E> extends AbstractImmutableList<E> implements 
 		}
 		return isUnique(ObjectEqualityComparator.getInstance());
 	}
-	
+
 	public ImmutableList<E> unique(EqualityComparator<? super E> comparator) {
 		if (isUnique(comparator)) {
 			return this;
@@ -389,8 +451,34 @@ public final class ImmutableList<E> extends AbstractImmutableList<E> implements 
 	}
 	
 	public ImmutableList<E> unique() {
-		if (this.equalityComparator != null) {
+		if (this.size == 0) {
+			return this;
+		}
+		else if (this.equalityComparator != null) {
 			return unique(this.equalityComparator);
+		}
+		else if (this.comparator != null) {
+			int countDuplicates = 0;
+			for (int i = 1; i < this.size; i++) {
+				if (this.comparator.compare(get(i-1), get(i)) == 0) {
+					countDuplicates++;
+				}
+			}
+			if (countDuplicates == 0) {
+				return this;
+			}
+			else {
+				Object[] newData = new Object[size - countDuplicates];
+				newData[0] = this.get(0);
+				int newSize = 1;
+				for (int i = 1; i < this.size; i++) {
+					Object element = this.get(i);
+					if (comparator.compare(element, newData[newSize - 1]) != 0) {
+						newData[newSize++] = element;
+					}
+				}
+				return new ImmutableList<E>(newData, 0, newSize, this.descending, this.comparator, null);
+			}
 		}
 		return unique(ObjectEqualityComparator.getInstance());
 	}

@@ -23,32 +23,30 @@ import java.util.Map.Entry;
  */
 public final class ImmutableEntry<K, V> implements Entry<K, V> {
 
-	private final Entry<K, V> entry;
+	private final K key;
+	private final V value;
+	
+	public ImmutableEntry(K key, V value) {
+		this.key = key;
+		this.value = value;
+	}
 	
 	public ImmutableEntry(Entry<K, V> entry) {
 		if (entry == null) {
 			throw new NullPointerException();
 		}
-		this.entry = entry;
+		this.key = entry.getKey();
+		this.value = entry.getValue();
 	}
 	
-	/* (non-Javadoc)
-	 * @see java.util.Map.Entry#getKey()
-	 */
 	public K getKey() {
-		return entry.getKey();
+		return key;
 	}
 
-	/* (non-Javadoc)
-	 * @see java.util.Map.Entry#getValue()
-	 */
 	public V getValue() {
-		return entry.getValue();
+		return value;
 	}
 
-	/* (non-Javadoc)
-	 * @see java.util.Map.Entry#setValue(java.lang.Object)
-	 */
 	public V setValue(V arg0) {
 		throw new UnsupportedOperationException();
 	}

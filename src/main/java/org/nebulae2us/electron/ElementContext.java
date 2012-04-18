@@ -24,11 +24,15 @@ public class ElementContext<E> {
 	public final static int ACTION_KEEP_ELEMENT = 0;
 	public final static int ACTION_SKIP_ELEMENT = 1;
 	
-	private final int index;
+	private int index;
 	
-	private final E element;
+	private E element;
 	
 	private int action = ACTION_KEEP_ELEMENT;
+	
+	public ElementContext() {
+		
+	}
 	
 	public ElementContext(int index, E element) {
 		this.index = index;
@@ -49,6 +53,14 @@ public class ElementContext<E> {
 
 	public void setAction(int action) {
 		this.action = action;
+	}
+
+	public void setIndex(int index) {
+		this.index = index;
+	}
+
+	public void setElement(E element) {
+		this.element = element;
 	}
 
 }

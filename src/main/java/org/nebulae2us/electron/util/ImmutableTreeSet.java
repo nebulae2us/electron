@@ -16,6 +16,7 @@
 package org.nebulae2us.electron.util;
 
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.Iterator;
 import java.util.NavigableSet;
 import java.util.SortedSet;
@@ -29,14 +30,12 @@ public final class ImmutableTreeSet<E> extends TreeSet<E> {
 
 	private static final long serialVersionUID = 1555011942707861208L;
 
-	public ImmutableTreeSet(Collection<? extends E> collection) {
-		super(collection);
-	}
+	private final ImmutableSortedSet<E> data;
 	
-	public ImmutableTreeSet(SortedSet<E> sortedSet) {
-		super(sortedSet);
+	public ImmutableTreeSet(SortedSet<? extends E> c) {
+		this.data = new ImmutableSortedSet<E>(c);
 	}
-	
+
 	@Override
 	public boolean add(E e) {
 		throw new UnsupportedOperationException();
@@ -48,33 +47,83 @@ public final class ImmutableTreeSet<E> extends TreeSet<E> {
 	}
 
 	@Override
+	public E ceiling(E e) {
+		return data.ceiling(e);
+	}
+
+	@Override
 	public void clear() {
 		throw new UnsupportedOperationException();
 	}
 
 	@Override
+	public Object clone() {
+		return super.clone();
+	}
+
+	@Override
+	public Comparator<? super E> comparator() {
+		return data.comparator() == NaturalComparator.getInstance() ? null : data.comparator();
+	}
+
+	@Override
+	public boolean contains(Object o) {
+		return data.contains(o);
+	}
+
+	@Override
 	public Iterator<E> descendingIterator() {
-		return new ImmutableIterator<E>(super.descendingIterator());
+		return data.descendingIterator();
 	}
 
 	@Override
 	public NavigableSet<E> descendingSet() {
-		return new ImmutableSortedSet<E>(super.descendingSet());
+		return data.descendingSet();
 	}
 
 	@Override
-	public NavigableSet<E> headSet(E toElement, boolean inclusive) {
-		return new ImmutableSortedSet<E>(super.headSet(toElement, inclusive));
+	public E first() {
+		return data.first();
+	}
+
+	@Override
+	public E floor(E e) {
+		return data.floor(e);
 	}
 
 	@Override
 	public SortedSet<E> headSet(E toElement) {
-		return new ImmutableSortedSet<E>(super.headSet(toElement));
+		return data.headSet(toElement);
+	}
+
+	@Override
+	public NavigableSet<E> headSet(E toElement, boolean inclusive) {
+		return data.headSet(toElement, inclusive);
+	}
+
+	@Override
+	public E higher(E e) {
+		return data.higher(e);
+	}
+
+	@Override
+	public boolean isEmpty() {
+		return data.isEmpty();
 	}
 
 	@Override
 	public Iterator<E> iterator() {
-		return new ImmutableIterator<E>(super.iterator());
+		return data.iterator();
+	}
+
+	@Override
+	public E last() {
+		return data.last();
+	}
+
+	@Override
+	public E lower(E e) {
+		return data.lower(e);
 	}
 
 	@Override
@@ -88,28 +137,49 @@ public final class ImmutableTreeSet<E> extends TreeSet<E> {
 	}
 
 	@Override
-	public boolean remove(Object element) {
+	public boolean remove(Object o) {
 		throw new UnsupportedOperationException();
 	}
 
 	@Override
-	public NavigableSet<E> subSet(E fromElement, boolean fromInclusive, E toElement, boolean toInclusive) {
-		return new ImmutableSortedSet<E>(super.subSet(fromElement, fromInclusive, toElement, toInclusive));
+	public int size() {
+		return data.size();
 	}
 
 	@Override
 	public SortedSet<E> subSet(E fromElement, E toElement) {
-		return new ImmutableSortedSet<E>(super.subSet(fromElement, toElement));
+		return data.subSet(fromElement, toElement);
 	}
 
 	@Override
-	public NavigableSet<E> tailSet(E fromElement, boolean inclusive) {
-		return new ImmutableSortedSet<E>(super.tailSet(fromElement, inclusive));
+	public NavigableSet<E> subSet(E fromElement, boolean fromInclusive, E toElement, boolean toInclusive) {
+		return data.subSet(fromElement, fromInclusive, toElement, toInclusive);
 	}
 
 	@Override
 	public SortedSet<E> tailSet(E fromElement) {
-		return new ImmutableSortedSet<E>(super.tailSet(fromElement));
+		return data.tailSet(fromElement);
+	}
+
+	@Override
+	public NavigableSet<E> tailSet(E fromElement, boolean inclusive) {
+		return data.tailSet(fromElement, inclusive);
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (o == this) {
+			return true;
+		}
+		if (o == null || o.getClass() != this.getClass()) {
+			return false;
+		}
+		return this.data.equals(((ImmutableTreeSet<?>)o).data);
+	}
+
+	@Override
+	public int hashCode() {
+		return data.hashCode();
 	}
 
 	@Override
@@ -118,8 +188,28 @@ public final class ImmutableTreeSet<E> extends TreeSet<E> {
 	}
 
 	@Override
+	public boolean containsAll(Collection<?> c) {
+		return data.containsAll(c);
+	}
+
+	@Override
 	public boolean retainAll(Collection<?> c) {
 		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public Object[] toArray() {
+		return data.toArray();
+	}
+
+	@Override
+	public <T> T[] toArray(T[] a) {
+		return data.toArray(a);
+	}
+
+	@Override
+	public String toString() {
+		return data.toString();
 	}
 
 }

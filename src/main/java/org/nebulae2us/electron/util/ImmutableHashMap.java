@@ -15,11 +15,11 @@
  */
 package org.nebulae2us.electron.util;
 
-import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 
 /**
  * @author Trung Phan
@@ -28,22 +28,11 @@ import java.util.Map.Entry;
 public final class ImmutableHashMap<K, V> extends HashMap<K, V> {
 
 	private static final long serialVersionUID = 1089435676026499050L;
-	
-	private final ImmutableSet<Entry<K, V>> entrySet;
 
-	private final ImmutableSet<K> keySet = new ImmutableSet<K>(super.keySet());
+	private final ImmutableMap<K, V> data;
 	
-	private final ImmutableList<V> values = new ImmutableList<V>(this.values());
-
 	public ImmutableHashMap(Map<? extends K, ? extends V> m) {
-		super(m);
-		List<Entry<K, V>> entries = new ArrayList<Entry<K, V>>();
-		
-		for (Entry<K, V> entry : this.entrySet()) {
-			entries.add(new ImmutableEntry<K, V>(entry));
-		}
-		
-		entrySet = new ImmutableSet<Entry<K, V>>(entries);
+		this.data = new ImmutableMap<K, V>(m, ObjectEqualityComparator.getInstance());
 	}
 	
 	@Override
@@ -52,13 +41,13 @@ public final class ImmutableHashMap<K, V> extends HashMap<K, V> {
 	}
 
 	@Override
-	public ImmutableSet<Entry<K, V>> entrySet() {
-		return entrySet;
+	public Set<Entry<K, V>> entrySet() {
+		return data.entrySet();
 	}
 
 	@Override
-	public ImmutableSet<K> keySet() {
-		return keySet;
+	public Set<K> keySet() {
+		return data.keySet();
 	}
 
 	@Override
@@ -77,8 +66,60 @@ public final class ImmutableHashMap<K, V> extends HashMap<K, V> {
 	}
 
 	@Override
-	public ImmutableList<V> values() {
-		return values;
+	public Collection<V> values() {
+		return data.values();
 	}
 
+
+	@Override
+	public Object clone() {
+		return super.clone();
+	}
+
+	@Override
+	public boolean containsKey(Object key) {
+		return data.containsKey(key);
+	}
+
+	@Override
+	public boolean containsValue(Object o) {
+		return data.containsValue(o);
+	}
+
+	@Override
+	public V get(Object key) {
+		return data.get(key);
+	}
+
+	@Override
+	public boolean isEmpty() {
+		return data.isEmpty();
+	}
+
+	@Override
+	public int size() {
+		return data.size();
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (o == this) {
+			return true;
+		}
+		if (o == null || o.getClass() != this.getClass()) {
+			return false;
+		}
+		return this.data.equals(((ImmutableHashMap<?, ?>)o).data);
+	}
+
+	@Override
+	public int hashCode() {
+		return data.hashCode();
+	}
+
+	@Override
+	public String toString() {
+		return data.toString();
+	}
+	
 }

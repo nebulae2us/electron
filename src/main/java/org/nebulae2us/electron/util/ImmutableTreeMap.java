@@ -16,12 +16,10 @@
 package org.nebulae2us.electron.util;
 
 import java.util.Collection;
-import java.util.Comparator;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.NavigableMap;
 import java.util.NavigableSet;
-import java.util.Set;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
@@ -32,35 +30,26 @@ import java.util.TreeMap;
 public class ImmutableTreeMap<K, V> extends TreeMap<K, V> {
 
 	private static final long serialVersionUID = 2565430344565812032L;
-	
-	private final ImmutableSortedSet<K> keySet;
+
+	private final ImmutableSortedMap<K, V> data;
 
 	public ImmutableTreeMap(SortedMap<K, V> m) {
-		super(m);
-		
-		Comparator<? super K> comparator = this.comparator();
-		if (comparator == null) {
-			comparator = NaturalComparator.getInstance();
-		}
-		
-		this.keySet = new ImmutableSortedSet<K>(navigableKeySet());
+		this.data = new ImmutableSortedMap<K, V>(m);
 	}
 	
 	@Override
-	public ImmutableSortedSet<K> keySet() {
-		return keySet;
+	public NavigableSet<K> keySet() {
+		return data.keySet();
 	}
 
 	@Override
-	public Entry<K, V> ceilingEntry(K arg0) {
-		// TODO Auto-generated method stub
-		return super.ceilingEntry(arg0);
+	public Entry<K, V> ceilingEntry(K key) {
+		return data.ceilingEntry(key);
 	}
 
 	@Override
-	public K ceilingKey(K arg0) {
-		// TODO Auto-generated method stub
-		return super.ceilingKey(arg0);
+	public K ceilingKey(K key) {
+		return data.ceilingKey(key);
 	}
 
 	@Override
@@ -69,67 +58,58 @@ public class ImmutableTreeMap<K, V> extends TreeMap<K, V> {
 	}
 
 	@Override
-	public ImmutableSortedSet<K> descendingKeySet() {
-		return keySet.descendingSet();
+	public NavigableSet<K> descendingKeySet() {
+		return data.descendingKeySet();
 	}
 
 	@Override
 	public NavigableMap<K, V> descendingMap() {
-		// TODO Auto-generated method stub
-		return super.descendingMap();
+		return data.descendingMap();
 	}
 
 	@Override
-	public Set<Entry<K, V>> entrySet() {
-		// TODO Auto-generated method stub
-		return super.entrySet();
+	public ImmutableSortedSet<Entry<K, V>> entrySet() {
+		return data.entrySet();
 	}
 
 	@Override
 	public Entry<K, V> firstEntry() {
-		// TODO Auto-generated method stub
-		return super.firstEntry();
+		return data.firstEntry();
 	}
 
 	@Override
-	public Entry<K, V> floorEntry(K arg0) {
-		// TODO Auto-generated method stub
-		return super.floorEntry(arg0);
+	public Entry<K, V> floorEntry(K key) {
+		return data.floorEntry(key);
 	}
 
 	@Override
-	public NavigableMap<K, V> headMap(K arg0, boolean arg1) {
-		// TODO Auto-generated method stub
-		return super.headMap(arg0, arg1);
+	public NavigableMap<K, V> headMap(K toKey, boolean inclusive) {
+		return data.headMap(toKey, inclusive);
 	}
 
 	@Override
-	public SortedMap<K, V> headMap(K arg0) {
-		// TODO Auto-generated method stub
-		return super.headMap(arg0);
+	public SortedMap<K, V> headMap(K key) {
+		return data.headMap(key);
 	}
 
 	@Override
-	public Entry<K, V> higherEntry(K arg0) {
-		// TODO Auto-generated method stub
-		return super.higherEntry(arg0);
+	public Entry<K, V> higherEntry(K key) {
+		return data.higherEntry(key);
 	}
 
 	@Override
 	public Entry<K, V> lastEntry() {
-		// TODO Auto-generated method stub
-		return super.lastEntry();
+		return data.lastEntry();
 	}
 
 	@Override
-	public Entry<K, V> lowerEntry(K arg0) {
-		// TODO Auto-generated method stub
-		return super.lowerEntry(arg0);
+	public Entry<K, V> lowerEntry(K key) {
+		return data.lowerEntry(key);
 	}
 
 	@Override
 	public NavigableSet<K> navigableKeySet() {
-		return keySet;
+		return data.navigableKeySet();
 	}
 
 	@Override
@@ -158,33 +138,28 @@ public class ImmutableTreeMap<K, V> extends TreeMap<K, V> {
 	}
 
 	@Override
-	public NavigableMap<K, V> subMap(K arg0, boolean arg1, K arg2, boolean arg3) {
-		// TODO Auto-generated method stub
-		return super.subMap(arg0, arg1, arg2, arg3);
+	public NavigableMap<K, V> subMap(K fromKey, boolean fromInclusive, K toKey, boolean toInclusive) {
+		return data.subMap(fromKey, fromInclusive, toKey, toInclusive);
 	}
 
 	@Override
-	public SortedMap<K, V> subMap(K arg0, K arg1) {
-		// TODO Auto-generated method stub
-		return super.subMap(arg0, arg1);
+	public SortedMap<K, V> subMap(K fromKey, K toKey) {
+		return data.subMap(fromKey, toKey);
 	}
 
 	@Override
-	public NavigableMap<K, V> tailMap(K arg0, boolean arg1) {
-		// TODO Auto-generated method stub
-		return super.tailMap(arg0, arg1);
+	public NavigableMap<K, V> tailMap(K fromKey, boolean inclusive) {
+		return data.tailMap(fromKey, inclusive);
 	}
 
 	@Override
-	public SortedMap<K, V> tailMap(K arg0) {
-		// TODO Auto-generated method stub
-		return super.tailMap(arg0);
+	public SortedMap<K, V> tailMap(K fromKey) {
+		return data.tailMap(fromKey);
 	}
 
 	@Override
 	public Collection<V> values() {
-		// TODO Auto-generated method stub
-		return super.values();
+		return data.values();
 	}
 
 }
