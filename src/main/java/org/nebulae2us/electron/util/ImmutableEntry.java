@@ -50,5 +50,40 @@ public final class ImmutableEntry<K, V> implements Entry<K, V> {
 	public V setValue(V arg0) {
 		throw new UnsupportedOperationException();
 	}
+	
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) {
+			return true;
+		}
+		if (o == null || o.getClass() != this.getClass()) {
+			return false;
+		}
+		ImmutableEntry<?,?> e = (ImmutableEntry<?,?>)o;
+		
+		if (this.key == null) {
+			if (e.key != null) {
+				return false;
+			}
+		}
+		else if (!this.key.equals(e.key)) {
+			return false;
+		}
+		
+		if (this.value == null) {
+			if (e.value != null) {
+				return false;
+			}
+		}
+		else if (!this.value.equals(e.value)) {
+			return false;
+		}
+		
+		return true;
+	}
 
+	@Override
+	public int hashCode() {
+		return (this.key == null ? 0 : this.key.hashCode()) ^ (this.value == null ? 0 : this.value.hashCode());
+	}
 }

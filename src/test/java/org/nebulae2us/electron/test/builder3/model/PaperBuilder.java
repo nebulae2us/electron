@@ -49,11 +49,11 @@ public class PaperBuilder<P> implements Wrappable<Paper<? extends Color>>, Recor
 	}
 
     public Paper<? extends Color> toPaper() {
-    	return new Converter(new BuilderAnnotationDestinationClassResolver(), true).convert(this).to(Paper.class);
+    	return new Converter(new DestinationClassResolverByAnnotation(), true).convert(this).to(Paper.class);
     }
 
     public <C extends Color> Paper<C> toPaper(Class<C> C) {
-    	return new Converter(new BuilderAnnotationDestinationClassResolver(), true).convert(this).to(Paper.class);
+    	return new Converter(new DestinationClassResolverByAnnotation(), true).convert(this).to(Paper.class);
     }
 
 

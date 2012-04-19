@@ -49,7 +49,7 @@ public class HobbyBuilderSpec<P> implements Wrappable<Hobby> {
 	}
 
     public Hobby toHobby() {
-    	return new Converter(new BuilderAnnotationDestinationClassResolver(), true).convert(this).to(Hobby.class);
+    	return new Converter(new DestinationClassResolverByAnnotation(), true).convert(this).to(Hobby.class);
     }
 
 

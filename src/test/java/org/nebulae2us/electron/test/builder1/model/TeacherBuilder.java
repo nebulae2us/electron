@@ -31,13 +31,13 @@ public class TeacherBuilder<P> extends PersonBuilder<P> {
 	}
 
     public Teacher toTeacher() {
-    	return new Converter(new BuilderAnnotationDestinationClassResolver(), true).convert(this).to(Teacher.class);
+    	return new Converter(new DestinationClassResolverByAnnotation(), true).convert(this).to(Teacher.class);
     }
     
 
 	@Override
     public Teacher toPerson() {
-    	return new Converter(new BuilderAnnotationDestinationClassResolver(), true).convert(this).to(Teacher.class);
+    	return new Converter(new DestinationClassResolverByAnnotation(), true).convert(this).to(Teacher.class);
     }
     
 

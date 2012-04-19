@@ -49,7 +49,7 @@ public class PersonBuilder<P> implements Wrappable<Person> {
 	}
 
     public Person toPerson() {
-    	return new Converter(new BuilderAnnotationDestinationClassResolver(), true).convert(this).to(Person.class);
+    	return new Converter(new DestinationClassResolverByAnnotation(), true).convert(this).to(Person.class);
     }
 
 

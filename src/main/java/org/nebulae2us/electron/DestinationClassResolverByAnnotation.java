@@ -19,7 +19,7 @@ package org.nebulae2us.electron;
  * @author Trung Phan
  *
  */
-public class BuilderAnnotationDestinationClassResolver implements DestinationClassResolver {
+public class DestinationClassResolverByAnnotation implements DestinationClassResolver {
 
 	public <T> Class<? extends T> getDestinationClass(Class<?> src, Class<T> expectedDest) {
 		

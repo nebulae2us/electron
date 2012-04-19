@@ -15,7 +15,9 @@
  */
 package org.nebulae2us.electron.util;
 
+import java.util.Iterator;
 import java.util.Map;
+import java.util.Map.Entry;
 
 /**
  * @author Trung Phan
@@ -38,4 +40,73 @@ public abstract class AbstractImmutableMap<K, V> implements Map<K, V> {
         throw new UnsupportedOperationException();
     }
 
+    @Override
+    public boolean equals(Object o) {
+    	if (o == this) {
+    	    return true;
+    	}
+
+    	if (!(o instanceof Map)) {
+    	    return false;
+    	}
+    	
+    	Map<K,V> t = (Map<K,V>) o;
+    	if (t.size() != size()) {
+    	    return false;
+    	}
+
+        try {
+            Iterator<Entry<K,V>> i = entrySet().iterator();
+            while (i.hasNext()) {
+                Entry<K,V> e = i.next();
+                K key = e.getKey();
+                V value = e.getValue();
+                if (value == null) {
+                    if (!(t.get(key)==null && t.containsKey(key)))
+                        return false;
+                } else {
+                    if (!value.equals(t.get(key)))
+                        return false;
+                }
+            }
+        } catch(ClassCastException unused) {
+            return false;
+        } catch(NullPointerException unused) {
+            return false;
+        }
+
+    	return true;
+    }
+    
+    @Override
+    public int hashCode() {
+    	int h = 0;
+    	Iterator<Entry<K,V>> i = entrySet().iterator();
+    	while (i.hasNext()) {
+    	    h += i.next().hashCode();
+    	}
+    	return h;
+    }
+    
+    @Override
+    public String toString() {
+    	if (this.size() == 0) {
+    		return "{}";
+    	}
+
+    	StringBuilder sb = new StringBuilder();
+    	sb.append('{');
+    	for (Entry<K, V> entry : this.entrySet()) {
+    		if (sb.length() != 1) {
+    			sb.append(", ");
+    		}
+    		K key = entry.getKey();
+    		V value = entry.getValue();
+    		sb.append(key == this ? "(this Map)" : key)
+    		.append('=')
+    		.append(value == this ? "(this Map)" : value);
+    	}
+    	sb.append('}');
+    	return sb.toString();
+    }
 }

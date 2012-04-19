@@ -23,6 +23,8 @@ import java.util.*;
  */
 public interface Mirror {
 	
+	
+	
 	public boolean exists(String fieldName);
 	
 	public <T> T to(Class<T> objectClass, String fieldName);

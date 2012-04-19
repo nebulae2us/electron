@@ -714,7 +714,8 @@ public class BuilderGenerator {
 				.replace("PaperBuilderSpec", typeHolder.toBuilderTypeHolder(this.builderSuffix, "?", classesToBuild).getName())
 				.replace("Book", field.getDeclaringClass().getSimpleName())
 				.replace("myPaper", field.getName())
-				.replace("MyPaper", StringUtils.toUpperCamelCase(field.getName()));
+				.replace("MyPaper", StringUtils.toUpperCamelCase(field.getName()))
+				.replace("Builders", this.buildersClassName);
 	}	
 	
 	private static Class<?> getMutableCollectionType(Class<?> rawClass) {

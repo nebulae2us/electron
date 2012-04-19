@@ -49,7 +49,7 @@ public class SampleBuilderSpec<P> implements Wrappable<Sample> {
 	}
 
     public Sample toSample() {
-    	return new Converter(new BuilderAnnotationDestinationClassResolver(), true).convert(this).to(Sample.class);
+    	return new Converter(new DestinationClassResolverByAnnotation(), true).convert(this).to(Sample.class);
     }
 
 

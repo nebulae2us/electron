@@ -19,7 +19,7 @@ import java.io.Serializable;
 import java.util.List;
 
 import org.nebulae2us.electron.Builder;
-import org.nebulae2us.electron.BuilderAnnotationDestinationClassResolver;
+import org.nebulae2us.electron.DestinationClassResolverByAnnotation;
 import org.nebulae2us.electron.BuilderRepository;
 import org.nebulae2us.electron.Converter;
 import org.nebulae2us.electron.Wrappable;
@@ -70,7 +70,7 @@ public class OrangeBuilderSpec<P> implements Wrappable<Orange<? extends Sample, 
 	}
 
     public Orange<? extends Sample, ? extends List<? extends Blank>, ? extends Serializable> toOrange() {
-    	return new Converter(new BuilderAnnotationDestinationClassResolver(), true).convert(this).to(Orange.class);
+    	return new Converter(new DestinationClassResolverByAnnotation(), true).convert(this).to(Orange.class);
     }
     
     private SampleBuilderSpec<?> sample;

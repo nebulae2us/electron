@@ -31,13 +31,13 @@ public class RGBColorBuilder<P> extends ColorBuilder<P> {
 	}
 
     public RGBColor toRGBColor() {
-    	return new Converter(new BuilderAnnotationDestinationClassResolver(), true).convert(this).to(RGBColor.class);
+    	return new Converter(new DestinationClassResolverByAnnotation(), true).convert(this).to(RGBColor.class);
     }
     
 
 	@Override
     public RGBColor toColor() {
-    	return new Converter(new BuilderAnnotationDestinationClassResolver(), true).convert(this).to(RGBColor.class);
+    	return new Converter(new DestinationClassResolverByAnnotation(), true).convert(this).to(RGBColor.class);
     }
     
 

@@ -49,7 +49,7 @@ public class BlankBuilderSpec<P> implements Wrappable<Blank> {
 	}
 
     public Blank toBlank() {
-    	return new Converter(new BuilderAnnotationDestinationClassResolver(), true).convert(this).to(Blank.class);
+    	return new Converter(new DestinationClassResolverByAnnotation(), true).convert(this).to(Blank.class);
     }
 
 

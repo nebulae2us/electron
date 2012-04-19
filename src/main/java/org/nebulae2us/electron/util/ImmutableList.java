@@ -83,6 +83,10 @@ public final class ImmutableList<E> extends AbstractImmutableList<E> implements 
 
 	@SuppressWarnings("unchecked")
 	public ImmutableList(Collection<? extends E> c, EqualityComparator<? super E> equalityComparator, boolean unique) {
+		if (equalityComparator == null) {
+			throw new NullPointerException();
+		}
+		
         this.fromIndex = 0;
         this.descending = false;
         this.comparator = null;
@@ -120,37 +124,40 @@ public final class ImmutableList<E> extends AbstractImmutableList<E> implements 
 
     @SuppressWarnings("unchecked")
 	public ImmutableList(Collection<? extends E> c, Comparator<? super E> comparator, boolean unique) {
+    	if (comparator == null) {
+    		throw new NullPointerException();
+    	}
+    	
         this.fromIndex = 0;
         this.descending = false;
         this.comparator = (Comparator<Object>)comparator;
+        this.equalityComparator = null;
 
-    	if (unique) {
-    		List<E> newList = new ArrayList<E>();
-    		for (E e : c) {
-    			
-    			boolean contains = false;
-    			for (E ie : newList) {
-    				if (comparator.compare(ie, e) == 0) {
-    					contains = true;
-    					break;
-    				}
-    			}
-    			
-    			if (!contains) {
-    				newList.add(e);
-    			}
-    			
-    		}
-    		
-    		c = newList;
-    	}
-    	
         Object[] newData = c.toArray();
         Arrays.sort(newData, this.comparator);
-        data = newData;
-
-        this.size = c.size();
-        this.equalityComparator = null;
+        
+        if (!unique) {
+        	this.data = newData;
+        	this.size = newData.length;
+        }
+        else if (c.size() == 0) {
+        	this.data = newData;
+        	this.size = 0;
+        }
+        else {
+            this.data = newData;
+            int newSize = 1;
+            for (int i = 1; i < c.size(); i++) {
+            	if (this.comparator.compare(data[i-1], data[i]) != 0) {
+            		if (newSize < i) {
+            			this.data[newSize] = this.data[i];
+            		}
+            		newSize++;
+            	}
+            }
+            this.size = newSize;
+        }
+        
     }
 
     protected ImmutableList(ImmutableList<E> cloned, int fromIndex, int toIndex) {
@@ -177,6 +184,13 @@ public final class ImmutableList<E> extends AbstractImmutableList<E> implements 
     }
     
     private ImmutableList(Object[] data, int fromIndex, int size, boolean descending, Comparator<Object> comparator, EqualityComparator<Object> equalityComparator) {
+    	if (comparator == null && equalityComparator == null) {
+    		throw new NullPointerException();
+    	}
+    	if (comparator != null && equalityComparator != null) {
+    		throw new IllegalArgumentException();
+    	}
+    	
     	this.data = data;
     	this.fromIndex = fromIndex;
     	this.size = size;
@@ -337,19 +351,25 @@ public final class ImmutableList<E> extends AbstractImmutableList<E> implements 
             throw new NullPointerException();
         }
         
-        int idx = 0;
+        int idx;
         if (comparator.getClass() == NaturalComparator.class) {
             idx = Arrays.binarySearch(this.data, this.fromIndex, this.fromIndex + this.size, o);
         }
         else {
             idx = Arrays.binarySearch(this.data, this.fromIndex, this.fromIndex + this.size, o, comparator);
         }
+
+        if (!this.descending) {
+        	return idx >= 0 ? idx - this.fromIndex : idx + this.fromIndex;
+        }
+        else {
+        	return idx >= 0 ? this.fromIndex + this.size - idx - 1 : -idx - this.size - this.fromIndex - 2;
+        }
         
-        return this.descending ? this.size - idx - 1 : idx;
-    }
+   }
 
     public ImmutableList<E> changeComparator(Comparator<? super E> comparator) {
-    	return sort(comparator);
+    	return toSortedList(comparator);
     }
 
     public ImmutableList<E> changeComparator(EqualityComparator<? super E> equalityComparator) {
@@ -395,16 +415,16 @@ public final class ImmutableList<E> extends AbstractImmutableList<E> implements 
 		return isSorted;
     }
     
-    public ImmutableList<E> sort() {
-    	return sort(null);
+    public ImmutableList<E> toSortedList() {
+    	return toSortedList(null);
     }
     
-	public ImmutableList<E> sort(Comparator<? super E> comparator) {
+	public ImmutableList<E> toSortedList(Comparator<? super E> comparator) {
 		
 		Comparator<Object> _comparator = comparator == null ? NaturalComparator.getInstance() : (Comparator<Object>)comparator;
 
 		if (isSorted(comparator)) {
-			return new ImmutableList<E>(this.data, this.fromIndex, this.size, this.descending, _comparator, null);
+			return new ImmutableList<E>(this.data, this.fromIndex, this.size, false, _comparator, null);
 		}
 		
     	Object[] newData = new Object[this.size];
@@ -439,10 +459,17 @@ public final class ImmutableList<E> extends AbstractImmutableList<E> implements 
 		if (this.equalityComparator != null) {
 			return isUnique(this.equalityComparator);
 		}
-		return isUnique(ObjectEqualityComparator.getInstance());
+		else {
+			for (int i = 1; i < this.size; i++) {
+				if (this.comparator.compare(get(i-1), get(i)) == 0) {
+					return false;
+				}
+			}
+			return true;
+		}
 	}
 
-	public ImmutableList<E> unique(EqualityComparator<? super E> comparator) {
+	public ImmutableList<E> toUniqueList(EqualityComparator<? super E> comparator) {
 		if (isUnique(comparator)) {
 			return this;
 		}
@@ -450,12 +477,12 @@ public final class ImmutableList<E> extends AbstractImmutableList<E> implements 
 		return new ImmutableList<E>(this, comparator, true);
 	}
 	
-	public ImmutableList<E> unique() {
+	public ImmutableList<E> toUniqueList() {
 		if (this.size == 0) {
 			return this;
 		}
 		else if (this.equalityComparator != null) {
-			return unique(this.equalityComparator);
+			return toUniqueList(this.equalityComparator);
 		}
 		else if (this.comparator != null) {
 			int countDuplicates = 0;
@@ -480,7 +507,55 @@ public final class ImmutableList<E> extends AbstractImmutableList<E> implements 
 				return new ImmutableList<E>(newData, 0, newSize, this.descending, this.comparator, null);
 			}
 		}
-		return unique(ObjectEqualityComparator.getInstance());
+		return toUniqueList(ObjectEqualityComparator.getInstance());
+	}
+	
+	public ImmutableList<E> toSortedUniqueList() {
+		return toSortedUniqueList(null);
+	}
+	
+	public ImmutableList<E> toSortedUniqueList(Comparator<? super E> comparator) {
+		if (this.size == 0) {
+			return this;
+		}
+		
+		Comparator<Object> _comparator = comparator == null ? NaturalComparator.getInstance() : (Comparator<Object>)comparator;
+
+		if (isSorted(comparator)) {
+			boolean unique = true;
+			if (this.comparator != null) {
+				unique = isUnique();
+			}
+			else {
+				for (int i = 1; i < this.size; i++) {
+					if (_comparator.compare(get(i-1), get(i)) == 0) {
+						unique = false;
+						break;
+					}
+				}
+			}
+			if (unique) {
+				return new ImmutableList<E>(this.data, this.fromIndex, this.size, false, _comparator, null);
+			}
+			else {
+				Object[] newData = new Object[this.size];
+				int newSize = 1;
+				newData[0] = get(0);
+				for (int i  = 1; i < this.size; i++) {
+					if (_comparator.compare(get(i-1), get(i)) != 0) {
+						newData[newSize++] = get(i);
+					}
+				}
+				return new ImmutableList<E>(newData, 0, newSize, false, _comparator, null);
+			}
+		}
+		
+    	return new ImmutableList<E>(this, _comparator, true);
+		
+	}
+	
+	public ImmutableSortedSet<E> toSortedSet(Comparator<? super E> comparator) {
+		return new ImmutableSortedSet<E>(toSortedUniqueList(comparator));
 	}
 	
     public <T> ImmutableList<T> toList(Function1<T, ElementContext<E>> function) {

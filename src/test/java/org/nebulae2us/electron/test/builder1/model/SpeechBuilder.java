@@ -49,7 +49,7 @@ public class SpeechBuilder<P> implements Wrappable<Speech> {
 	}
 
     public Speech toSpeech() {
-    	return new Converter(new BuilderAnnotationDestinationClassResolver(), true).convert(this).to(Speech.class);
+    	return new Converter(new DestinationClassResolverByAnnotation(), true).convert(this).to(Speech.class);
     }
 
 

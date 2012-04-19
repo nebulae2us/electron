@@ -28,7 +28,7 @@ public final class ImmutableSortedSet<E> extends AbstractImmutableSortedSet<E> i
 	private final ImmutableList<E> data;
 
     public ImmutableSortedSet() {
-    	this.data = new ImmutableList<E>();
+    	this.data = new ImmutableList<E>(Collections.EMPTY_LIST, NaturalComparator.getInstance(), true);
     }
 	
     public ImmutableSortedSet(Collection<E> c, Comparator<? super E> comparator) {
@@ -44,7 +44,7 @@ public final class ImmutableSortedSet<E> extends AbstractImmutableSortedSet<E> i
     }
     
     public ImmutableSortedSet(Collection<E> c) {
-    	this(c, NaturalComparator.getInstance());
+    	this(c, c instanceof ImmutableList ? (Comparator<Object>)((ImmutableList<E>)c).comparator() : NaturalComparator.getInstance());
     }
     
     public ImmutableSortedSet(E ... elements) {

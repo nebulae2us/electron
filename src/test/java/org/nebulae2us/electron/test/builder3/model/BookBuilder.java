@@ -50,11 +50,11 @@ public class BookBuilder<P> implements Wrappable<Book<? extends Color, ? extends
 	}
 
     public Book<? extends Color, ? extends Paper<? extends Color>, ? extends Recordable<? extends Color>, ? extends List<? extends Paper<? extends Color>>> toBook() {
-    	return new Converter(new BuilderAnnotationDestinationClassResolver(), true).convert(this).to(Book.class);
+    	return new Converter(new DestinationClassResolverByAnnotation(), true).convert(this).to(Book.class);
     }
 
     public <C extends Color & Serializable, T extends Paper<C>, R extends Recordable<C>, L extends List<? extends T>> Book<C, T, R, L> toBook(Class<C> C, Class<T> T, Class<R> R, Class<L> L) {
-    	return new Converter(new BuilderAnnotationDestinationClassResolver(), true).convert(this).to(Book.class);
+    	return new Converter(new DestinationClassResolverByAnnotation(), true).convert(this).to(Book.class);
     }
 
 

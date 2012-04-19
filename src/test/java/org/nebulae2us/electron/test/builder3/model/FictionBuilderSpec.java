@@ -32,17 +32,17 @@ public class FictionBuilderSpec<P> extends BookBuilderSpec<P> {
 	}
 
     public Fiction<? extends Color, ? extends Recordable<? extends Color>, ? extends Set<? super Recordable<? extends Color>>> toFiction() {
-    	return new Converter(new BuilderAnnotationDestinationClassResolver(), true).convert(this).to(Fiction.class);
+    	return new Converter(new DestinationClassResolverByAnnotation(), true).convert(this).to(Fiction.class);
     }
     
     public <C extends Color & Serializable, R extends Recordable<C>, S extends Set<? super R>> Fiction<C, R, S> toFiction(Class<C> C, Class<R> R, Class<S> S) {
-    	return new Converter(new BuilderAnnotationDestinationClassResolver(), true).convert(this).to(Fiction.class);
+    	return new Converter(new DestinationClassResolverByAnnotation(), true).convert(this).to(Fiction.class);
     }
 	
 
 	@Override
     public Fiction<? extends Color, ? extends Recordable<? extends Color>, ? extends Set<? super Recordable<? extends Color>>> toBook() {
-    	return new Converter(new BuilderAnnotationDestinationClassResolver(), true).convert(this).to(Fiction.class);
+    	return new Converter(new DestinationClassResolverByAnnotation(), true).convert(this).to(Fiction.class);
     }
     
 
