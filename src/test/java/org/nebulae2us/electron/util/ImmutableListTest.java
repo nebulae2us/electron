@@ -18,8 +18,11 @@ package org.nebulae2us.electron.util;
 import org.junit.Test;
 import org.nebulae2us.electron.util.apitest.ListImmutantScanTest;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Iterator;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.ListIterator;
 
@@ -30,6 +33,30 @@ import static org.junit.Assert.*;
  */
 public class ImmutableListTest {
 
+	private <E> void scan(Class<E> elementClass, E ... elements) {
+		ReverseListFunction<E> rev = new ReverseListFunction<E>();
+		ReverseImmutableListFunction<E> revTest = new ReverseImmutableListFunction<E>();
+
+		List<E> control = new ArrayList<E>(Arrays.asList(elements));
+		new ListImmutantScanTest<E>(elementClass, control, rev, new ImmutableList<E>(control), revTest).runTests();
+
+		if (Comparable.class.isAssignableFrom(elementClass)) {
+	 		Collections.sort(control, NaturalComparator.getInstance());
+			new ListImmutantScanTest<E>(elementClass, control, rev, new ImmutableList<E>(control).toSortedList(), revTest);
+		}
+		
+		control = new ArrayList<E>(new LinkedHashSet<E>(Arrays.asList(elements)));
+		new ListImmutantScanTest<E>(elementClass, control, rev, new ImmutableList<E>(control).toUniqueList(), revTest);
+	}
+	
+	@Test
+	public void scan_immutant_methods_of_lists() {
+		scan(Object.class);
+		scan(Integer.class, 3, 7, 5, 5, 7, 9, 3, 2);
+		scan(String.class, "s3", "s7", "s5", "s7", "s9", "s4");
+		scan(Object.class, new Object(), new Object(), new Object(), new Object(), new Object(), new Object());
+	}
+	
     @Test
     public void can_create_list() {
         List<Integer> source = Arrays.asList(1, 2, 3);
@@ -326,40 +353,17 @@ public class ImmutableListTest {
     	catch (IndexOutOfBoundsException e) {}    	
     }
 
+    @Test
+    public void sort_on_sorted_list_should_return_the_same_list() {
+    	ImmutableList<Integer> list = new ImmutableList<Integer>(1, 3, 7, 2, 4);
+    	
+    	ImmutableList<Integer> sortedList = list.toSortedList();
+    	
+    	assertTrue(sortedList == sortedList.toSortedList());
+    }
     
     	
-//	@Test
-	public void immutable_list_of_integer() {
-		
-		List<Integer> control = Arrays.asList(3, 7, 5, 7, 9);
-		ImmutableList<Integer> test = new ImmutableList<Integer>(control);
-		
-		new ListImmutantScanTest<Integer>(Integer.class,
-				control,
-				new ReverseListFunction<Integer>(),
-				test,
-				new ReverseImmutableListFunction<Integer>(),
-				true).runTests();
-		
-		
-	}
-	
-	
-//	@Test
-	public void immutable_list_of_string() {
-		
-		List<String> control = Arrays.asList("s3", "s7", "s5", "s7", "s9");
-		ImmutableList<String> test = new ImmutableList<String>(control);
-		
-		new ListImmutantScanTest<String>(String.class,
-				control,
-				new ReverseListFunction<String>(),
-				test,
-				new ReverseImmutableListFunction<String>(),
-				true).runTests();
-		
-		
-	}
+
 	
 
 

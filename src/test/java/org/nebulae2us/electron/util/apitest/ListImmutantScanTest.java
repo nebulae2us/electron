@@ -42,21 +42,18 @@ public class ListImmutantScanTest<E> extends CollectionImmutantScanTest<E> {
 	protected final Function<List<E>> reverseControl;
 	private final List<E> test;
 	protected final Function<List<E>> reverseTest;
-	private final boolean testSubList;
 	
 	public ListImmutantScanTest(Class<E> elementClass,
 			List<E> control,
 			Function<List<E>> reverseControl,
 			List<E> test,
-			Function<List<E>> reverseTest,
-			boolean testSubList) {
+			Function<List<E>> reverseTest) {
 		
 		super(elementClass, control, test);
 		this.control = control;
 		this.reverseControl = reverseControl;
 		this.test = test;
 		this.reverseTest = reverseTest;
-		this.testSubList = testSubList;
 	}
 
 	@Override
@@ -66,16 +63,16 @@ public class ListImmutantScanTest<E> extends CollectionImmutantScanTest<E> {
 		testImmutantFunctionality();
 		
 		if (reverseControl != null && reverseTest != null) {
-			new ListImmutantScanTest<E>(elementClass, reverseControl.execute(control), null, reverseTest.execute(test), null, testSubList).runTests();
+			new ListImmutantScanTest<E>(elementClass, reverseControl.execute(control), null, reverseTest.execute(test), null).runTests();
 		}
-
-		if (testSubList) {
-			testSubList();
-		}
+		testSubList();
 		
 	}
 	
 	private void testImmutantFunctionality() {
+		assertTrue(control.equals(test));
+		assertTrue(test.equals(control));
+
 		testToArray();
 		testListIterator();
 		testListIteratorWithIndex();
@@ -86,23 +83,36 @@ public class ListImmutantScanTest<E> extends CollectionImmutantScanTest<E> {
 		testIterator();
 	}
 	
-	public void testSubList() {
-		
-		int size = control.size();
-		
-		if (size > 0) {
-			for (int i = 0; i < size; i++) {
-				for (int j = i; j < size + 1; j++) {
-					if (i == 0 && j == size) {
-						new ListImmutantScanTest<E>(elementClass, control.subList(i, j), reverseControl, test.subList(i, j), reverseTest, false).runTests();
-					}
-					else {
-						new ListImmutantScanTest<E>(elementClass, control.subList(i, j), reverseControl, test.subList(i, j), reverseTest, testSubList).runTests();
-					}
-				}
-			}
+	private void assertListThrowIndexOutOfBounds(int fromIndex, int toIndex) {
+		try {
+			test.subList(fromIndex, toIndex);
+			fail();
 		}
+		catch (IndexOutOfBoundsException e) {
+		}
+	}
+	
+	public void testSubList() {
+		int size = control.size();
+
+		assertListThrowIndexOutOfBounds(-1, 0);
+		assertListThrowIndexOutOfBounds(0, test.size() + 1);
+		assertListThrowIndexOutOfBounds(1, 0);
 		
+		assertEquals(control.subList(0, 0), test.subList(0, 0));
+		assertEquals(control.subList(size, size), test.subList(size, size));
+		assertEquals(control.subList(0, size), test.subList(0, size));
+		
+		if (size > 1) {
+			new ListImmutantScanTest<E>(elementClass, control.subList(0, 1), reverseControl, test.subList(0, 1), reverseTest).runTests();
+			new ListImmutantScanTest<E>(elementClass, control.subList(size - 1, size), reverseControl, test.subList(size - 1, size), reverseTest).runTests();
+		}
+		if (size > 3) {
+			new ListImmutantScanTest<E>(elementClass, control.subList( (size / 2) - 1 , (size / 2) + 2), reverseControl, test.subList((size / 2) - 1, (size / 2) + 2), reverseTest).runTests();
+		}
+		if (size > 5) {
+			new ListImmutantScanTest<E>(elementClass, control.subList( (size / 2) - 2 , (size / 2) + 3), reverseControl, test.subList((size / 2) - 2, (size / 2) + 3), reverseTest).runTests();
+		}
 	}
 	
 	

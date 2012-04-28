@@ -15,23 +15,22 @@
  */
 package org.nebulae2us.electron.util.apitest;
 
-import static org.junit.Assert.assertTrue;
+import java.util.NavigableMap;
 
-import java.util.Collection;
-import java.util.Set;
+import static org.junit.Assert.*;
 
 /**
- * 
  * @author Trung Phan
  *
  */
-public class SetImmutantScanTest<E> extends CollectionImmutantScanTest<E> {
+public class SortedMapImmutantScanTest<K, V> extends MapImmutantScanTest<K, V> {
 
-	private final Set<E> control;
-	private final Set<E> test;
+	private final NavigableMap<K, V> control;
 	
-	public SetImmutantScanTest(Class<E> elementClass, Set<E> control, Set<E> test) {
-		super(elementClass, control, test);
+	private final NavigableMap<K, V> test;
+	
+	public SortedMapImmutantScanTest(Class<K> keyClass, Class<V> valueClass, NavigableMap<K, V> control, NavigableMap<K, V> test) {
+		super(keyClass, valueClass, control, test);
 		this.control = control;
 		this.test = test;
 	}
@@ -39,13 +38,10 @@ public class SetImmutantScanTest<E> extends CollectionImmutantScanTest<E> {
 	@Override
 	public void runTests() {
 		super.runTests();
-		
 		testImmutantFunctionality();
 	}
-	
+
 	private void testImmutantFunctionality() {
-		assertTrue(control.equals(test));
-		assertTrue(test.equals(control));
 	}
 	
 }

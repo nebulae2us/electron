@@ -50,8 +50,6 @@ public class CollectionImmutantScanTest<E> {
 	private void testImmutantFunctionality() {
 		assertEquals(control.size(), test.size());
 		assertEquals(control.isEmpty(), test.isEmpty());
-		assertTrue(control.equals(test));
-		assertTrue(test.equals(control));
 		assertTrue(control.containsAll(test));
 		assertTrue(test.containsAll(control));
 		testContains();

@@ -20,7 +20,7 @@ import java.util.NavigableSet;
 /**
  * @author Trung Phan
  */
-public abstract class AbstractImmutableSortedSet<E> extends AbstractImmutableCollection<E> implements NavigableSet<E> {
+public abstract class AbstractImmutableSortedSet<E> extends AbstractImmutableSet<E> implements NavigableSet<E> {
 
     protected AbstractImmutableSortedSet() {}
 

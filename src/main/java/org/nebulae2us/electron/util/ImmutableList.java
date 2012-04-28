@@ -160,10 +160,10 @@ public final class ImmutableList<E> extends AbstractImmutableList<E> implements 
         
     }
 
-    protected ImmutableList(ImmutableList<E> cloned, int fromIndex, int toIndex) {
+    private ImmutableList(ImmutableList<E> cloned, int fromIndex, int toIndex) {
         if (fromIndex < 0 || fromIndex > cloned.size ||
             toIndex < 0 || toIndex > cloned.size || toIndex < fromIndex  ) {
-            throw new IllegalArgumentException("fromIndex or toIndex is not valid. FromIndex: " + fromIndex + ", toIndex" + toIndex);
+            throw new IndexOutOfBoundsException("fromIndex or toIndex is not valid. FromIndex: " + fromIndex + ", toIndex" + toIndex);
         }
 
         this.size = toIndex - fromIndex;
@@ -174,7 +174,7 @@ public final class ImmutableList<E> extends AbstractImmutableList<E> implements 
         this.equalityComparator = cloned.equalityComparator;
     }
 
-    protected ImmutableList(ImmutableList<E> cloned, boolean descending) {
+    private ImmutableList(ImmutableList<E> cloned, boolean descending) {
         this.fromIndex = cloned.fromIndex;
         this.data = cloned.data;
         this.size = cloned.size;
@@ -220,24 +220,24 @@ public final class ImmutableList<E> extends AbstractImmutableList<E> implements 
         boolean realDesc = this.descending ? !descending : descending;
 
         if (comparator != null) {
-            int idx = Arrays.binarySearch(data, fromIndex, fromIndex + size, o, comparator);
+            int idx = Arrays.binarySearch(this.data, this.fromIndex, this.fromIndex + this.size, o, this.comparator);
             if (idx >= 0) {
             	if (!realDesc) {
-                	while (idx > fromIndex && this.comparator.compare(data[idx], data[idx-1]) == 0) {
+                	while (idx > this.fromIndex && this.comparator.compare(data[idx], data[idx-1]) == 0) {
                 		idx--;
                 	}
             	}
             	else {
-                	while (idx < fromIndex + size - 1 && this.comparator.compare(data[idx], data[idx+1]) == 0) {
+                	while (idx < this.fromIndex + size - 1 && this.comparator.compare(this.data[idx], this.data[idx+1]) == 0) {
                 		idx++;
                 	}
             	}
-                return this.descending ? fromIndex + this.size - idx - 1 : idx - fromIndex;
+                return this.descending ? this.fromIndex + this.size - idx - 1 : idx - this.fromIndex;
             }
         }
-        else if (equalityComparator != null) {
-            for (int i = 0; i < size; i++) {
-                if (equalityComparator.compare(o, data[realDesc ? fromIndex + size - i - 1 : fromIndex + i]))
+        else if (this.equalityComparator != null) {
+            for (int i = 0; i < this.size; i++) {
+                if (this.equalityComparator.compare(o, this.data[realDesc ? fromIndex + size - i - 1 : fromIndex + i]))
                     return descending ? this.size - i - 1 : i;
             }
         }
@@ -346,9 +346,9 @@ public final class ImmutableList<E> extends AbstractImmutableList<E> implements 
         return new ImmutableList<E>(this, true);
     }
 
-    protected int binarySearch(Object o) {
+    public int binarySearch(Object o) {
         if (comparator == null) {
-            throw new NullPointerException();
+            throw new IllegalStateException("Cannot do binary search on an un-sorted list.");
         }
         
         int idx;
@@ -365,7 +365,6 @@ public final class ImmutableList<E> extends AbstractImmutableList<E> implements 
         else {
         	return idx >= 0 ? this.fromIndex + this.size - idx - 1 : -idx - this.size - this.fromIndex - 2;
         }
-        
    }
 
     public ImmutableList<E> changeComparator(Comparator<? super E> comparator) {
@@ -423,6 +422,10 @@ public final class ImmutableList<E> extends AbstractImmutableList<E> implements 
 		
 		Comparator<Object> _comparator = comparator == null ? NaturalComparator.getInstance() : (Comparator<Object>)comparator;
 
+		if (this.comparator != null && this.comparator == _comparator && !this.descending) {
+			return this;
+		}
+		
 		if (isSorted(comparator)) {
 			return new ImmutableList<E>(this.data, this.fromIndex, this.size, false, _comparator, null);
 		}
