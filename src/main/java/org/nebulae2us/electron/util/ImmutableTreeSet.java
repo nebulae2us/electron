@@ -15,6 +15,7 @@
  */
 package org.nebulae2us.electron.util;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.Iterator;
@@ -31,6 +32,18 @@ public final class ImmutableTreeSet<E> extends TreeSet<E> {
 	private static final long serialVersionUID = 1555011942707861208L;
 
 	private final ImmutableSortedSet<E> data;
+	
+	public ImmutableTreeSet(E ... elements) {
+		this(Arrays.asList(elements));
+	}
+	
+	public ImmutableTreeSet(Collection<? extends E> c) {
+		this(c, NaturalComparator.getInstance());
+	}
+	
+	public ImmutableTreeSet(Collection<? extends E> c, Comparator<? super E> comparator) {
+		this.data = new ImmutableSortedSet<E>(c, comparator);
+	}
 	
 	public ImmutableTreeSet(SortedSet<? extends E> c) {
 		this.data = new ImmutableSortedSet<E>(c);
@@ -171,10 +184,10 @@ public final class ImmutableTreeSet<E> extends TreeSet<E> {
 		if (o == this) {
 			return true;
 		}
-		if (o == null || o.getClass() != this.getClass()) {
-			return false;
+		if (o instanceof ImmutableTreeSet) {
+			return this.data.equals(((ImmutableTreeSet<?>)o).data);
 		}
-		return this.data.equals(((ImmutableTreeSet<?>)o).data);
+		return data.equals(o);
 	}
 
 	@Override

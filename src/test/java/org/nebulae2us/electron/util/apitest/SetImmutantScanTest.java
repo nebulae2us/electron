@@ -15,9 +15,9 @@
  */
 package org.nebulae2us.electron.util.apitest;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
-import java.util.Collection;
+import java.util.Arrays;
 import java.util.Set;
 
 /**
@@ -46,6 +46,16 @@ public class SetImmutantScanTest<E> extends CollectionImmutantScanTest<E> {
 	private void testImmutantFunctionality() {
 		assertTrue(control.equals(test));
 		assertTrue(test.equals(control));
+		testToArray();
 	}
 	
+	public void testToArray() {
+		Object[] testArray = test.toArray();
+		assertEquals(control.size(), testArray.length);
+		assertTrue(control.containsAll(Arrays.asList(testArray)));
+		
+		E[] testArray2 = test.toArray((E[])new Object[0]);
+		assertEquals(control.size(), testArray2.length);
+		assertTrue(control.containsAll(Arrays.asList(testArray2)));
+	}	
 }

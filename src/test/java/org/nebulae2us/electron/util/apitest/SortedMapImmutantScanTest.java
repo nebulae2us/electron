@@ -15,7 +15,9 @@
  */
 package org.nebulae2us.electron.util.apitest;
 
+import java.util.Iterator;
 import java.util.NavigableMap;
+import java.util.NoSuchElementException;
 
 import static org.junit.Assert.*;
 
@@ -29,19 +31,34 @@ public class SortedMapImmutantScanTest<K, V> extends MapImmutantScanTest<K, V> {
 	
 	private final NavigableMap<K, V> test;
 	
+	private final boolean testInverse;
+	
 	public SortedMapImmutantScanTest(Class<K> keyClass, Class<V> valueClass, NavigableMap<K, V> control, NavigableMap<K, V> test) {
+		this(keyClass, valueClass, control, test, true);
+	}
+	
+	public SortedMapImmutantScanTest(Class<K> keyClass, Class<V> valueClass, NavigableMap<K, V> control, NavigableMap<K, V> test, boolean testInverse) {
 		super(keyClass, valueClass, control, test);
 		this.control = control;
 		this.test = test;
+		this.testInverse = testInverse;
 	}
 	
 	@Override
 	public void runTests() {
 		super.runTests();
 		testImmutantFunctionality();
+		
+		if (this.testInverse) {
+			new SortedMapImmutantScanTest<K, V>(this.keyClass, this.valueClass, control, test, false).runTests();
+		}
 	}
 
 	private void testImmutantFunctionality() {
+		new SortedSetImmutantScanTest<K>(keyClass, control.navigableKeySet(), test.navigableKeySet()).runTests();
+		new SortedSetImmutantScanTest<K>(keyClass, control.descendingKeySet(), test.descendingKeySet()).runTests();
 	}
+
+
 	
 }

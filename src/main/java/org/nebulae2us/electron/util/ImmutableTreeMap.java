@@ -16,10 +16,11 @@
 package org.nebulae2us.electron.util;
 
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.NavigableMap;
 import java.util.NavigableSet;
+import java.util.Set;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
@@ -27,98 +28,61 @@ import java.util.TreeMap;
  * @author Trung Phan
  *
  */
-public class ImmutableTreeMap<K, V> extends TreeMap<K, V> {
+public final class ImmutableTreeMap<K, V> extends TreeMap<K, V> {
 
 	private static final long serialVersionUID = 2565430344565812032L;
 
 	private final ImmutableSortedMap<K, V> data;
-
-	public ImmutableTreeMap(SortedMap<K, V> m) {
-		this.data = new ImmutableSortedMap<K, V>(m);
+	
+	public ImmutableTreeMap(Map<? extends K, ? extends V> m) {
+		this.data = new ImmutableSortedMap<K, V>(m, NaturalComparator.getInstance());
 	}
 	
-	@Override
-	public NavigableSet<K> keySet() {
-		return data.keySet();
+	public ImmutableTreeMap(Map<? extends K, ? extends V> m, Comparator<? super K> comparator) {
+		this.data = new ImmutableSortedMap<K, V>(m, comparator);
+	}
+
+	public ImmutableTreeMap(SortedMap<? extends K, ? extends V> m) {
+		this.data = new ImmutableSortedMap<K, V>(m);
 	}
 
 	@Override
-	public Entry<K, V> ceilingEntry(K key) {
-		return data.ceilingEntry(key);
+	public int size() {
+		return data.size();
 	}
 
 	@Override
-	public K ceilingKey(K key) {
-		return data.ceilingKey(key);
+	public boolean containsKey(Object key) {
+		return data.containsKey(key);
 	}
 
 	@Override
-	public void clear() {
-		throw new UnsupportedOperationException();
+	public boolean containsValue(Object value) {
+		return data.containsValue(value);
 	}
 
 	@Override
-	public NavigableSet<K> descendingKeySet() {
-		return data.descendingKeySet();
+	public V get(Object key) {
+		return data.get(key);
 	}
 
 	@Override
-	public NavigableMap<K, V> descendingMap() {
-		return data.descendingMap();
+	public Comparator<? super K> comparator() {
+		return data.comparator();
 	}
 
 	@Override
-	public ImmutableSortedSet<Entry<K, V>> entrySet() {
-		return data.entrySet();
+	public K firstKey() {
+		return data.firstKey();
 	}
 
 	@Override
-	public Entry<K, V> firstEntry() {
-		return data.firstEntry();
+	public K lastKey() {
+		return data.lastKey();
 	}
 
 	@Override
-	public Entry<K, V> floorEntry(K key) {
-		return data.floorEntry(key);
-	}
-
-	@Override
-	public NavigableMap<K, V> headMap(K toKey, boolean inclusive) {
-		return data.headMap(toKey, inclusive);
-	}
-
-	@Override
-	public SortedMap<K, V> headMap(K key) {
-		return data.headMap(key);
-	}
-
-	@Override
-	public Entry<K, V> higherEntry(K key) {
-		return data.higherEntry(key);
-	}
-
-	@Override
-	public Entry<K, V> lastEntry() {
-		return data.lastEntry();
-	}
-
-	@Override
-	public Entry<K, V> lowerEntry(K key) {
-		return data.lowerEntry(key);
-	}
-
-	@Override
-	public NavigableSet<K> navigableKeySet() {
-		return data.navigableKeySet();
-	}
-
-	@Override
-	public Entry<K, V> pollFirstEntry() {
-		throw new UnsupportedOperationException();
-	}
-
-	@Override
-	public Entry<K, V> pollLastEntry() {
+	public void putAll(Map<? extends K, ? extends V> map) {
 		throw new UnsupportedOperationException();
 	}
 
@@ -128,18 +92,119 @@ public class ImmutableTreeMap<K, V> extends TreeMap<K, V> {
 	}
 
 	@Override
-	public void putAll(Map<? extends K, ? extends V> m) {
+	public V remove(Object key) {
 		throw new UnsupportedOperationException();
 	}
 
 	@Override
-	public V remove(Object o) {
+	public void clear() {
 		throw new UnsupportedOperationException();
 	}
 
 	@Override
-	public NavigableMap<K, V> subMap(K fromKey, boolean fromInclusive, K toKey, boolean toInclusive) {
+	public java.util.Map.Entry<K, V> firstEntry() {
+		return data.firstEntry();
+	}
+
+	@Override
+	public java.util.Map.Entry<K, V> lastEntry() {
+		return data.lastEntry();
+	}
+
+	@Override
+	public java.util.Map.Entry<K, V> pollFirstEntry() {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public java.util.Map.Entry<K, V> pollLastEntry() {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public java.util.Map.Entry<K, V> lowerEntry(K key) {
+		return data.lowerEntry(key);
+	}
+
+	@Override
+	public K lowerKey(K key) {
+		return data.lowerKey(key);
+	}
+
+	@Override
+	public java.util.Map.Entry<K, V> floorEntry(K key) {
+		return data.floorEntry(key);
+	}
+
+	@Override
+	public K floorKey(K key) {
+		return data.floorKey(key);
+	}
+
+	@Override
+	public java.util.Map.Entry<K, V> ceilingEntry(K key) {
+		return data.ceilingEntry(key);
+	}
+
+	@Override
+	public K ceilingKey(K key) {
+		return data.ceilingKey(key);
+	}
+
+	@Override
+	public java.util.Map.Entry<K, V> higherEntry(K key) {
+		return data.higherEntry(key);
+	}
+
+	@Override
+	public K higherKey(K key) {
+		return data.higherKey(key);
+	}
+
+	@Override
+	public Set<K> keySet() {
+		return data.keySet();
+	}
+
+	@Override
+	public NavigableSet<K> navigableKeySet() {
+		return data.navigableKeySet();
+	}
+
+	@Override
+	public NavigableSet<K> descendingKeySet() {
+		return data.descendingKeySet();
+	}
+
+	@Override
+	public Collection<V> values() {
+		return data.values();
+	}
+
+	@Override
+	public Set<java.util.Map.Entry<K, V>> entrySet() {
+		return data.entrySet();
+	}
+
+	@Override
+	public NavigableMap<K, V> descendingMap() {
+		return data.descendingMap();
+	}
+
+	@Override
+	public NavigableMap<K, V> subMap(K fromKey, boolean fromInclusive, K toKey,
+			boolean toInclusive) {
 		return data.subMap(fromKey, fromInclusive, toKey, toInclusive);
+	}
+
+	@Override
+	public NavigableMap<K, V> headMap(K toKey, boolean inclusive) {
+		return data.headMap(toKey, inclusive);
+	}
+
+	@Override
+	public NavigableMap<K, V> tailMap(K fromKey, boolean inclusive) {
+		return data.tailMap(fromKey);
 	}
 
 	@Override
@@ -148,8 +213,8 @@ public class ImmutableTreeMap<K, V> extends TreeMap<K, V> {
 	}
 
 	@Override
-	public NavigableMap<K, V> tailMap(K fromKey, boolean inclusive) {
-		return data.tailMap(fromKey, inclusive);
+	public SortedMap<K, V> headMap(K toKey) {
+		return data.headMap(toKey);
 	}
 
 	@Override
@@ -158,8 +223,30 @@ public class ImmutableTreeMap<K, V> extends TreeMap<K, V> {
 	}
 
 	@Override
-	public Collection<V> values() {
-		return data.values();
+	public boolean isEmpty() {
+		return data.isEmpty();
 	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (o == this) {
+			return true;
+		}
+		if (o instanceof ImmutableTreeMap) {
+			return this.data.equals(((ImmutableTreeMap)o).data);
+		}
+		return this.data.equals(o);
+	}
+
+	@Override
+	public int hashCode() {
+		return data.hashCode();
+	}
+
+	@Override
+	public String toString() {
+		return data.toString();
+	}
+
 
 }

@@ -42,43 +42,32 @@ public final class ImmutableLinkedHashMap<K, V> extends LinkedHashMap<K, V> {
 
 	@Override
 	public boolean containsValue(Object value) {
-		// TODO Auto-generated method stub
-		return super.containsValue(value);
+		return data.containsValue(value);
 	}
 
 	@Override
 	public V get(Object key) {
-		// TODO Auto-generated method stub
-		return super.get(key);
+		return data.get(key);
 	}
 
 	@Override
-	public Object clone() {
-		return super.clone();
-	}
-
-	@Override
-	public boolean containsKey(Object arg0) {
-		// TODO Auto-generated method stub
-		return super.containsKey(arg0);
+	public boolean containsKey(Object key) {
+		return data.containsKey(key);
 	}
 
 	@Override
 	public Set<Entry<K, V>> entrySet() {
-		// TODO Auto-generated method stub
-		return super.entrySet();
+		return data.entrySet();
 	}
 
 	@Override
 	public boolean isEmpty() {
-		// TODO Auto-generated method stub
-		return super.isEmpty();
+		return data.isEmpty();
 	}
 
 	@Override
 	public Set<K> keySet() {
-		// TODO Auto-generated method stub
-		return super.keySet();
+		return data.keySet();
 	}
 
 	@Override
@@ -111,10 +100,10 @@ public final class ImmutableLinkedHashMap<K, V> extends LinkedHashMap<K, V> {
 		if (o == this) {
 			return true;
 		}
-		if (o == null || o.getClass() != this.getClass()) {
-			return false;
+		if (o instanceof ImmutableLinkedHashMap) {
+			return this.data.equals(((ImmutableLinkedHashMap<?, ?>)o).data);
 		}
-		return this.data.equals(((ImmutableLinkedHashMap<?, ?>)o).data);
+		return this.data.equals(o);
 	}
 
 	@Override

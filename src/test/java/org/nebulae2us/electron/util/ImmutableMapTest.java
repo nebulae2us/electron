@@ -15,42 +15,34 @@
  */
 package org.nebulae2us.electron.util;
 
-import java.util.Iterator;
+import java.util.HashMap;
+import java.util.Map;
+
+import org.junit.Test;
+import org.nebulae2us.electron.util.apitest.MapImmutantScanTest;
 
 /**
  * @author Trung Phan
  *
  */
-public final class ImmutableIterator<E> implements Iterator<E> {
+public class ImmutableMapTest {
 
-	private final Iterator<E> iterator;
-	
-	public ImmutableIterator(Iterator<E> iterator) {
-		if (iterator == null) {
-			throw new NullPointerException();
+	private <K> void scan(Class<K> keyClass, K ... keys) {
+
+		Map<K, Object> control = new HashMap<K, Object>();
+		for (K key : keys) {
+			control.put(key, new Object());
 		}
-		this.iterator = iterator;
+		
+		new MapImmutantScanTest<K, Object>(keyClass, Object.class, control, new ImmutableMap<K, Object>(control)).runTests();
 	}
 	
-	/* (non-Javadoc)
-	 * @see java.util.Iterator#hasNext()
-	 */
-	public boolean hasNext() {
-		return iterator.hasNext();
+	@Test
+	public void scan_immutant_methods_of_lists() {
+		scan(Integer.class);
+		scan(Integer.class, 3, 7, 5, 5, 7, 9, 3, 2, 53, 41, 12, 15);
+		scan(String.class, "s3", "s7", "s5", "s7", "s9", "s4", "s15", "s82", "s2", "s8");
 	}
-
-	/* (non-Javadoc)
-	 * @see java.util.Iterator#next()
-	 */
-	public E next() {
-		return iterator.next();
-	}
-
-	/* (non-Javadoc)
-	 * @see java.util.Iterator#remove()
-	 */
-	public void remove() {
-		throw new UnsupportedOperationException();
-	}
-
+	
+	
 }

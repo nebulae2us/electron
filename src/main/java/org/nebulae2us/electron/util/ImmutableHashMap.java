@@ -106,10 +106,10 @@ public final class ImmutableHashMap<K, V> extends HashMap<K, V> {
 		if (o == this) {
 			return true;
 		}
-		if (o == null || o.getClass() != this.getClass()) {
-			return false;
+		if (o instanceof ImmutableHashMap) {
+			return this.data.equals(((ImmutableHashMap<?, ?>)o).data);
 		}
-		return this.data.equals(((ImmutableHashMap<?, ?>)o).data);
+		return this.data.equals(o);
 	}
 
 	@Override

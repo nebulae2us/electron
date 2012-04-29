@@ -15,7 +15,11 @@
  */
 package org.nebulae2us.electron.util.apitest;
 
+import static org.junit.Assert.*;
+
+import java.util.Iterator;
 import java.util.NavigableSet;
+import java.util.NoSuchElementException;
 
 /**
  * 
@@ -26,21 +30,59 @@ public class SortedSetImmutantScanTest<E> extends SetImmutantScanTest<E> {
 
 	private final NavigableSet<E> control;
 	private final NavigableSet<E> test;
+	private final boolean testInverse;
 	
-	public SortedSetImmutantScanTest(Class<E> elementClass,
-			NavigableSet<E> control, NavigableSet<E> test) {
-
+	public SortedSetImmutantScanTest(Class<E> elementClass, NavigableSet<E> control, NavigableSet<E> test) {
+		this(elementClass, control, test, true);
+	}	
+	public SortedSetImmutantScanTest(Class<E> elementClass, NavigableSet<E> control, NavigableSet<E> test, boolean testInverse) {
 		super(elementClass, control, test);
 
 		this.control = control;
 		this.test = test;
+		this.testInverse = testInverse;
 	}
 	
 	@Override
 	public void runTests() {
 		super.runTests();
+		testImmutableFunctionality();
+		
+		if (this.testInverse) {
+			new SortedSetImmutantScanTest<E>(elementClass, control.descendingSet(), test.descendingSet(), false).runTests();
+		}
 	}
 	
+	private void testImmutableFunctionality() {
+		testDescendingIterator();
+	}
 	
-
+	private void testDescendingIterator() {
+		Iterator<E> iControl = control.descendingIterator();
+		Iterator<E> iTest = test.descendingIterator();
+		
+		while (iControl.hasNext()) {
+			assertTrue(iTest.hasNext());
+			
+			assertEquals(iControl.next(), iTest.next());
+			
+		}
+		assertFalse(iTest.hasNext());
+		
+		try {
+			iControl.next();
+			fail();
+		}
+		catch(Exception ex) {
+			assertTrue(ex instanceof NoSuchElementException);
+		}
+		
+		try {
+			iTest.next();
+			fail();
+		}
+		catch(Exception ex) {
+			assertTrue(ex instanceof NoSuchElementException);
+		}		
+	}
 }

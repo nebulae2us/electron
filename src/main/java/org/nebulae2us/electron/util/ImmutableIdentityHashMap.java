@@ -64,11 +64,10 @@ public final class ImmutableIdentityHashMap<K, V> extends IdentityHashMap<K, V> 
 		if (this == o) {
 			return true;
 		}
-		if (o == null || o.getClass() != this.getClass()) {
-			return false;
+		if (o instanceof ImmutableIdentityHashMap) {
+			return data.equals(((ImmutableIdentityHashMap<?, ?>)o).data);
 		}
-		
-		return data.equals(((ImmutableIdentityHashMap<?, ?>)o).data);
+		return data.equals(o);
 	}
 
 	@Override

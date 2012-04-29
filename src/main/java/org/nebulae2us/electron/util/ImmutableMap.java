@@ -35,6 +35,10 @@ public final class ImmutableMap<K, V> extends AbstractImmutableMap<K, V> impleme
     	this.equalityComparator = ObjectEqualityComparator.getInstance();
     }
     
+    public ImmutableMap(Map<? extends K, ? extends V> m) {
+    	this(m, ObjectEqualityComparator.getInstance());
+    }
+    
     public ImmutableMap(Map<? extends K, ? extends V> m, EqualityComparator<? super K> equalityComparator) {
 
         int capacity = 1;
@@ -70,7 +74,7 @@ public final class ImmutableMap<K, V> extends AbstractImmutableMap<K, V> impleme
         size = calcSize;
     }
 
-    ImmutableMap(Collection<K> c, EqualityComparator<? super K> equalityComparator) {
+    ImmutableMap(Collection<? extends K> c, EqualityComparator<? super K> equalityComparator) {
 
         int capacity = 1;
         while (capacity < c.size())
@@ -308,7 +312,7 @@ public final class ImmutableMap<K, V> extends AbstractImmutableMap<K, V> impleme
 
 
 
-    private class KeySet extends DerivedCollection<K> implements Set<K> {
+    private class KeySet extends AbstractImmutableSet<K> {
 
         private KeySet() {}
 
@@ -318,6 +322,14 @@ public final class ImmutableMap<K, V> extends AbstractImmutableMap<K, V> impleme
 
         public Iterator<K> iterator() {
             return new KeyIterator();
+        }
+
+        public int size() {
+            return size;
+        }
+
+        public boolean isEmpty() {
+            return size == 0;
         }
     }
 

@@ -31,7 +31,7 @@ public class ImmutableSortedSetTest {
 	@Test
 	public void must_remove_dup_value() {
 		
-		ImmutableSortedSet<Integer> fixture = new ImmutableSortedSet<Integer>(1, 3, 3, 5);
+		ImmutableList<Integer> fixture = new ImmutableList<Integer>(1, 3, 3, 5).toUniqueList();
 		
 		assertEquals(3, fixture.size());
 		assertEquals(Arrays.asList(1, 3, 5), fixture);

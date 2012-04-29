@@ -17,9 +17,7 @@ package org.nebulae2us.electron.util.apitest;
 
 import static org.junit.Assert.*;
 
-import java.util.Iterator;
 import java.util.Map;
-import java.util.NoSuchElementException;
 import java.util.Map.Entry;
 
 /**
@@ -28,9 +26,9 @@ import java.util.Map.Entry;
  */
 public class MapImmutantScanTest<K, V> {
 
-	private final Class<K> keyClass;
+	protected final Class<K> keyClass;
 	
-	private final Class<V> valueClass;
+	protected final Class<V> valueClass;
 	
 	private final Map<K, V> control;
 
@@ -55,11 +53,28 @@ public class MapImmutantScanTest<K, V> {
 
 		new SetImmutantScanTest<K>(keyClass, control.keySet(), test.keySet()).runTests();
 		new CollectionImmutantScanTest<V>(valueClass, control.values(), test.values()).runTests();
+		
 		testContains();
+		testGet();
 	}
 	
 
+	private void testGet() {
+		for (Entry<K, V> entry : control.entrySet()) {
+			assertTrue(test.get(entry.getKey()) == control.get(entry.getKey()));
+		}
+
+		assertNull(test.get(new Object()));
+		
+		try {
+			// this should either throw NullPointerException or return null
+			assertNull(test.get(null));
+		}
+		catch (NullPointerException e) {}
+	}
+
 	private void testContains() {
+		
 		for (Entry<K, V> entry : control.entrySet()) {
 			assertTrue(test.containsKey(entry.getKey()));
 			assertTrue(test.containsValue(entry.getValue()));
@@ -71,5 +86,5 @@ public class MapImmutantScanTest<K, V> {
 			assertTrue(control.containsValue(entry.getValue()));
 		}
 	}
-	
+
 }

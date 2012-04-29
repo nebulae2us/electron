@@ -33,12 +33,16 @@ public final class ImmutableSortedMap<K, V> extends AbstractImmutableMap<K, V> i
     	this.keyComparator = NaturalComparator.getInstance();
     }
     
-    public ImmutableSortedMap(Map<K, V> data, final Comparator<? super K> comparator) {
+    public ImmutableSortedMap(Map<? extends K, ? extends V> data) {
+    	this(data, NaturalComparator.getInstance());
+    }    
+    
+    public ImmutableSortedMap(Map<? extends K, ? extends V> data, final Comparator<? super K> comparator) {
     	this.keyComparator = comparator == null ? NaturalComparator.getInstance() : (Comparator<Object>)comparator;
     	
         ArrayList<ImmutableEntry<K,V>> _data = new ArrayList<ImmutableEntry<K,V>>();
         
-        for (Entry<K, V> entry : data.entrySet()) {
+        for (Entry<? extends K, ? extends V> entry : data.entrySet()) {
         	
         	if (entry.getKey() == null) {
         		continue;
@@ -57,8 +61,8 @@ public final class ImmutableSortedMap<K, V> extends AbstractImmutableMap<K, V> i
         this.data = new ImmutableSortedSet<ImmutableEntry<K,V>>(_data, entryComparator);
     }
 
-    public ImmutableSortedMap(SortedMap<K, V> map) {
-        this(map, map.comparator());
+    public ImmutableSortedMap(SortedMap<? extends K, ? extends V> map) {
+        this(map, (Comparator<Object>)map.comparator());
     }
 
     public ImmutableSortedMap(ImmutableSortedMap<K, V> cloned, boolean descending) {
@@ -216,8 +220,13 @@ public final class ImmutableSortedMap<K, V> extends AbstractImmutableMap<K, V> i
     }
 
     public V get(Object key) {
-    	int idx = data.indexOf(new ImmutableEntry<K, V>((K)key, null));
-    	return idx < 0 ? null : this.data.get(idx).getValue();
+    	try {
+        	int idx = data.indexOf(new ImmutableEntry<K, V>((K)key, null));
+        	return idx < 0 ? null : this.data.get(idx).getValue();
+    	}
+    	catch (RuntimeException e) {
+    		return null;
+    	}
     }
 
     public NavigableSet<K> keySet() {
@@ -265,6 +274,9 @@ public final class ImmutableSortedMap<K, V> extends AbstractImmutableMap<K, V> i
         }
 
         public Entry<K, V> next() {
+        	if (this.index >= data.size()) {
+        		throw new NoSuchElementException();
+        	}
             return data.get(this.index ++);
         }
 

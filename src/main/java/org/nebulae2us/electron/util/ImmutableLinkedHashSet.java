@@ -27,12 +27,39 @@ public final class ImmutableLinkedHashSet<E> extends LinkedHashSet<E> {
 
 	private static final long serialVersionUID = 5718771109469218056L;
 
-	public ImmutableLinkedHashSet(Collection<? extends E> collection) {
-		super(collection);
-	}
+	private final ImmutableSet<E> data;
 	
+	public ImmutableLinkedHashSet(Collection<? extends E> collection) {
+		this.data = new ImmutableSet<E>(collection);
+	}
+
 	@Override
-	public boolean add(E arg0) {
+	public Iterator<E> iterator() {
+		return data.iterator();
+	}
+
+	@Override
+	public int size() {
+		return data.size();
+	}
+
+	@Override
+	public boolean isEmpty() {
+		return data.isEmpty();
+	}
+
+	@Override
+	public boolean contains(Object o) {
+		return data.contains(o);
+	}
+
+	@Override
+	public boolean add(E e) {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public boolean remove(Object o) {
 		throw new UnsupportedOperationException();
 	}
 
@@ -42,28 +69,52 @@ public final class ImmutableLinkedHashSet<E> extends LinkedHashSet<E> {
 	}
 
 	@Override
-	public Iterator<E> iterator() {
-		return new ImmutableIterator<E>(super.iterator());
+	public boolean equals(Object o) {
+		if (o == this) {
+			return true;
+		}
+		return data.equals(o);
 	}
 
 	@Override
-	public boolean remove(Object arg0) {
+	public int hashCode() {
+		return data.hashCode();
+	}
+
+	@Override
+	public boolean removeAll(Collection<?> c) {
 		throw new UnsupportedOperationException();
 	}
 
 	@Override
-	public boolean removeAll(Collection<?> arg0) {
+	public Object[] toArray() {
+		return data.toArray();
+	}
+
+	@Override
+	public <T> T[] toArray(T[] a) {
+		return data.toArray(a);
+	}
+
+	@Override
+	public boolean containsAll(Collection<?> c) {
+		return data.containsAll(c);
+	}
+
+	@Override
+	public boolean addAll(Collection<? extends E> c) {
 		throw new UnsupportedOperationException();
 	}
 
 	@Override
-	public boolean addAll(Collection<? extends E> arg0) {
+	public boolean retainAll(Collection<?> c) {
 		throw new UnsupportedOperationException();
 	}
 
 	@Override
-	public boolean retainAll(Collection<?> arg0) {
-		throw new UnsupportedOperationException();
+	public String toString() {
+		return data.toString();
 	}
+	
 
 }

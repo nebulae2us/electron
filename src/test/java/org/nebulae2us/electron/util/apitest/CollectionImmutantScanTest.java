@@ -55,6 +55,15 @@ public class CollectionImmutantScanTest<E> {
 		testContains();
 
 		testIterator();
+		testToArray();
+	}
+
+	private void testToArray() {
+		try {
+			test.toArray(null);
+			fail();
+		}
+		catch (NullPointerException e) {}
 	}
 
 	private void testContains() {

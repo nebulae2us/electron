@@ -217,10 +217,22 @@ public final class ImmutableList<E> extends AbstractImmutableList<E> implements 
     }
 
     private int indexOf(Object o, boolean descending) {
+    	
+    	if (this.size == 0) {
+    		return -1;
+    	}
+    	
         boolean realDesc = this.descending ? !descending : descending;
 
         if (comparator != null) {
-            int idx = Arrays.binarySearch(this.data, this.fromIndex, this.fromIndex + this.size, o, this.comparator);
+        	int idx;
+        	if (comparator == NaturalComparator.getInstance()) {
+                idx = Arrays.binarySearch(this.data, this.fromIndex, this.fromIndex + this.size, o);
+        	}
+        	else {
+                idx = Arrays.binarySearch(this.data, this.fromIndex, this.fromIndex + this.size, o, this.comparator);
+        	}
+        	
             if (idx >= 0) {
             	if (!realDesc) {
                 	while (idx > this.fromIndex && this.comparator.compare(data[idx], data[idx-1]) == 0) {
@@ -251,7 +263,43 @@ public final class ImmutableList<E> extends AbstractImmutableList<E> implements 
     public int lastIndexOf(Object o) {
         return indexOf(o, true);
     }
+    
+    public int indexOf(Object o, int index) {
+    	if (this.equalityComparator != null) {
+    	    for (int i = index ; i < size ; i++) {
+    	    	if (this.equalityComparator.compare(get(i), o)) {
+    	    		return i;
+    	    	}
+    	    }
+    	}
+    	else if (this.comparator != null) {
+    		for (int i = index; i < size; i++) {
+    			if (this.comparator.compare(get(i), o) == 0) {
+    				return i;
+    			}
+    		}
+    	}
+    	return -1;
+    }
 
+    public int lastIndexOf(Object o, int index) {
+    	if (this.equalityComparator != null) {
+    	    for (int i = index ; i >= 0; i--) {
+    	    	if (this.equalityComparator.compare(get(i), o)) {
+    	    		return i;
+    	    	}
+    	    }
+    	}
+    	else if (this.comparator != null) {
+    		for (int i = index; i >= 0; i--) {
+    			if (this.comparator.compare(get(i), o) == 0) {
+    				return i;
+    			}
+    		}
+    	}
+    	return -1;
+    }
+    
     public ImmutableList<E> subList(int fromIndex) {
     	return subList(fromIndex, size);
     }
@@ -265,6 +313,10 @@ public final class ImmutableList<E> extends AbstractImmutableList<E> implements 
         return new ImmutableList<E>(this, fromIndex, toIndex);
     }
 
+    public Enumeration<E> elements() {
+    	return new InternalListIterator(0, false);
+    }
+    
     public Iterator<E> iterator() {
         return new InternalListIterator(0, false);
     }
@@ -278,7 +330,7 @@ public final class ImmutableList<E> extends AbstractImmutableList<E> implements 
         return comparator != null && descending ? Collections.reverseOrder(comparator) : comparator;
     }
 
-    private final class InternalListIterator extends AbstractImmutableListIterator<E> implements ListIterator<E> {
+    private final class InternalListIterator extends AbstractImmutableListIterator<E> implements ListIterator<E>, Enumeration<E> {
 
         private int index;
         
@@ -318,6 +370,14 @@ public final class ImmutableList<E> extends AbstractImmutableList<E> implements 
         public int previousIndex() {
             return this.descending ? index + 1 : index - 1;
         }
+
+		public boolean hasMoreElements() {
+			return hasNext();
+		}
+
+		public E nextElement() {
+			return next();
+		}
     }
 
     public ListIterator<E> listIterator() {
@@ -555,6 +615,10 @@ public final class ImmutableList<E> extends AbstractImmutableList<E> implements 
 		
     	return new ImmutableList<E>(this, _comparator, true);
 		
+	}
+	
+	public ImmutableSortedSet<E> toSortedSet() {
+		return new ImmutableSortedSet<E>(toSortedUniqueList());
 	}
 	
 	public ImmutableSortedSet<E> toSortedSet(Comparator<? super E> comparator) {

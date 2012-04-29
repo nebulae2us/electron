@@ -31,11 +31,11 @@ public final class ImmutableSet<E> extends AbstractImmutableSet<E> implements Se
     	this(Collections.EMPTY_LIST);
     }
     
-    public ImmutableSet(Collection<E> c, EqualityComparator<? super E> equalityComparator) {
+    public ImmutableSet(Collection<? extends E> c, EqualityComparator<? super E> equalityComparator) {
         hashes = new ImmutableMap<E, Object>(c, equalityComparator);
     }
 
-    public ImmutableSet(Collection<E> c) {
+    public ImmutableSet(Collection<? extends E> c) {
         this(c, ObjectEqualityComparator.getInstance());
     }
 
