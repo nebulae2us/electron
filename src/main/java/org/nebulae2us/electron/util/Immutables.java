@@ -31,5 +31,26 @@ public class Immutables {
 		return new ImmutableList<E>(elements);
 	}
 	
+	private static final ImmutableList<?> _emptyList = new ImmutableList<Object>();
 	
+	@SuppressWarnings("unchecked")
+	public static final <E> ImmutableList<E> emptyList(Class<E> elementClass) {
+		return (ImmutableList<E>)_emptyList;
+	}
+
+	public static final <E> ImmutableList<?> emptyList() {
+		return _emptyList;
+	}
+
+	private static final ImmutableMap<?, ?> _emptyMap = new ImmutableMap<Object, Object>();
+	
+	@SuppressWarnings("unchecked")
+	public static final <E> ImmutableMap<String, E> emptyStringMap(Class<E> elementClass) {
+		return (ImmutableMap<String, E>)_emptyMap;
+	}
+
+	public static final ImmutableMap<String, ?> emptyStringMap() {
+		return (ImmutableMap<String, ?>)_emptyMap;
+	}
+
 }

@@ -21,15 +21,10 @@ package org.nebulae2us.electron.internal.util;
  */
 public class StringUtils {
 
-	public static String concat(String delim, String prevFix, String suffix, String ... elements) {
-		
-		return "";
-	}
-	
 	public static String toCamelCase(String text) {
 		String upperCase = toUpperCamelCase(text);
 		return upperCase.length() == 0 ? "" : Character.toLowerCase(upperCase.charAt(0)) + upperCase.substring(1);
-	}	
+	}
 	
 	public static String toUpperCamelCase(String text) {
 		text = text.trim();
