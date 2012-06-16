@@ -168,4 +168,16 @@ public class ClassUtils {
 		}
 		
 	}
+
+	public static Constructor<?> getDefaultConstructor(Class<?> destClass) {
+		Constructor<?> constructor = null;
+		try {
+			constructor = destClass.getConstructor();
+			return constructor;
+		} catch (Exception e) {
+			return null;
+		}
+		
+	}
+
 }

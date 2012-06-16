@@ -383,14 +383,29 @@ public class Converter {
 				throw new RuntimeException("Failed to instantiate " + destClass, e);
 			}
 		}
-
-		try {
-			T result = destClass.newInstance();
-			return new Pair<T, Boolean>(result, Boolean.FALSE);
-		} catch (Exception e) {
-			e.printStackTrace();
-			return new Pair<T, Boolean>(null, Boolean.TRUE);
+		else {
+			constructor = ClassUtils.getDefaultConstructor(destClass);
+			
+			if (constructor != null) {
+				try {
+					T result = destClass.newInstance();
+					return new Pair<T, Boolean>(result, Boolean.FALSE);
+				} catch (Exception e) {
+					e.printStackTrace();
+					return new Pair<T, Boolean>(null, Boolean.TRUE);
+				}
+				
+			}
+			else if (destClass.isInstance(srcObject)) {
+				return new Pair<T, Boolean>((T)srcObject, Boolean.TRUE);
+			}
+			else {
+				return new Pair<T, Boolean>(null, Boolean.TRUE);
+			}
+			
 		}
+
+		
 	}
 	
 

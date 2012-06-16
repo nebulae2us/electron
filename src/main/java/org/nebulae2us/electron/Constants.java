@@ -18,6 +18,8 @@ package org.nebulae2us.electron;
 import java.lang.reflect.Field;
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.security.Timestamp;
+import java.sql.Time;
 import java.util.*;
 
 /**
@@ -30,7 +32,7 @@ public interface Constants {
 					Integer.class, Short.class, Byte.class, Long.class, 
 					Double.class, Float.class, Character.class, Boolean.class,
 					BigDecimal.class, BigInteger.class,
-					String.class, Date.class});
+					String.class, Date.class, java.sql.Date.class, Time.class, Timestamp.class});
 
 	public static final List<Class<?>> IMMUTABLE_TYPES =
 			Arrays.asList(new Class<?>[] {
