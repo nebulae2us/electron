@@ -37,6 +37,9 @@ public class DestinationClassResolverByAnnotation implements DestinationClassRes
 			src = src.getSuperclass();
 		}
 
+		if (expectedDest.isAssignableFrom(src)) {
+			return (Class<T>)src;
+		}
 		return expectedDest;
 	}
 

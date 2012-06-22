@@ -391,7 +391,7 @@ public class Converter {
 					T result = destClass.newInstance();
 					return new Pair<T, Boolean>(result, Boolean.FALSE);
 				} catch (Exception e) {
-					e.printStackTrace();
+					// TODO show warning
 					return new Pair<T, Boolean>(null, Boolean.TRUE);
 				}
 				

@@ -55,7 +55,10 @@ public class DestinationClassResolverByMap implements DestinationClassResolver {
 			}
 			c = c.getSuperclass();
 		}
-		
+
+		if (expectedDest.isAssignableFrom(src)) {
+			return (Class<T>)src;
+		}
 		return expectedDest;
 	}
 
