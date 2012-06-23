@@ -123,7 +123,7 @@ public class NullMirror implements Mirror {
 	}
 
 	public Boolean toBoolean(String fieldName) {
-		return null;
+		return (Boolean)null;
 	}
 
 	public boolean toBooleanValue(String fieldName) {

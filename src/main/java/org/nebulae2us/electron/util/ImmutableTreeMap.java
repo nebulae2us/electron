@@ -28,7 +28,7 @@ import java.util.TreeMap;
  * @author Trung Phan
  *
  */
-public final class ImmutableTreeMap<K, V> extends TreeMap<K, V> {
+public final class ImmutableTreeMap<K, V> extends TreeMap<K, V> implements ImmutableSortedMapAware<K, V> {
 
 	private static final long serialVersionUID = 2565430344565812032L;
 
@@ -246,6 +246,10 @@ public final class ImmutableTreeMap<K, V> extends TreeMap<K, V> {
 	@Override
 	public String toString() {
 		return data.toString();
+	}
+
+	public ImmutableSortedMap<K, V> getImmutableSortedMap() {
+		return data;
 	}
 
 

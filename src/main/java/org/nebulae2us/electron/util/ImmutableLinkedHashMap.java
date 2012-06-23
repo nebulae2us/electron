@@ -25,7 +25,7 @@ import java.util.Set;
  * @author Trung Phan
  *
  */
-public final class ImmutableLinkedHashMap<K, V> extends LinkedHashMap<K, V> {
+public final class ImmutableLinkedHashMap<K, V> extends LinkedHashMap<K, V> implements ImmutableMapAware<K, V> {
 
 	private static final long serialVersionUID = 8070724328849837500L;
 	
@@ -114,6 +114,10 @@ public final class ImmutableLinkedHashMap<K, V> extends LinkedHashMap<K, V> {
 	@Override
 	public String toString() {
 		return data.toString();
+	}
+
+	public ImmutableMap<K, V> getImmutableMap() {
+		return data;
 	}
 
 	

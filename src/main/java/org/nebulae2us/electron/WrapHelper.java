@@ -16,6 +16,10 @@
 package org.nebulae2us.electron;
 
 import java.lang.reflect.Field;
+import java.util.Arrays;
+import java.util.List;
+
+import org.nebulae2us.electron.util.ListBuilder;
 
 /**
  * @author Trung Phan
@@ -33,21 +37,17 @@ public class WrapHelper {
 		}
 	}
 	
+	private static List<Object> ZERO_VALUES = new ListBuilder<Object>()
+			.add(Boolean.FALSE, Integer.valueOf(0), Long.valueOf(0L), Short.valueOf((short)0), Byte.valueOf((byte)0), Double.valueOf(0D), Float.valueOf(0F), Character.valueOf((char)0))
+			.toList();
+	
 	public static boolean valueNotSet(Object target, Class<?> type) {
 		if (target == null) {
 			return true;
 		}
 		
 		if (type.isPrimitive()) {
-			return target == Boolean.FALSE ||
-					target == Integer.valueOf(0) ||
-					target == Long.valueOf(0L) ||
-					target == Short.valueOf((short)0) ||
-					target == Byte.valueOf((byte)0) ||
-					target == Double.valueOf(0.0) ||
-					target == Float.valueOf(0.0f) ||
-					target == Character.valueOf((char)0);
-					
+			return ZERO_VALUES.contains(target);
 		}
 		
 		return false;

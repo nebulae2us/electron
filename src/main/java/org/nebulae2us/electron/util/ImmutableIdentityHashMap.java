@@ -24,7 +24,7 @@ import java.util.Set;
  * @author Trung Phan
  *
  */
-public final class ImmutableIdentityHashMap<K, V> extends IdentityHashMap<K, V> {
+public final class ImmutableIdentityHashMap<K, V> extends IdentityHashMap<K, V> implements ImmutableMapAware<K, V> {
 
 	private static final long serialVersionUID = 1593227809905738117L;
 	
@@ -118,6 +118,10 @@ public final class ImmutableIdentityHashMap<K, V> extends IdentityHashMap<K, V> 
 	@Override
 	public String toString() {
 		return data.toString();
+	}
+
+	public final ImmutableMap<K, V> getImmutableMap() {
+		return data;
 	}
 
 }

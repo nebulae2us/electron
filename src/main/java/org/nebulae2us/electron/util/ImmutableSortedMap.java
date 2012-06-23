@@ -21,7 +21,7 @@ import java.util.*;
 /**
  * @author Trung Phan
  */
-public final class ImmutableSortedMap<K, V> extends AbstractImmutableMap<K, V> implements NavigableMap<K, V> {
+public final class ImmutableSortedMap<K, V> extends AbstractImmutableMap<K, V> implements NavigableMap<K, V>, ImmutableSortedMapAware<K, V> {
 
     private final ImmutableSortedSet<ImmutableEntry<K, V>>  data;
 	
@@ -403,4 +403,8 @@ public final class ImmutableSortedMap<K, V> extends AbstractImmutableMap<K, V> i
 		}
     	
     }
+
+	public ImmutableSortedMap<K, V> getImmutableSortedMap() {
+		return this;
+	}
 }

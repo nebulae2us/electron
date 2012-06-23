@@ -33,6 +33,7 @@ import org.nebulae2us.electron.util.ImmutableSet;
 import org.nebulae2us.electron.util.ImmutableSortedMap;
 import org.nebulae2us.electron.util.ImmutableSortedSet;
 import org.nebulae2us.electron.util.Immutables;
+import org.nebulae2us.electron.util.MapBuilder;
 import org.nebulae2us.electron.util.NaturalComparator;
 import org.nebulae2us.electron.util.ObjectEqualityComparator;
 
@@ -472,41 +473,9 @@ public class Converter {
 			}
 			
 			if (Collection.class.isAssignableFrom(srcClass)) {
-				Collection result = null;
-				
-				if (immutable && MUTABLE_COLLECTION_TYPES.contains(requestedClass)) {
-					throw new IllegalStateException("Option IMMUTABLE is not appropriate for " + requestedClass.getSimpleName());
-				}
-				
-				if (requestedClass.isAssignableFrom(Collection.class)) {
-					if (!(srcObject instanceof List) && srcObject instanceof SortedSet) {
-						result = new TreeSet();
-					}
-					else if (!(srcObject instanceof List) && srcObject instanceof Set) {
-						result = new HashSet();
-					}
-					else {
-						result = new ArrayList();
-					}
-				}
-				else if (requestedClass.isAssignableFrom(List.class) || requestedClass.isAssignableFrom(ArrayList.class)) {
-					result = new ArrayList();
-				}
-				else if (requestedClass.isAssignableFrom(Set.class) || requestedClass.isAssignableFrom(HashSet.class)) {
-					result = new HashSet();
-				}
-				else if (requestedClass.isAssignableFrom(NavigableSet.class) || requestedClass.isAssignableFrom(TreeSet.class)) {
-					// TODO think of option to convert comparator
-					result = new TreeSet();
-				}
-				else if (requestedClass.isAssignableFrom(LinkedList.class)) {
-					result = new LinkedList();
-				}
-				else if (requestedClass.isAssignableFrom(LinkedHashSet.class)) {
-					result = new LinkedHashSet();
-				}
-				else {
-					throw new IllegalStateException("Unsupported collection type: " + requestedClass.getName());
+				Collection result = instantiateMutableCollection((Class<? extends Collection>)requestedClass, srcClass);
+				if (result == null) {
+					return null;
 				}
 
 				for (Object o : (Collection)srcObject) {
@@ -517,15 +486,21 @@ public class Converter {
 				}
 
 				if (immutable) {
-					if (result instanceof List) {
-						result = new ImmutableList<Object>(result);
+					Class<?> expectedType = List.class;
+					
+					if (Collection.class.isAssignableFrom(requestedClass) && requestedClass != Collection.class) {
+						expectedType = requestedClass;
 					}
-					else if (result instanceof SortedSet) {
-						result = new ImmutableSortedSet<Object>(result);
+					else if (srcObject instanceof List) {
+						expectedType = List.class;
 					}
-					else {
-						result = new ImmutableSet<Object>(result);
+					else if (srcObject instanceof SortedSet) {
+						expectedType = SortedSet.class;
 					}
+					else if (srcObject instanceof Set) {
+						expectedType = Set.class;
+					}
+					result = Immutables.toImmutableCollection((Class<? extends Collection>)expectedType, result);
 				}
 				
 				this.convertedObjects.put(srcObject, result);
@@ -534,49 +509,9 @@ public class Converter {
 			}
 
 			if (Map.class.isAssignableFrom(srcClass)) {
-				Map result = null;
-				
-				if (immutable && MUTABLE_COLLECTION_TYPES.contains(requestedClass)) {
-					throw new IllegalStateException("Option IMMUTABLE is not appropriate for " + requestedClass.getSimpleName());
-				}
-				
-				if (requestedClass.isAssignableFrom(Map.class)) {
-					if (srcObject instanceof SortedMap) {
-						result = new TreeMap();
-					}
-					else if (srcObject instanceof IdentityHashMap) {
-						result = new IdentityHashMap();
-					}
-					else {
-						result = new HashMap();
-					}
-				}
-				else if (requestedClass.isAssignableFrom(NavigableMap.class) || requestedClass.isAssignableFrom(TreeMap.class)) {
-					result = new TreeMap();
-				}
-				else if (requestedClass.isAssignableFrom(HashMap.class)) {
-					result = new HashMap();
-				}
-				else if (requestedClass.isAssignableFrom(LinkedHashMap.class)) {
-					result = new LinkedHashMap();
-				}
-				else if (requestedClass.isAssignableFrom(Hashtable.class)) {
-					result = new Hashtable();
-				}
-				else if (requestedClass.isAssignableFrom(IdentityHashMap.class)) {
-					result = new IdentityHashMap();
-				}
-				else if (requestedClass.isAssignableFrom(WeakHashMap.class)) {
-					result = new WeakHashMap();
-				}
-				else if (requestedClass.isAssignableFrom(ImmutableMap.class)) {
-					result = new HashMap();
-				}
-				else if (requestedClass.isAssignableFrom(ImmutableSortedMap.class)) {
-					result = new TreeMap();
-				}
-				else {
-					throw new IllegalStateException("Unsupported map type: " + requestedClass.getName());
+				Map result = instantiateMutableMap(requestedClass, srcClass);
+				if (result == null) {
+					return null;
 				}
 				
 				for (Entry<?, ?> entry : ((Map<?, ?>)srcObject).entrySet()) {
@@ -591,14 +526,19 @@ public class Converter {
 				}
 
 				if (immutable) {
-					if (result instanceof SortedMap) {
-						result = new ImmutableSortedMap<Object, Object>(result, NaturalComparator.getInstance());
-					}
-					else if (result instanceof IdentityHashMap) {
-						result = new ImmutableMap<Object, Object>(result, IdentityEqualityComparator.getInstance());
+					if (result instanceof IdentityHashMap) {
+						result = new ImmutableMap(result, IdentityEqualityComparator.getInstance());
 					}
 					else {
-						result = new ImmutableMap<Object, Object>(result, ObjectEqualityComparator.getInstance());
+						Class<? extends Map> expectedType = Map.class;
+						if (Map.class.isAssignableFrom(requestedClass)) {
+							expectedType = (Class<? extends Map>)requestedClass;
+						}
+						else if (srcObject instanceof SortedMap) {
+							expectedType = SortedMap.class;
+						}
+
+						result = Immutables.toImmutableMap(expectedType, result);
 					}
 				}
 				
@@ -648,6 +588,106 @@ public class Converter {
 			}
 			return result;
 		}
+		
+		/**
+		 * Try to instantiate mutable collection based on the requested returned type.
+		 * If the returned type is so generic (such as Object.class or Collection.class),
+		 * source class is considered to make result as close as source class.
+		 * 
+		 * @param requestedType
+		 * @param srcClass
+		 * @return
+		 */
+		private Collection instantiateMutableCollection(Class<?> requestedType, Class<?> srcClass) {
+			Collection result = null;
+			
+			if (requestedType.isAssignableFrom(Collection.class)) {
+				if (List.class.isAssignableFrom(srcClass)) {
+					result = new ArrayList();
+				}
+				else if (SortedSet.class.isAssignableFrom(srcClass)) {
+					result = new TreeSet();
+				}
+				else if (Set.class.isAssignableFrom(srcClass)) {
+					result = new HashSet();
+				}
+				else {
+					result = new ArrayList();
+				}
+			}
+			else if (requestedType.isAssignableFrom(List.class) || requestedType.isAssignableFrom(ArrayList.class)) {
+				result = new ArrayList();
+			}
+			else if (requestedType.isAssignableFrom(Set.class) || requestedType.isAssignableFrom(HashSet.class)) {
+				result = new HashSet();
+			}
+			else if (requestedType.isAssignableFrom(NavigableSet.class) || requestedType.isAssignableFrom(TreeSet.class)) {
+				result = new TreeSet();
+			}
+			else if (requestedType.isAssignableFrom(LinkedList.class)) {
+				result = new LinkedList();
+			}
+			else if (requestedType.isAssignableFrom(LinkedHashSet.class)) {
+				result = new LinkedHashSet();
+			}
+			else if (requestedType.isAssignableFrom(Vector.class)) {
+				result = new Vector();
+			}
+			
+			return result;
+		}
+		
+		/**
+		 * Try to instantiate mutable map based on the requested returned type.
+		 * If the returned type is generic (such as Object.class or Map.class),
+		 * source class is considered to make result as close as source class.
+		 * 
+		 * @param requestedClass
+		 * @param srcClass
+		 * @return
+		 */
+		private Map instantiateMutableMap(Class<?> requestedClass, Class<?> srcClass) {
+			Map result = null;
+			
+			if (requestedClass.isAssignableFrom(Map.class)) {
+				if (SortedMap.class.isAssignableFrom(srcClass)) {
+					result = new TreeMap();
+				}
+				else if (IdentityHashMap.class.isAssignableFrom(srcClass)) {
+					result = new IdentityHashMap();
+				}
+				else {
+					result = new HashMap();
+				}
+			}
+			else if (requestedClass.isAssignableFrom(NavigableMap.class) || requestedClass.isAssignableFrom(TreeMap.class)) {
+				result = new TreeMap();
+			}
+			else if (requestedClass.isAssignableFrom(HashMap.class)) {
+				result = new HashMap();
+			}
+			else if (requestedClass.isAssignableFrom(LinkedHashMap.class)) {
+				result = new LinkedHashMap();
+			}
+			else if (requestedClass.isAssignableFrom(Hashtable.class)) {
+				result = new Hashtable();
+			}
+			else if (requestedClass.isAssignableFrom(IdentityHashMap.class)) {
+				result = new IdentityHashMap();
+			}
+			else if (requestedClass.isAssignableFrom(WeakHashMap.class)) {
+				result = new WeakHashMap();
+			}
+			else if (requestedClass.isAssignableFrom(ImmutableMap.class)) {
+				result = new HashMap();
+			}
+			else if (requestedClass.isAssignableFrom(ImmutableSortedMap.class)) {
+				result = new TreeMap();
+			}
+			
+			return result;
+		}
+		
 		
 		@SuppressWarnings("unchecked")
 		public <T> T to(Class<T> objectClass, String fieldName) {

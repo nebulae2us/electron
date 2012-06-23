@@ -31,6 +31,12 @@ public final class ImmutableSortedSet<E> extends AbstractImmutableSortedSet<E> i
     	this.data = new ImmutableList<E>(Collections.EMPTY_LIST, NaturalComparator.getInstance(), true);
     }
 	
+    /**
+     * 
+     * @param c
+     * @param comparator
+     * @throws NullPointerException if comparator is null
+     */
     public ImmutableSortedSet(Collection<? extends E> c, Comparator<? super E> comparator) {
     	this.data = new ImmutableList<E>(c, comparator, true);
     }

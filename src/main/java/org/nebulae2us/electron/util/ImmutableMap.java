@@ -20,7 +20,7 @@ import java.util.*;
 /**
  * @author Trung Phan
  */
-public final class ImmutableMap<K, V> extends AbstractImmutableMap<K, V> implements Map<K, V> {
+public final class ImmutableMap<K, V> extends AbstractImmutableMap<K, V> implements Map<K, V>, ImmutableMapAware<K, V>  {
 
     private final int size;
 
@@ -345,4 +345,8 @@ public final class ImmutableMap<K, V> extends AbstractImmutableMap<K, V> impleme
             return size == 0;
         }
     }
+
+	public ImmutableMap<K, V> getImmutableMap() {
+		return this;
+	}
 }

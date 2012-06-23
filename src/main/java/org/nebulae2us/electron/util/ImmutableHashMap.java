@@ -25,14 +25,14 @@ import java.util.Set;
  * @author Trung Phan
  *
  */
-public final class ImmutableHashMap<K, V> extends HashMap<K, V> {
+public final class ImmutableHashMap<K, V> extends HashMap<K, V> implements ImmutableMapAware<K, V> {
 
 	private static final long serialVersionUID = 1089435676026499050L;
 
 	private final ImmutableMap<K, V> data;
 	
 	public ImmutableHashMap(Map<? extends K, ? extends V> m) {
-		this.data = new ImmutableMap<K, V>(m, ObjectEqualityComparator.getInstance());
+		this.data = m instanceof ImmutableMap ? (ImmutableMap)m : new ImmutableMap<K, V>(m, ObjectEqualityComparator.getInstance());
 	}
 	
 	@Override
@@ -120,6 +120,10 @@ public final class ImmutableHashMap<K, V> extends HashMap<K, V> {
 	@Override
 	public String toString() {
 		return data.toString();
+	}
+
+	public ImmutableMap<K, V> getImmutableMap() {
+		return data;
 	}
 	
 }
