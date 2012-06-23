@@ -2,7 +2,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.nebulae2us</groupId>
     <artifactId>electron</artifactId>
-    <version>1.0.0</version>
+    <version>1.0.0.RC1</version>
     <name>Electron</name>
     <description>Java library for immutable objects</description>
     
