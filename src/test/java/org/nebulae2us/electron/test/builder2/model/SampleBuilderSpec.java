@@ -49,7 +49,7 @@ public class SampleBuilderSpec<P> implements Wrappable<Sample> {
 	}
 
     public Sample toSample() {
-    	return new Converter(new DestinationClassResolverByAnnotation(), true).convert(this).to(Sample.class);
+    	return new Converter(new DestinationClassResolverByAnnotation(), true, BuilderSpecs.IGNORED_TYPES).convert(this).to(Sample.class);
     }
 
 
@@ -59,7 +59,7 @@ public class SampleBuilderSpec<P> implements Wrappable<Sample> {
 	public String getName() {
 		if (this.$$$wrapped != null && WrapHelper.valueNotSet(this.name, String.class)) {
 			Object o = WrapHelper.getValue(this.$$$wrapped, Sample.class, "name");
-			this.name = new WrapConverter(Builders.DESTINATION_CLASS_RESOLVER).convert(o).to(String.class);
+			this.name = new WrapConverter(BuilderSpecs.DESTINATION_CLASS_RESOLVER, BuilderSpecs.IGNORED_TYPES).convert(o).to(String.class);
 		}
 
 		return name;
@@ -81,7 +81,7 @@ public class SampleBuilderSpec<P> implements Wrappable<Sample> {
 	public List<String> getNames() {
 		if (this.$$$wrapped != null && WrapHelper.valueNotSet(this.names, List.class)) {
 			Object o = WrapHelper.getValue(this.$$$wrapped, Sample.class, "names");
-			this.names = new WrapConverter(Builders.DESTINATION_CLASS_RESOLVER).convert(o).to(List.class);
+			this.names = new WrapConverter(BuilderSpecs.DESTINATION_CLASS_RESOLVER, BuilderSpecs.IGNORED_TYPES).convert(o).to(List.class);
 		}
 
 		return names;
@@ -117,7 +117,7 @@ public class SampleBuilderSpec<P> implements Wrappable<Sample> {
 	public Set<String> getKeywords() {
 		if (this.$$$wrapped != null && WrapHelper.valueNotSet(this.keywords, Set.class)) {
 			Object o = WrapHelper.getValue(this.$$$wrapped, Sample.class, "keywords");
-			this.keywords = new WrapConverter(Builders.DESTINATION_CLASS_RESOLVER).convert(o).to(Set.class);
+			this.keywords = new WrapConverter(BuilderSpecs.DESTINATION_CLASS_RESOLVER, BuilderSpecs.IGNORED_TYPES).convert(o).to(Set.class);
 		}
 
 		return keywords;
@@ -153,7 +153,7 @@ public class SampleBuilderSpec<P> implements Wrappable<Sample> {
 	public List<Collection<String>> getKeywordsList() {
 		if (this.$$$wrapped != null && WrapHelper.valueNotSet(this.keywordsList, List.class)) {
 			Object o = WrapHelper.getValue(this.$$$wrapped, Sample.class, "keywordsList");
-			this.keywordsList = new WrapConverter(Builders.DESTINATION_CLASS_RESOLVER).convert(o).to(List.class);
+			this.keywordsList = new WrapConverter(BuilderSpecs.DESTINATION_CLASS_RESOLVER, BuilderSpecs.IGNORED_TYPES).convert(o).to(List.class);
 		}
 
 		return keywordsList;
@@ -169,7 +169,7 @@ public class SampleBuilderSpec<P> implements Wrappable<Sample> {
 	public Map<String, Integer> getKeywordCounts() {
 		if (this.$$$wrapped != null && WrapHelper.valueNotSet(this.keywordCounts, Map.class)) {
 			Object o = WrapHelper.getValue(this.$$$wrapped, Sample.class, "keywordCounts");
-			this.keywordCounts = new WrapConverter(Builders.DESTINATION_CLASS_RESOLVER).convert(o).to(Map.class);
+			this.keywordCounts = new WrapConverter(BuilderSpecs.DESTINATION_CLASS_RESOLVER, BuilderSpecs.IGNORED_TYPES).convert(o).to(Map.class);
 		}
 
 		return keywordCounts;
@@ -242,7 +242,7 @@ public class SampleBuilderSpec<P> implements Wrappable<Sample> {
 	public Map<String, Set<String>> getKeywordSynonyms() {
 		if (this.$$$wrapped != null && WrapHelper.valueNotSet(this.keywordSynonyms, Map.class)) {
 			Object o = WrapHelper.getValue(this.$$$wrapped, Sample.class, "keywordSynonyms");
-			this.keywordSynonyms = new WrapConverter(Builders.DESTINATION_CLASS_RESOLVER).convert(o).to(Map.class);
+			this.keywordSynonyms = new WrapConverter(BuilderSpecs.DESTINATION_CLASS_RESOLVER, BuilderSpecs.IGNORED_TYPES).convert(o).to(Map.class);
 		}
 
 		return keywordSynonyms;
@@ -258,7 +258,7 @@ public class SampleBuilderSpec<P> implements Wrappable<Sample> {
 	public Class<?> getMyClass() {
 		if (this.$$$wrapped != null && WrapHelper.valueNotSet(this.myClass, Class.class)) {
 			Object o = WrapHelper.getValue(this.$$$wrapped, Sample.class, "myClass");
-			this.myClass = new WrapConverter(Builders.DESTINATION_CLASS_RESOLVER).convert(o).to(Class.class);
+			this.myClass = new WrapConverter(BuilderSpecs.DESTINATION_CLASS_RESOLVER, BuilderSpecs.IGNORED_TYPES).convert(o).to(Class.class);
 		}
 
 		return myClass;
@@ -280,7 +280,7 @@ public class SampleBuilderSpec<P> implements Wrappable<Sample> {
 	public NavigableSet<Class<?>> getOtherClasses() {
 		if (this.$$$wrapped != null && WrapHelper.valueNotSet(this.otherClasses, NavigableSet.class)) {
 			Object o = WrapHelper.getValue(this.$$$wrapped, Sample.class, "otherClasses");
-			this.otherClasses = new WrapConverter(Builders.DESTINATION_CLASS_RESOLVER).convert(o).to(NavigableSet.class);
+			this.otherClasses = new WrapConverter(BuilderSpecs.DESTINATION_CLASS_RESOLVER, BuilderSpecs.IGNORED_TYPES).convert(o).to(NavigableSet.class);
 		}
 
 		return otherClasses;
@@ -316,7 +316,7 @@ public class SampleBuilderSpec<P> implements Wrappable<Sample> {
 	public Map<Class<?>, List<Class<?>>> getFriendClasses() {
 		if (this.$$$wrapped != null && WrapHelper.valueNotSet(this.friendClasses, Map.class)) {
 			Object o = WrapHelper.getValue(this.$$$wrapped, Sample.class, "friendClasses");
-			this.friendClasses = new WrapConverter(Builders.DESTINATION_CLASS_RESOLVER).convert(o).to(Map.class);
+			this.friendClasses = new WrapConverter(BuilderSpecs.DESTINATION_CLASS_RESOLVER, BuilderSpecs.IGNORED_TYPES).convert(o).to(Map.class);
 		}
 
 		return friendClasses;
@@ -332,7 +332,7 @@ public class SampleBuilderSpec<P> implements Wrappable<Sample> {
 	public BlankBuilderSpec<?> getBlank() {
 		if (this.$$$wrapped != null && WrapHelper.valueNotSet(this.blank, BlankBuilderSpec.class)) {
 			Object o = WrapHelper.getValue(this.$$$wrapped, Sample.class, "blank");
-			this.blank = new WrapConverter(Builders.DESTINATION_CLASS_RESOLVER).convert(o).to(BlankBuilderSpec.class);
+			this.blank = new WrapConverter(BuilderSpecs.DESTINATION_CLASS_RESOLVER, BuilderSpecs.IGNORED_TYPES).convert(o).to(BlankBuilderSpec.class);
 		}
 
 		return blank;
@@ -351,7 +351,7 @@ public class SampleBuilderSpec<P> implements Wrappable<Sample> {
 
     public SampleBuilderSpec<P> blank$wrap(Blank blank) {
     	verifyMutable();
-    	this.blank = new WrapConverter(BuilderSpecs.DESTINATION_CLASS_RESOLVER).convert(blank).to(BlankBuilderSpec.class);
+    	this.blank = new WrapConverter(BuilderSpecs.DESTINATION_CLASS_RESOLVER, BuilderSpecs.IGNORED_TYPES).convert(blank).to(BlankBuilderSpec.class);
         return this;
     }
     
@@ -392,7 +392,7 @@ public class SampleBuilderSpec<P> implements Wrappable<Sample> {
 	public Collection<BlankBuilderSpec<?>> getBlanks() {
 		if (this.$$$wrapped != null && WrapHelper.valueNotSet(this.blanks, Collection.class)) {
 			Object o = WrapHelper.getValue(this.$$$wrapped, Sample.class, "blanks");
-			this.blanks = new WrapConverter(Builders.DESTINATION_CLASS_RESOLVER).convert(o).to(Collection.class);
+			this.blanks = new WrapConverter(BuilderSpecs.DESTINATION_CLASS_RESOLVER, BuilderSpecs.IGNORED_TYPES).convert(o).to(Collection.class);
 		}
 
 		return blanks;
@@ -476,7 +476,7 @@ public class SampleBuilderSpec<P> implements Wrappable<Sample> {
 		}
 		if (blanks != null) {
 			for (Blank e : blanks) {
-				BlankBuilderSpec<?> wrapped = new WrapConverter(BuilderSpecs.DESTINATION_CLASS_RESOLVER).convert(e).to(BlankBuilderSpec.class);
+				BlankBuilderSpec<?> wrapped = new WrapConverter(BuilderSpecs.DESTINATION_CLASS_RESOLVER, BuilderSpecs.IGNORED_TYPES).convert(e).to(BlankBuilderSpec.class);
 				CollectionUtils.addItem(this.blanks, wrapped);
 			}
 		}
@@ -525,7 +525,7 @@ public class SampleBuilderSpec<P> implements Wrappable<Sample> {
 	public NavigableMap<Class<BlankBuilderSpec>, BlankBuilderSpec<?>> getBlanksMap() {
 		if (this.$$$wrapped != null && WrapHelper.valueNotSet(this.blanksMap, NavigableMap.class)) {
 			Object o = WrapHelper.getValue(this.$$$wrapped, Sample.class, "blanksMap");
-			this.blanksMap = new WrapConverter(Builders.DESTINATION_CLASS_RESOLVER).convert(o).to(NavigableMap.class);
+			this.blanksMap = new WrapConverter(BuilderSpecs.DESTINATION_CLASS_RESOLVER, BuilderSpecs.IGNORED_TYPES).convert(o).to(NavigableMap.class);
 		}
 
 		return blanksMap;
@@ -604,7 +604,7 @@ public class SampleBuilderSpec<P> implements Wrappable<Sample> {
 	public Map<BlankBuilderSpec<?>, BlankBuilderSpec<?>> getBlanks2blanks() {
 		if (this.$$$wrapped != null && WrapHelper.valueNotSet(this.blanks2blanks, Map.class)) {
 			Object o = WrapHelper.getValue(this.$$$wrapped, Sample.class, "blanks2blanks");
-			this.blanks2blanks = new WrapConverter(Builders.DESTINATION_CLASS_RESOLVER).convert(o).to(Map.class);
+			this.blanks2blanks = new WrapConverter(BuilderSpecs.DESTINATION_CLASS_RESOLVER, BuilderSpecs.IGNORED_TYPES).convert(o).to(Map.class);
 		}
 
 		return blanks2blanks;

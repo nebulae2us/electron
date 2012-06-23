@@ -49,7 +49,7 @@ public class ColorBuilderSpec<P> implements Wrappable<Color> {
 	}
 
     public Color toColor() {
-    	return new Converter(new DestinationClassResolverByAnnotation(), true).convert(this).to(Color.class);
+    	return new Converter(new DestinationClassResolverByAnnotation(), true, BuilderSpecs.IGNORED_TYPES).convert(this).to(Color.class);
     }
 
 

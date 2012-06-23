@@ -20,7 +20,6 @@ import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
 import org.nebulae2us.electron.reflect.*;
 import org.nebulae2us.electron.test.builder1.*;
-import org.nebulae2us.electron.test.builder2.model.BuilderTest;
 import org.nebulae2us.electron.test.builder2.model.SpecTest;
 import org.nebulae2us.electron.test.builder3.model.FictionSpecTest;
 import org.nebulae2us.electron.test.convert.*;
@@ -37,7 +36,6 @@ import org.nebulae2us.electron.util.*;
 	InheritanceTest.class,
 	ModifyImmutableTest.class,
 	TestCreatedBuilders.class,
-	BuilderTest.class,
 	SpecTest.class,
 	FictionSpecTest.class,
 	ConvertMutableTest.class,

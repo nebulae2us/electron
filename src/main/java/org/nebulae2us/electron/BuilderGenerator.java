@@ -77,6 +77,20 @@ public class BuilderGenerator {
 		return this;
 	}
 	
+	private List<Class<?>> ignoredTypes = new ArrayList<Class<?>>();
+	
+	public BuilderGenerator ignoreTypes(Class<?>... types) {
+		for (Class<?> type : types) {
+			ignoredTypes.add(type);
+		}
+		return this;
+	}
+	
+	public BuilderGenerator ignoreTypes(Collection<Class<?>> types) {
+		this.ignoredTypes.addAll(types);
+		return this;
+	}
+	
 	private List<Class<?>> classesToBuild;
 	
 	public void generate(Class<?> ... classesToBuild) {
@@ -181,6 +195,7 @@ public class BuilderGenerator {
 					.replace("BookBuilderSpec<P>", destClassReturnName)
 					.replace("BookBuilderSpec", destClassName)
 					.replace("Book", srcClassName)
+					.replace("BuilderSpecs", this.buildersClassName)
 					.toString()
 					));
 			
@@ -192,6 +207,7 @@ public class BuilderGenerator {
 						.replace("<C extends Color & Serializable, T extends Paper<C>, R extends Recordable<C>, L extends List<? extends T>>", srcClassHolder.toVariableDeclaration())
 						.replace("<C, T, R, L>", $(srcClassHolder.toVariableList()).join(", ", "<", ">"))
 						.replace("Class<C> C, Class<T> T, Class<R> R, Class<L> L", $(srcClassHolder.toVariableList()).formatElement("Class<%1$s> %1$s").join(", "))
+						.replace("BuilderSpecs", this.buildersClassName)
 						.toString()
 						));
 			}
@@ -211,6 +227,7 @@ public class BuilderGenerator {
 					.replace("FictionBuilderSpec<P>", destClassReturnName)
 					.replace("FictionBuilderSpec", destClassName)
 					.replace("Fiction", srcClassName)
+					.replace("BuilderSpecs", this.buildersClassName)
 					.toString()
 					));
 			
@@ -221,6 +238,7 @@ public class BuilderGenerator {
 						.replace("<C extends Color & Serializable, R extends Recordable<C>, S extends Set<? super R>>", srcClassHolder.toVariableDeclaration())
 						.replace("<C, R, S>", $(srcClassHolder.toVariableList()).join(", ", "<", ">"))
 						.replace("Class<C> C, Class<R> R, Class<S> S", $(srcClassHolder.toVariableList()).formatElement("Class<%1$s> %1$s").join(", "))
+						.replace("BuilderSpecs", this.buildersClassName)
 						.toString()
 						));
 			}
@@ -241,6 +259,7 @@ public class BuilderGenerator {
 							.replace("Fiction<? extends Color, ? extends Recordable<? extends Color>, ? extends Set<? super Recordable<? extends Color>>>", srcTypeNoVariable.toString())
 							.replace("Fiction", srcClassName)
 							.replace("Book", superClassName)
+							.replace("BuilderSpecs", this.buildersClassName)
 							.toString());
 					
 				}
@@ -715,7 +734,7 @@ public class BuilderGenerator {
 				.replace("Book", field.getDeclaringClass().getSimpleName())
 				.replace("myPaper", field.getName())
 				.replace("MyPaper", StringUtils.toUpperCamelCase(field.getName()))
-				.replace("Builders", this.buildersClassName);
+				.replace("BuilderSpecs", this.buildersClassName);
 	}	
 	
 	private static Class<?> getMutableCollectionType(Class<?> rawClass) {
@@ -833,6 +852,15 @@ public class BuilderGenerator {
 				.replace(".put(Person.class, PersonBuilder.class)", hint.toString())
 				);
 		
+		StringBuilder ignoredTypesBuilder = new StringBuilder();
+		for (Class<?> ignoredType : this.ignoredTypes) {
+			ignoredTypesBuilder.append(".add(").append(ignoredType.getName()).append(".class)\n\t\t\t");
+		}
+		
+		if (ignoredTypesBuilder.length() > 0) {
+			builder.insert(builder.indexOf(".toList();"), ignoredTypesBuilder);
+		}
+		
 		for (Class<?> modelClass : this.classesToBuild) {
 			
 			if (modelClass.isInterface()) {
@@ -853,6 +881,9 @@ public class BuilderGenerator {
 				
 		}
 
+		
+		
+		
 		builder.append(getTemplates().getProperty("custom_code_marker"));
 		
 		builder.append("}\n");

@@ -49,7 +49,7 @@ public class SpeechBuilderSpec<P> implements Wrappable<Speech> {
 	}
 
     public Speech toSpeech() {
-    	return new Converter(new DestinationClassResolverByAnnotation(), true).convert(this).to(Speech.class);
+    	return new Converter(new DestinationClassResolverByAnnotation(), true, BuilderSpecs.IGNORED_TYPES).convert(this).to(Speech.class);
     }
 
 
@@ -59,7 +59,7 @@ public class SpeechBuilderSpec<P> implements Wrappable<Speech> {
 	public String getName() {
 		if (this.$$$wrapped != null && WrapHelper.valueNotSet(this.name, String.class)) {
 			Object o = WrapHelper.getValue(this.$$$wrapped, Speech.class, "name");
-			this.name = new WrapConverter(Builders.DESTINATION_CLASS_RESOLVER).convert(o).to(String.class);
+			this.name = new WrapConverter(BuilderSpecs.DESTINATION_CLASS_RESOLVER, BuilderSpecs.IGNORED_TYPES).convert(o).to(String.class);
 		}
 
 		return name;
@@ -81,7 +81,7 @@ public class SpeechBuilderSpec<P> implements Wrappable<Speech> {
 	public PersonBuilderSpec<?> getOwner() {
 		if (this.$$$wrapped != null && WrapHelper.valueNotSet(this.owner, PersonBuilderSpec.class)) {
 			Object o = WrapHelper.getValue(this.$$$wrapped, Speech.class, "owner");
-			this.owner = new WrapConverter(Builders.DESTINATION_CLASS_RESOLVER).convert(o).to(PersonBuilderSpec.class);
+			this.owner = new WrapConverter(BuilderSpecs.DESTINATION_CLASS_RESOLVER, BuilderSpecs.IGNORED_TYPES).convert(o).to(PersonBuilderSpec.class);
 		}
 
 		return owner;
@@ -100,7 +100,7 @@ public class SpeechBuilderSpec<P> implements Wrappable<Speech> {
 
     public SpeechBuilderSpec<P> owner$wrap(Person owner) {
     	verifyMutable();
-    	this.owner = new WrapConverter(BuilderSpecs.DESTINATION_CLASS_RESOLVER).convert(owner).to(PersonBuilderSpec.class);
+    	this.owner = new WrapConverter(BuilderSpecs.DESTINATION_CLASS_RESOLVER, BuilderSpecs.IGNORED_TYPES).convert(owner).to(PersonBuilderSpec.class);
         return this;
     }
     
@@ -155,7 +155,7 @@ public class SpeechBuilderSpec<P> implements Wrappable<Speech> {
 	public List<String> getKeywords() {
 		if (this.$$$wrapped != null && WrapHelper.valueNotSet(this.keywords, List.class)) {
 			Object o = WrapHelper.getValue(this.$$$wrapped, Speech.class, "keywords");
-			this.keywords = new WrapConverter(Builders.DESTINATION_CLASS_RESOLVER).convert(o).to(List.class);
+			this.keywords = new WrapConverter(BuilderSpecs.DESTINATION_CLASS_RESOLVER, BuilderSpecs.IGNORED_TYPES).convert(o).to(List.class);
 		}
 
 		return keywords;
@@ -191,7 +191,7 @@ public class SpeechBuilderSpec<P> implements Wrappable<Speech> {
 	public Map<HobbyBuilderSpec<?>, List<String>> getHobbyKeywords() {
 		if (this.$$$wrapped != null && WrapHelper.valueNotSet(this.hobbyKeywords, Map.class)) {
 			Object o = WrapHelper.getValue(this.$$$wrapped, Speech.class, "hobbyKeywords");
-			this.hobbyKeywords = new WrapConverter(Builders.DESTINATION_CLASS_RESOLVER).convert(o).to(Map.class);
+			this.hobbyKeywords = new WrapConverter(BuilderSpecs.DESTINATION_CLASS_RESOLVER, BuilderSpecs.IGNORED_TYPES).convert(o).to(Map.class);
 		}
 
 		return hobbyKeywords;

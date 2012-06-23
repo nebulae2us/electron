@@ -49,7 +49,7 @@ public class HobbyBuilder<P> implements Wrappable<Hobby> {
 	}
 
     public Hobby toHobby() {
-    	return new Converter(new DestinationClassResolverByAnnotation(), true).convert(this).to(Hobby.class);
+    	return new Converter(new DestinationClassResolverByAnnotation(), true, Builders.IGNORED_TYPES).convert(this).to(Hobby.class);
     }
 
 
@@ -59,7 +59,7 @@ public class HobbyBuilder<P> implements Wrappable<Hobby> {
 	public String getName() {
 		if (this.$$$wrapped != null && WrapHelper.valueNotSet(this.name, String.class)) {
 			Object o = WrapHelper.getValue(this.$$$wrapped, Hobby.class, "name");
-			this.name = new WrapConverter(Builders.DESTINATION_CLASS_RESOLVER).convert(o).to(String.class);
+			this.name = new WrapConverter(Builders.DESTINATION_CLASS_RESOLVER, Builders.IGNORED_TYPES).convert(o).to(String.class);
 		}
 
 		return name;
@@ -81,7 +81,7 @@ public class HobbyBuilder<P> implements Wrappable<Hobby> {
 	public List<PersonBuilder<?>> getPeople() {
 		if (this.$$$wrapped != null && WrapHelper.valueNotSet(this.people, List.class)) {
 			Object o = WrapHelper.getValue(this.$$$wrapped, Hobby.class, "people");
-			this.people = new WrapConverter(Builders.DESTINATION_CLASS_RESOLVER).convert(o).to(List.class);
+			this.people = new WrapConverter(Builders.DESTINATION_CLASS_RESOLVER, Builders.IGNORED_TYPES).convert(o).to(List.class);
 		}
 
 		return people;
@@ -205,7 +205,7 @@ public class HobbyBuilder<P> implements Wrappable<Hobby> {
 		}
 		if (people != null) {
 			for (Person e : people) {
-				PersonBuilder<?> wrapped = new WrapConverter(Builders.DESTINATION_CLASS_RESOLVER).convert(e).to(PersonBuilder.class);
+				PersonBuilder<?> wrapped = new WrapConverter(Builders.DESTINATION_CLASS_RESOLVER, Builders.IGNORED_TYPES).convert(e).to(PersonBuilder.class);
 				CollectionUtils.addItem(this.people, wrapped);
 			}
 		}

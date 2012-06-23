@@ -49,7 +49,7 @@ public class BlankBuilderSpec<P> implements Wrappable<Blank> {
 	}
 
     public Blank toBlank() {
-    	return new Converter(new DestinationClassResolverByAnnotation(), true).convert(this).to(Blank.class);
+    	return new Converter(new DestinationClassResolverByAnnotation(), true, BuilderSpecs.IGNORED_TYPES).convert(this).to(Blank.class);
     }
 
 
@@ -59,7 +59,7 @@ public class BlankBuilderSpec<P> implements Wrappable<Blank> {
 	public String getName() {
 		if (this.$$$wrapped != null && WrapHelper.valueNotSet(this.name, String.class)) {
 			Object o = WrapHelper.getValue(this.$$$wrapped, Blank.class, "name");
-			this.name = new WrapConverter(Builders.DESTINATION_CLASS_RESOLVER).convert(o).to(String.class);
+			this.name = new WrapConverter(BuilderSpecs.DESTINATION_CLASS_RESOLVER, BuilderSpecs.IGNORED_TYPES).convert(o).to(String.class);
 		}
 
 		return name;

@@ -31,17 +31,17 @@ public class CopyPaperBuilderSpec<P> extends PaperBuilderSpec<P> {
 	}
 
     public CopyPaper<? extends Color> toCopyPaper() {
-    	return new Converter(new DestinationClassResolverByAnnotation(), true).convert(this).to(CopyPaper.class);
+    	return new Converter(new DestinationClassResolverByAnnotation(), true, BuilderSpecs.IGNORED_TYPES).convert(this).to(CopyPaper.class);
     }
     
     public <C extends Color> CopyPaper<C> toCopyPaper(Class<C> C) {
-    	return new Converter(new DestinationClassResolverByAnnotation(), true).convert(this).to(CopyPaper.class);
+    	return new Converter(new DestinationClassResolverByAnnotation(), true, BuilderSpecs.IGNORED_TYPES).convert(this).to(CopyPaper.class);
     }
 	
 
 	@Override
     public CopyPaper<? extends Color> toPaper() {
-    	return new Converter(new DestinationClassResolverByAnnotation(), true).convert(this).to(CopyPaper.class);
+    	return new Converter(new DestinationClassResolverByAnnotation(), true, BuilderSpecs.IGNORED_TYPES).convert(this).to(CopyPaper.class);
     }
     
 

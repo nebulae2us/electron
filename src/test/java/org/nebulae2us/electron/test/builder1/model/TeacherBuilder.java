@@ -31,13 +31,13 @@ public class TeacherBuilder<P> extends PersonBuilder<P> {
 	}
 
     public Teacher toTeacher() {
-    	return new Converter(new DestinationClassResolverByAnnotation(), true).convert(this).to(Teacher.class);
+    	return new Converter(new DestinationClassResolverByAnnotation(), true, Builders.IGNORED_TYPES).convert(this).to(Teacher.class);
     }
     
 
 	@Override
     public Teacher toPerson() {
-    	return new Converter(new DestinationClassResolverByAnnotation(), true).convert(this).to(Teacher.class);
+    	return new Converter(new DestinationClassResolverByAnnotation(), true, Builders.IGNORED_TYPES).convert(this).to(Teacher.class);
     }
     
 
@@ -47,7 +47,7 @@ public class TeacherBuilder<P> extends PersonBuilder<P> {
 	public double getSalary() {
 		if (this.$$$wrapped != null && WrapHelper.valueNotSet(this.salary, double.class)) {
 			Object o = WrapHelper.getValue(this.$$$wrapped, Teacher.class, "salary");
-			this.salary = new WrapConverter(Builders.DESTINATION_CLASS_RESOLVER).convert(o).to(double.class);
+			this.salary = new WrapConverter(Builders.DESTINATION_CLASS_RESOLVER, Builders.IGNORED_TYPES).convert(o).to(double.class);
 		}
 
 		return salary;
@@ -69,7 +69,7 @@ public class TeacherBuilder<P> extends PersonBuilder<P> {
 	public List<StudentBuilder<?>> getStudents() {
 		if (this.$$$wrapped != null && WrapHelper.valueNotSet(this.students, List.class)) {
 			Object o = WrapHelper.getValue(this.$$$wrapped, Teacher.class, "students");
-			this.students = new WrapConverter(Builders.DESTINATION_CLASS_RESOLVER).convert(o).to(List.class);
+			this.students = new WrapConverter(Builders.DESTINATION_CLASS_RESOLVER, Builders.IGNORED_TYPES).convert(o).to(List.class);
 		}
 
 		return students;
@@ -153,7 +153,7 @@ public class TeacherBuilder<P> extends PersonBuilder<P> {
 		}
 		if (students != null) {
 			for (Student e : students) {
-				StudentBuilder<?> wrapped = new WrapConverter(Builders.DESTINATION_CLASS_RESOLVER).convert(e).to(StudentBuilder.class);
+				StudentBuilder<?> wrapped = new WrapConverter(Builders.DESTINATION_CLASS_RESOLVER, Builders.IGNORED_TYPES).convert(e).to(StudentBuilder.class);
 				CollectionUtils.addItem(this.students, wrapped);
 			}
 		}

@@ -1,6 +1,7 @@
 
 package org.nebulae2us.electron.test.builder3.model;
 
+import java.util.*;
 import org.nebulae2us.electron.*;
 import org.nebulae2us.electron.util.*;
 import org.nebulae2us.electron.test.builder3.model.Recordable;
@@ -20,6 +21,9 @@ import org.nebulae2us.electron.test.builder3.model.RGBColorBuilderSpec;
 
 public class BuilderSpecs {
 
+	public static final List<Class<?>> IGNORED_TYPES = new ListBuilder<Class<?>>()
+			.toList();
+
 	public static final DestinationClassResolver DESTINATION_CLASS_RESOLVER = new DestinationClassResolverByMap(
 			new MapBuilder<Class<?>, Class<?>> ()
 				.put(Recordable.class, RecordableBuilderSpec.class)
@@ -33,7 +37,7 @@ public class BuilderSpecs {
 			);
 
 	public static Converter converter() {
-		return new Converter(DESTINATION_CLASS_RESOLVER, true);
+		return new Converter(DESTINATION_CLASS_RESOLVER, true, IGNORED_TYPES);
 	}
 
     public static BookBuilderSpec<?> book() {
@@ -45,12 +49,12 @@ public class BuilderSpecs {
     }
 
     public static BookBuilderSpec<?> book$copyFrom(Book book) {
-    	BookBuilderSpec<?> result = new Converter(DESTINATION_CLASS_RESOLVER, false).convert(book).to(BookBuilderSpec.class);
+    	BookBuilderSpec<?> result = new Converter(DESTINATION_CLASS_RESOLVER, false, IGNORED_TYPES).convert(book).to(BookBuilderSpec.class);
     	return result;
     }
     
     public static BookBuilderSpec<?> wrap(Book book) {
-    	return new WrapConverter(DESTINATION_CLASS_RESOLVER).convert(book).to(BookBuilderSpec.class);
+    	return new WrapConverter(DESTINATION_CLASS_RESOLVER, IGNORED_TYPES).convert(book).to(BookBuilderSpec.class);
     }
 
     public static ColorBuilderSpec<?> color() {
@@ -62,12 +66,12 @@ public class BuilderSpecs {
     }
 
     public static ColorBuilderSpec<?> color$copyFrom(Color color) {
-    	ColorBuilderSpec<?> result = new Converter(DESTINATION_CLASS_RESOLVER, false).convert(color).to(ColorBuilderSpec.class);
+    	ColorBuilderSpec<?> result = new Converter(DESTINATION_CLASS_RESOLVER, false, IGNORED_TYPES).convert(color).to(ColorBuilderSpec.class);
     	return result;
     }
     
     public static ColorBuilderSpec<?> wrap(Color color) {
-    	return new WrapConverter(DESTINATION_CLASS_RESOLVER).convert(color).to(ColorBuilderSpec.class);
+    	return new WrapConverter(DESTINATION_CLASS_RESOLVER, IGNORED_TYPES).convert(color).to(ColorBuilderSpec.class);
     }
 
     public static PaperBuilderSpec<?> paper() {
@@ -79,12 +83,12 @@ public class BuilderSpecs {
     }
 
     public static PaperBuilderSpec<?> paper$copyFrom(Paper paper) {
-    	PaperBuilderSpec<?> result = new Converter(DESTINATION_CLASS_RESOLVER, false).convert(paper).to(PaperBuilderSpec.class);
+    	PaperBuilderSpec<?> result = new Converter(DESTINATION_CLASS_RESOLVER, false, IGNORED_TYPES).convert(paper).to(PaperBuilderSpec.class);
     	return result;
     }
     
     public static PaperBuilderSpec<?> wrap(Paper paper) {
-    	return new WrapConverter(DESTINATION_CLASS_RESOLVER).convert(paper).to(PaperBuilderSpec.class);
+    	return new WrapConverter(DESTINATION_CLASS_RESOLVER, IGNORED_TYPES).convert(paper).to(PaperBuilderSpec.class);
     }
 
     public static CopyPaperBuilderSpec<?> copyPaper() {
@@ -96,12 +100,12 @@ public class BuilderSpecs {
     }
 
     public static CopyPaperBuilderSpec<?> copyPaper$copyFrom(CopyPaper copyPaper) {
-    	CopyPaperBuilderSpec<?> result = new Converter(DESTINATION_CLASS_RESOLVER, false).convert(copyPaper).to(CopyPaperBuilderSpec.class);
+    	CopyPaperBuilderSpec<?> result = new Converter(DESTINATION_CLASS_RESOLVER, false, IGNORED_TYPES).convert(copyPaper).to(CopyPaperBuilderSpec.class);
     	return result;
     }
     
     public static CopyPaperBuilderSpec<?> wrap(CopyPaper copyPaper) {
-    	return new WrapConverter(DESTINATION_CLASS_RESOLVER).convert(copyPaper).to(CopyPaperBuilderSpec.class);
+    	return new WrapConverter(DESTINATION_CLASS_RESOLVER, IGNORED_TYPES).convert(copyPaper).to(CopyPaperBuilderSpec.class);
     }
 
     public static FictionBuilderSpec<?> fiction() {
@@ -113,12 +117,12 @@ public class BuilderSpecs {
     }
 
     public static FictionBuilderSpec<?> fiction$copyFrom(Fiction fiction) {
-    	FictionBuilderSpec<?> result = new Converter(DESTINATION_CLASS_RESOLVER, false).convert(fiction).to(FictionBuilderSpec.class);
+    	FictionBuilderSpec<?> result = new Converter(DESTINATION_CLASS_RESOLVER, false, IGNORED_TYPES).convert(fiction).to(FictionBuilderSpec.class);
     	return result;
     }
     
     public static FictionBuilderSpec<?> wrap(Fiction fiction) {
-    	return new WrapConverter(DESTINATION_CLASS_RESOLVER).convert(fiction).to(FictionBuilderSpec.class);
+    	return new WrapConverter(DESTINATION_CLASS_RESOLVER, IGNORED_TYPES).convert(fiction).to(FictionBuilderSpec.class);
     }
 
     public static RGBColorBuilderSpec<?> rGBColor() {
@@ -130,12 +134,12 @@ public class BuilderSpecs {
     }
 
     public static RGBColorBuilderSpec<?> rGBColor$copyFrom(RGBColor rGBColor) {
-    	RGBColorBuilderSpec<?> result = new Converter(DESTINATION_CLASS_RESOLVER, false).convert(rGBColor).to(RGBColorBuilderSpec.class);
+    	RGBColorBuilderSpec<?> result = new Converter(DESTINATION_CLASS_RESOLVER, false, IGNORED_TYPES).convert(rGBColor).to(RGBColorBuilderSpec.class);
     	return result;
     }
     
     public static RGBColorBuilderSpec<?> wrap(RGBColor rGBColor) {
-    	return new WrapConverter(DESTINATION_CLASS_RESOLVER).convert(rGBColor).to(RGBColorBuilderSpec.class);
+    	return new WrapConverter(DESTINATION_CLASS_RESOLVER, IGNORED_TYPES).convert(rGBColor).to(RGBColorBuilderSpec.class);
     }
 
     /* CUSTOM CODE *********************************

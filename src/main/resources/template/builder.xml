@@ -45,12 +45,12 @@
 	}
 
     public Book<? extends Color, ? extends Paper<? extends Color>, ? extends Recordable<? extends Color>, ? extends List<? extends Paper<? extends Color>>> toBook() {
-    	return new Converter(new DestinationClassResolverByAnnotation(), true).convert(this).to(Book.class);
+    	return new Converter(new DestinationClassResolverByAnnotation(), true, BuilderSpecs.IGNORED_TYPES).convert(this).to(Book.class);
     }
 
 	//{1 only exist if type variables exist
     public <C extends Color & Serializable, T extends Paper<C>, R extends Recordable<C>, L extends List<? extends T>> Book<C, T, R, L> toBook(Class<C> C, Class<T> T, Class<R> R, Class<L> L) {
-    	return new Converter(new DestinationClassResolverByAnnotation(), true).convert(this).to(Book.class);
+    	return new Converter(new DestinationClassResolverByAnnotation(), true, BuilderSpecs.IGNORED_TYPES).convert(this).to(Book.class);
     }
     //}1
 ]]></entry>
@@ -80,30 +80,30 @@
 	}
 
     public Fiction<? extends Color, ? extends Recordable<? extends Color>, ? extends Set<? super Recordable<? extends Color>>> toFiction() {
-    	return new Converter(new DestinationClassResolverByAnnotation(), true).convert(this).to(Fiction.class);
+    	return new Converter(new DestinationClassResolverByAnnotation(), true, BuilderSpecs.IGNORED_TYPES).convert(this).to(Fiction.class);
     }
     
     //{1 only exist if type variables exist
     public <C extends Color & Serializable, R extends Recordable<C>, S extends Set<? super R>> Fiction<C, R, S> toFiction(Class<C> C, Class<R> R, Class<S> S) {
-    	return new Converter(new DestinationClassResolverByAnnotation(), true).convert(this).to(Fiction.class);
+    	return new Converter(new DestinationClassResolverByAnnotation(), true, BuilderSpecs.IGNORED_TYPES).convert(this).to(Fiction.class);
     }
 	
 	//}1
 	//{2 only exist if has super class
 	@Override
     public Fiction<? extends Color, ? extends Recordable<? extends Color>, ? extends Set<? super Recordable<? extends Color>>> toBook() {
-    	return new Converter(new DestinationClassResolverByAnnotation(), true).convert(this).to(Fiction.class);
+    	return new Converter(new DestinationClassResolverByAnnotation(), true, BuilderSpecs.IGNORED_TYPES).convert(this).to(Fiction.class);
     }
     
     //}2
 ]]></entry>
 
-<entry key="subclass_build_methods"><![CDATA[
+<!-- entry key="subclass_build_methods"><![CDATA[
     @Override
     public SubSample toSample() {
-    	return new Converter(new DestinationClassResolverByAnnotation(), true).convert(this).to(SubSample.class);
+    	return new Converter(new DestinationClassResolverByAnnotation(), true, BuilderSpecs.IGNORED_TYPES).convert(this).to(SubSample.class);
     }
-]]></entry>
+]]></entry-->
 
 <entry key="builder_fieldname_getter_settter"><![CDATA[
 	private PaperBuilderSpec<?> myPaper;
@@ -111,7 +111,7 @@
 	public PaperBuilderSpec<?> getMyPaper() {
 		if (this.$$$wrapped != null && WrapHelper.valueNotSet(this.myPaper, PaperBuilderSpec.class)) {
 			Object o = WrapHelper.getValue(this.$$$wrapped, Book.class, "myPaper");
-			this.myPaper = new WrapConverter(Builders.DESTINATION_CLASS_RESOLVER).convert(o).to(PaperBuilderSpec.class);
+			this.myPaper = new WrapConverter(BuilderSpecs.DESTINATION_CLASS_RESOLVER, BuilderSpecs.IGNORED_TYPES).convert(o).to(PaperBuilderSpec.class);
 		}
 
 		return myPaper;
@@ -159,7 +159,7 @@
 <entry key="builder_single_type_builder_field"><![CDATA[
     public BookBuilderSpec<P> myPaper$wrap(Paper myPaper) {
     	verifyMutable();
-    	this.myPaper = new WrapConverter(BuilderSpecs.DESTINATION_CLASS_RESOLVER).convert(myPaper).to(PaperBuilderSpec.class);
+    	this.myPaper = new WrapConverter(BuilderSpecs.DESTINATION_CLASS_RESOLVER, BuilderSpecs.IGNORED_TYPES).convert(myPaper).to(PaperBuilderSpec.class);
         return this;
     }
     
@@ -294,7 +294,7 @@
 		}
 		if (myPapers != null) {
 			for (Paper e : myPapers) {
-				PaperBuilderSpec<?> wrapped = new WrapConverter(BuilderSpecs.DESTINATION_CLASS_RESOLVER).convert(e).to(PaperBuilderSpec.class);
+				PaperBuilderSpec<?> wrapped = new WrapConverter(BuilderSpecs.DESTINATION_CLASS_RESOLVER, BuilderSpecs.IGNORED_TYPES).convert(e).to(PaperBuilderSpec.class);
 				CollectionUtils.addItem(this.myPapers, wrapped);
 			}
 		}
@@ -556,10 +556,14 @@
 <entry key="builders_declare"><![CDATA[
 package packageName;
 
+import java.util.*;
 import org.nebulae2us.electron.*;
 import org.nebulae2us.electron.util.*;
 import Person;
 public class BuilderSpecs {
+
+	public static final List<Class<?>> IGNORED_TYPES = new ListBuilder<Class<?>>()
+			.toList();
 
 	public static final DestinationClassResolver DESTINATION_CLASS_RESOLVER = new DestinationClassResolverByMap(
 			new MapBuilder<Class<?>, Class<?>> ()
@@ -568,7 +572,7 @@ public class BuilderSpecs {
 			);
 
 	public static Converter converter() {
-		return new Converter(DESTINATION_CLASS_RESOLVER, true);
+		return new Converter(DESTINATION_CLASS_RESOLVER, true, IGNORED_TYPES);
 	}
 ]]></entry>
 
@@ -582,12 +586,12 @@ public class BuilderSpecs {
     }
 
     public static BookBuilderSpec<?> book$copyFrom(Book book) {
-    	BookBuilderSpec<?> result = new Converter(DESTINATION_CLASS_RESOLVER, false).convert(book).to(BookBuilderSpec.class);
+    	BookBuilderSpec<?> result = new Converter(DESTINATION_CLASS_RESOLVER, false, IGNORED_TYPES).convert(book).to(BookBuilderSpec.class);
     	return result;
     }
     
     public static BookBuilderSpec<?> wrap(Book book) {
-    	return new WrapConverter(DESTINATION_CLASS_RESOLVER).convert(book).to(BookBuilderSpec.class);
+    	return new WrapConverter(DESTINATION_CLASS_RESOLVER, IGNORED_TYPES).convert(book).to(BookBuilderSpec.class);
     }
 ]]></entry>
 

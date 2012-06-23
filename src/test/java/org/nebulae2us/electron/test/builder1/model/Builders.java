@@ -1,6 +1,7 @@
 
 package org.nebulae2us.electron.test.builder1.model;
 
+import java.util.*;
 import org.nebulae2us.electron.*;
 import org.nebulae2us.electron.util.*;
 import org.nebulae2us.electron.test.builder1.model.Hobby;
@@ -16,6 +17,11 @@ import org.nebulae2us.electron.test.builder1.model.TeacherBuilder;
 
 public class Builders {
 
+	public static final List<Class<?>> IGNORED_TYPES = new ListBuilder<Class<?>>()
+			.add(java.lang.Integer.class)
+			.add(java.lang.Long.class)
+			.toList();
+
 	public static final DestinationClassResolver DESTINATION_CLASS_RESOLVER = new DestinationClassResolverByMap(
 			new MapBuilder<Class<?>, Class<?>> ()
 				.put(Hobby.class, HobbyBuilder.class)
@@ -27,7 +33,7 @@ public class Builders {
 			);
 
 	public static Converter converter() {
-		return new Converter(DESTINATION_CLASS_RESOLVER, true);
+		return new Converter(DESTINATION_CLASS_RESOLVER, true, IGNORED_TYPES);
 	}
 
     public static HobbyBuilder<?> hobby() {
@@ -39,12 +45,12 @@ public class Builders {
     }
 
     public static HobbyBuilder<?> hobby$copyFrom(Hobby hobby) {
-    	HobbyBuilder<?> result = new Converter(DESTINATION_CLASS_RESOLVER, false).convert(hobby).to(HobbyBuilder.class);
+    	HobbyBuilder<?> result = new Converter(DESTINATION_CLASS_RESOLVER, false, IGNORED_TYPES).convert(hobby).to(HobbyBuilder.class);
     	return result;
     }
     
     public static HobbyBuilder<?> wrap(Hobby hobby) {
-    	return new WrapConverter(DESTINATION_CLASS_RESOLVER).convert(hobby).to(HobbyBuilder.class);
+    	return new WrapConverter(DESTINATION_CLASS_RESOLVER, IGNORED_TYPES).convert(hobby).to(HobbyBuilder.class);
     }
 
     public static PersonBuilder<?> person() {
@@ -56,12 +62,12 @@ public class Builders {
     }
 
     public static PersonBuilder<?> person$copyFrom(Person person) {
-    	PersonBuilder<?> result = new Converter(DESTINATION_CLASS_RESOLVER, false).convert(person).to(PersonBuilder.class);
+    	PersonBuilder<?> result = new Converter(DESTINATION_CLASS_RESOLVER, false, IGNORED_TYPES).convert(person).to(PersonBuilder.class);
     	return result;
     }
     
     public static PersonBuilder<?> wrap(Person person) {
-    	return new WrapConverter(DESTINATION_CLASS_RESOLVER).convert(person).to(PersonBuilder.class);
+    	return new WrapConverter(DESTINATION_CLASS_RESOLVER, IGNORED_TYPES).convert(person).to(PersonBuilder.class);
     }
 
     public static SpeechBuilder<?> speech() {
@@ -73,12 +79,12 @@ public class Builders {
     }
 
     public static SpeechBuilder<?> speech$copyFrom(Speech speech) {
-    	SpeechBuilder<?> result = new Converter(DESTINATION_CLASS_RESOLVER, false).convert(speech).to(SpeechBuilder.class);
+    	SpeechBuilder<?> result = new Converter(DESTINATION_CLASS_RESOLVER, false, IGNORED_TYPES).convert(speech).to(SpeechBuilder.class);
     	return result;
     }
     
     public static SpeechBuilder<?> wrap(Speech speech) {
-    	return new WrapConverter(DESTINATION_CLASS_RESOLVER).convert(speech).to(SpeechBuilder.class);
+    	return new WrapConverter(DESTINATION_CLASS_RESOLVER, IGNORED_TYPES).convert(speech).to(SpeechBuilder.class);
     }
 
     public static StudentBuilder<?> student() {
@@ -90,12 +96,12 @@ public class Builders {
     }
 
     public static StudentBuilder<?> student$copyFrom(Student student) {
-    	StudentBuilder<?> result = new Converter(DESTINATION_CLASS_RESOLVER, false).convert(student).to(StudentBuilder.class);
+    	StudentBuilder<?> result = new Converter(DESTINATION_CLASS_RESOLVER, false, IGNORED_TYPES).convert(student).to(StudentBuilder.class);
     	return result;
     }
     
     public static StudentBuilder<?> wrap(Student student) {
-    	return new WrapConverter(DESTINATION_CLASS_RESOLVER).convert(student).to(StudentBuilder.class);
+    	return new WrapConverter(DESTINATION_CLASS_RESOLVER, IGNORED_TYPES).convert(student).to(StudentBuilder.class);
     }
 
     public static TeacherBuilder<?> teacher() {
@@ -107,12 +113,12 @@ public class Builders {
     }
 
     public static TeacherBuilder<?> teacher$copyFrom(Teacher teacher) {
-    	TeacherBuilder<?> result = new Converter(DESTINATION_CLASS_RESOLVER, false).convert(teacher).to(TeacherBuilder.class);
+    	TeacherBuilder<?> result = new Converter(DESTINATION_CLASS_RESOLVER, false, IGNORED_TYPES).convert(teacher).to(TeacherBuilder.class);
     	return result;
     }
     
     public static TeacherBuilder<?> wrap(Teacher teacher) {
-    	return new WrapConverter(DESTINATION_CLASS_RESOLVER).convert(teacher).to(TeacherBuilder.class);
+    	return new WrapConverter(DESTINATION_CLASS_RESOLVER, IGNORED_TYPES).convert(teacher).to(TeacherBuilder.class);
     }
 
     /* CUSTOM CODE *********************************

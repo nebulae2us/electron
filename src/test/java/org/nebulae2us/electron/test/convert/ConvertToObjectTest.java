@@ -37,7 +37,7 @@ public class ConvertToObjectTest {
 	private Converter converter;
 	
 	public ConvertToObjectTest(boolean immutable) {
-		converter = new Converter(null, immutable);
+		converter = new Converter(null, immutable, Collections.EMPTY_LIST);
 	}
 	
 	@Parameters

@@ -31,13 +31,13 @@ public class SubSampleBuilderSpec<P> extends SampleBuilderSpec<P> {
 	}
 
     public SubSample toSubSample() {
-    	return new Converter(new DestinationClassResolverByAnnotation(), true).convert(this).to(SubSample.class);
+    	return new Converter(new DestinationClassResolverByAnnotation(), true, BuilderSpecs.IGNORED_TYPES).convert(this).to(SubSample.class);
     }
     
 
 	@Override
     public SubSample toSample() {
-    	return new Converter(new DestinationClassResolverByAnnotation(), true).convert(this).to(SubSample.class);
+    	return new Converter(new DestinationClassResolverByAnnotation(), true, BuilderSpecs.IGNORED_TYPES).convert(this).to(SubSample.class);
     }
     
 

@@ -31,13 +31,13 @@ public class TeacherBuilderSpec<P> extends PersonBuilderSpec<P> {
 	}
 
     public Teacher toTeacher() {
-    	return new Converter(new DestinationClassResolverByAnnotation(), true).convert(this).to(Teacher.class);
+    	return new Converter(new DestinationClassResolverByAnnotation(), true, BuilderSpecs.IGNORED_TYPES).convert(this).to(Teacher.class);
     }
     
 
 	@Override
     public Teacher toPerson() {
-    	return new Converter(new DestinationClassResolverByAnnotation(), true).convert(this).to(Teacher.class);
+    	return new Converter(new DestinationClassResolverByAnnotation(), true, BuilderSpecs.IGNORED_TYPES).convert(this).to(Teacher.class);
     }
     
 
@@ -47,7 +47,7 @@ public class TeacherBuilderSpec<P> extends PersonBuilderSpec<P> {
 	public double getSalary() {
 		if (this.$$$wrapped != null && WrapHelper.valueNotSet(this.salary, double.class)) {
 			Object o = WrapHelper.getValue(this.$$$wrapped, Teacher.class, "salary");
-			this.salary = new WrapConverter(Builders.DESTINATION_CLASS_RESOLVER).convert(o).to(double.class);
+			this.salary = new WrapConverter(BuilderSpecs.DESTINATION_CLASS_RESOLVER, BuilderSpecs.IGNORED_TYPES).convert(o).to(double.class);
 		}
 
 		return salary;
@@ -69,7 +69,7 @@ public class TeacherBuilderSpec<P> extends PersonBuilderSpec<P> {
 	public List<StudentBuilderSpec<?>> getStudents() {
 		if (this.$$$wrapped != null && WrapHelper.valueNotSet(this.students, List.class)) {
 			Object o = WrapHelper.getValue(this.$$$wrapped, Teacher.class, "students");
-			this.students = new WrapConverter(Builders.DESTINATION_CLASS_RESOLVER).convert(o).to(List.class);
+			this.students = new WrapConverter(BuilderSpecs.DESTINATION_CLASS_RESOLVER, BuilderSpecs.IGNORED_TYPES).convert(o).to(List.class);
 		}
 
 		return students;
@@ -153,7 +153,7 @@ public class TeacherBuilderSpec<P> extends PersonBuilderSpec<P> {
 		}
 		if (students != null) {
 			for (Student e : students) {
-				StudentBuilderSpec<?> wrapped = new WrapConverter(BuilderSpecs.DESTINATION_CLASS_RESOLVER).convert(e).to(StudentBuilderSpec.class);
+				StudentBuilderSpec<?> wrapped = new WrapConverter(BuilderSpecs.DESTINATION_CLASS_RESOLVER, BuilderSpecs.IGNORED_TYPES).convert(e).to(StudentBuilderSpec.class);
 				CollectionUtils.addItem(this.students, wrapped);
 			}
 		}

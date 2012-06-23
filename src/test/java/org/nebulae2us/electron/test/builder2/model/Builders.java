@@ -1,6 +1,7 @@
 
 package org.nebulae2us.electron.test.builder2.model;
 
+import java.util.*;
 import org.nebulae2us.electron.*;
 import org.nebulae2us.electron.util.*;
 import org.nebulae2us.electron.test.builder2.model.Blank;
@@ -12,6 +13,9 @@ import org.nebulae2us.electron.test.builder2.model.SubSampleBuilder;
 
 public class Builders {
 
+	public static final List<Class<?>> IGNORED_TYPES = new ListBuilder<Class<?>>()
+			.toList();
+
 	public static final DestinationClassResolver DESTINATION_CLASS_RESOLVER = new DestinationClassResolverByMap(
 			new MapBuilder<Class<?>, Class<?>> ()
 				.put(Blank.class, BlankBuilder.class)
@@ -21,7 +25,7 @@ public class Builders {
 			);
 
 	public static Converter converter() {
-		return new Converter(DESTINATION_CLASS_RESOLVER, true);
+		return new Converter(DESTINATION_CLASS_RESOLVER, true, IGNORED_TYPES);
 	}
 
     public static BlankBuilder<?> blank() {
@@ -33,12 +37,12 @@ public class Builders {
     }
 
     public static BlankBuilder<?> blank$copyFrom(Blank blank) {
-    	BlankBuilder<?> result = new Converter(DESTINATION_CLASS_RESOLVER, false).convert(blank).to(BlankBuilder.class);
+    	BlankBuilder<?> result = new Converter(DESTINATION_CLASS_RESOLVER, false, IGNORED_TYPES).convert(blank).to(BlankBuilder.class);
     	return result;
     }
     
     public static BlankBuilder<?> wrap(Blank blank) {
-    	return new WrapConverter(DESTINATION_CLASS_RESOLVER).convert(blank).to(BlankBuilder.class);
+    	return new WrapConverter(DESTINATION_CLASS_RESOLVER, IGNORED_TYPES).convert(blank).to(BlankBuilder.class);
     }
 
     public static SampleBuilder<?> sample() {
@@ -50,12 +54,12 @@ public class Builders {
     }
 
     public static SampleBuilder<?> sample$copyFrom(Sample sample) {
-    	SampleBuilder<?> result = new Converter(DESTINATION_CLASS_RESOLVER, false).convert(sample).to(SampleBuilder.class);
+    	SampleBuilder<?> result = new Converter(DESTINATION_CLASS_RESOLVER, false, IGNORED_TYPES).convert(sample).to(SampleBuilder.class);
     	return result;
     }
     
     public static SampleBuilder<?> wrap(Sample sample) {
-    	return new WrapConverter(DESTINATION_CLASS_RESOLVER).convert(sample).to(SampleBuilder.class);
+    	return new WrapConverter(DESTINATION_CLASS_RESOLVER, IGNORED_TYPES).convert(sample).to(SampleBuilder.class);
     }
 
     public static SubSampleBuilder<?> subSample() {
@@ -67,12 +71,12 @@ public class Builders {
     }
 
     public static SubSampleBuilder<?> subSample$copyFrom(SubSample subSample) {
-    	SubSampleBuilder<?> result = new Converter(DESTINATION_CLASS_RESOLVER, false).convert(subSample).to(SubSampleBuilder.class);
+    	SubSampleBuilder<?> result = new Converter(DESTINATION_CLASS_RESOLVER, false, IGNORED_TYPES).convert(subSample).to(SubSampleBuilder.class);
     	return result;
     }
     
     public static SubSampleBuilder<?> wrap(SubSample subSample) {
-    	return new WrapConverter(DESTINATION_CLASS_RESOLVER).convert(subSample).to(SubSampleBuilder.class);
+    	return new WrapConverter(DESTINATION_CLASS_RESOLVER, IGNORED_TYPES).convert(subSample).to(SubSampleBuilder.class);
     }
 
     /* CUSTOM CODE *********************************

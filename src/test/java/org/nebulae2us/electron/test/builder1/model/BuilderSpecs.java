@@ -1,6 +1,7 @@
 
 package org.nebulae2us.electron.test.builder1.model;
 
+import java.util.*;
 import org.nebulae2us.electron.*;
 import org.nebulae2us.electron.util.*;
 import org.nebulae2us.electron.test.builder1.model.Hobby;
@@ -16,6 +17,9 @@ import org.nebulae2us.electron.test.builder1.model.TeacherBuilderSpec;
 
 public class BuilderSpecs {
 
+	public static final List<Class<?>> IGNORED_TYPES = new ListBuilder<Class<?>>()
+			.toList();
+
 	public static final DestinationClassResolver DESTINATION_CLASS_RESOLVER = new DestinationClassResolverByMap(
 			new MapBuilder<Class<?>, Class<?>> ()
 				.put(Hobby.class, HobbyBuilderSpec.class)
@@ -27,7 +31,7 @@ public class BuilderSpecs {
 			);
 
 	public static Converter converter() {
-		return new Converter(DESTINATION_CLASS_RESOLVER, true);
+		return new Converter(DESTINATION_CLASS_RESOLVER, true, IGNORED_TYPES);
 	}
 
     public static HobbyBuilderSpec<?> hobby() {
@@ -39,12 +43,12 @@ public class BuilderSpecs {
     }
 
     public static HobbyBuilderSpec<?> hobby$copyFrom(Hobby hobby) {
-    	HobbyBuilderSpec<?> result = new Converter(DESTINATION_CLASS_RESOLVER, false).convert(hobby).to(HobbyBuilderSpec.class);
+    	HobbyBuilderSpec<?> result = new Converter(DESTINATION_CLASS_RESOLVER, false, IGNORED_TYPES).convert(hobby).to(HobbyBuilderSpec.class);
     	return result;
     }
     
     public static HobbyBuilderSpec<?> wrap(Hobby hobby) {
-    	return new WrapConverter(DESTINATION_CLASS_RESOLVER).convert(hobby).to(HobbyBuilderSpec.class);
+    	return new WrapConverter(DESTINATION_CLASS_RESOLVER, IGNORED_TYPES).convert(hobby).to(HobbyBuilderSpec.class);
     }
 
     public static PersonBuilderSpec<?> person() {
@@ -56,12 +60,12 @@ public class BuilderSpecs {
     }
 
     public static PersonBuilderSpec<?> person$copyFrom(Person person) {
-    	PersonBuilderSpec<?> result = new Converter(DESTINATION_CLASS_RESOLVER, false).convert(person).to(PersonBuilderSpec.class);
+    	PersonBuilderSpec<?> result = new Converter(DESTINATION_CLASS_RESOLVER, false, IGNORED_TYPES).convert(person).to(PersonBuilderSpec.class);
     	return result;
     }
     
     public static PersonBuilderSpec<?> wrap(Person person) {
-    	return new WrapConverter(DESTINATION_CLASS_RESOLVER).convert(person).to(PersonBuilderSpec.class);
+    	return new WrapConverter(DESTINATION_CLASS_RESOLVER, IGNORED_TYPES).convert(person).to(PersonBuilderSpec.class);
     }
 
     public static SpeechBuilderSpec<?> speech() {
@@ -73,12 +77,12 @@ public class BuilderSpecs {
     }
 
     public static SpeechBuilderSpec<?> speech$copyFrom(Speech speech) {
-    	SpeechBuilderSpec<?> result = new Converter(DESTINATION_CLASS_RESOLVER, false).convert(speech).to(SpeechBuilderSpec.class);
+    	SpeechBuilderSpec<?> result = new Converter(DESTINATION_CLASS_RESOLVER, false, IGNORED_TYPES).convert(speech).to(SpeechBuilderSpec.class);
     	return result;
     }
     
     public static SpeechBuilderSpec<?> wrap(Speech speech) {
-    	return new WrapConverter(DESTINATION_CLASS_RESOLVER).convert(speech).to(SpeechBuilderSpec.class);
+    	return new WrapConverter(DESTINATION_CLASS_RESOLVER, IGNORED_TYPES).convert(speech).to(SpeechBuilderSpec.class);
     }
 
     public static StudentBuilderSpec<?> student() {
@@ -90,12 +94,12 @@ public class BuilderSpecs {
     }
 
     public static StudentBuilderSpec<?> student$copyFrom(Student student) {
-    	StudentBuilderSpec<?> result = new Converter(DESTINATION_CLASS_RESOLVER, false).convert(student).to(StudentBuilderSpec.class);
+    	StudentBuilderSpec<?> result = new Converter(DESTINATION_CLASS_RESOLVER, false, IGNORED_TYPES).convert(student).to(StudentBuilderSpec.class);
     	return result;
     }
     
     public static StudentBuilderSpec<?> wrap(Student student) {
-    	return new WrapConverter(DESTINATION_CLASS_RESOLVER).convert(student).to(StudentBuilderSpec.class);
+    	return new WrapConverter(DESTINATION_CLASS_RESOLVER, IGNORED_TYPES).convert(student).to(StudentBuilderSpec.class);
     }
 
     public static TeacherBuilderSpec<?> teacher() {
@@ -107,12 +111,12 @@ public class BuilderSpecs {
     }
 
     public static TeacherBuilderSpec<?> teacher$copyFrom(Teacher teacher) {
-    	TeacherBuilderSpec<?> result = new Converter(DESTINATION_CLASS_RESOLVER, false).convert(teacher).to(TeacherBuilderSpec.class);
+    	TeacherBuilderSpec<?> result = new Converter(DESTINATION_CLASS_RESOLVER, false, IGNORED_TYPES).convert(teacher).to(TeacherBuilderSpec.class);
     	return result;
     }
     
     public static TeacherBuilderSpec<?> wrap(Teacher teacher) {
-    	return new WrapConverter(DESTINATION_CLASS_RESOLVER).convert(teacher).to(TeacherBuilderSpec.class);
+    	return new WrapConverter(DESTINATION_CLASS_RESOLVER, IGNORED_TYPES).convert(teacher).to(TeacherBuilderSpec.class);
     }
 
     /* CUSTOM CODE *********************************

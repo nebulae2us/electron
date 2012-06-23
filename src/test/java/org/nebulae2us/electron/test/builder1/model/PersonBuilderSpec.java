@@ -49,7 +49,7 @@ public class PersonBuilderSpec<P> implements Wrappable<Person> {
 	}
 
     public Person toPerson() {
-    	return new Converter(new DestinationClassResolverByAnnotation(), true).convert(this).to(Person.class);
+    	return new Converter(new DestinationClassResolverByAnnotation(), true, BuilderSpecs.IGNORED_TYPES).convert(this).to(Person.class);
     }
 
 
@@ -59,7 +59,7 @@ public class PersonBuilderSpec<P> implements Wrappable<Person> {
 	public String getName() {
 		if (this.$$$wrapped != null && WrapHelper.valueNotSet(this.name, String.class)) {
 			Object o = WrapHelper.getValue(this.$$$wrapped, Person.class, "name");
-			this.name = new WrapConverter(Builders.DESTINATION_CLASS_RESOLVER).convert(o).to(String.class);
+			this.name = new WrapConverter(BuilderSpecs.DESTINATION_CLASS_RESOLVER, BuilderSpecs.IGNORED_TYPES).convert(o).to(String.class);
 		}
 
 		return name;
@@ -81,7 +81,7 @@ public class PersonBuilderSpec<P> implements Wrappable<Person> {
 	public int getAge() {
 		if (this.$$$wrapped != null && WrapHelper.valueNotSet(this.age, int.class)) {
 			Object o = WrapHelper.getValue(this.$$$wrapped, Person.class, "age");
-			this.age = new WrapConverter(Builders.DESTINATION_CLASS_RESOLVER).convert(o).to(int.class);
+			this.age = new WrapConverter(BuilderSpecs.DESTINATION_CLASS_RESOLVER, BuilderSpecs.IGNORED_TYPES).convert(o).to(int.class);
 		}
 
 		return age;
@@ -103,7 +103,7 @@ public class PersonBuilderSpec<P> implements Wrappable<Person> {
 	public Gender getGender() {
 		if (this.$$$wrapped != null && WrapHelper.valueNotSet(this.gender, Gender.class)) {
 			Object o = WrapHelper.getValue(this.$$$wrapped, Person.class, "gender");
-			this.gender = new WrapConverter(Builders.DESTINATION_CLASS_RESOLVER).convert(o).to(Gender.class);
+			this.gender = new WrapConverter(BuilderSpecs.DESTINATION_CLASS_RESOLVER, BuilderSpecs.IGNORED_TYPES).convert(o).to(Gender.class);
 		}
 
 		return gender;
@@ -125,7 +125,7 @@ public class PersonBuilderSpec<P> implements Wrappable<Person> {
 	public PersonBuilderSpec<?> getParent() {
 		if (this.$$$wrapped != null && WrapHelper.valueNotSet(this.parent, PersonBuilderSpec.class)) {
 			Object o = WrapHelper.getValue(this.$$$wrapped, Person.class, "parent");
-			this.parent = new WrapConverter(Builders.DESTINATION_CLASS_RESOLVER).convert(o).to(PersonBuilderSpec.class);
+			this.parent = new WrapConverter(BuilderSpecs.DESTINATION_CLASS_RESOLVER, BuilderSpecs.IGNORED_TYPES).convert(o).to(PersonBuilderSpec.class);
 		}
 
 		return parent;
@@ -144,7 +144,7 @@ public class PersonBuilderSpec<P> implements Wrappable<Person> {
 
     public PersonBuilderSpec<P> parent$wrap(Person parent) {
     	verifyMutable();
-    	this.parent = new WrapConverter(BuilderSpecs.DESTINATION_CLASS_RESOLVER).convert(parent).to(PersonBuilderSpec.class);
+    	this.parent = new WrapConverter(BuilderSpecs.DESTINATION_CLASS_RESOLVER, BuilderSpecs.IGNORED_TYPES).convert(parent).to(PersonBuilderSpec.class);
         return this;
     }
     
@@ -199,7 +199,7 @@ public class PersonBuilderSpec<P> implements Wrappable<Person> {
 	public List<PersonBuilderSpec<?>> getChildren() {
 		if (this.$$$wrapped != null && WrapHelper.valueNotSet(this.children, List.class)) {
 			Object o = WrapHelper.getValue(this.$$$wrapped, Person.class, "children");
-			this.children = new WrapConverter(Builders.DESTINATION_CLASS_RESOLVER).convert(o).to(List.class);
+			this.children = new WrapConverter(BuilderSpecs.DESTINATION_CLASS_RESOLVER, BuilderSpecs.IGNORED_TYPES).convert(o).to(List.class);
 		}
 
 		return children;
@@ -323,7 +323,7 @@ public class PersonBuilderSpec<P> implements Wrappable<Person> {
 		}
 		if (children != null) {
 			for (Person e : children) {
-				PersonBuilderSpec<?> wrapped = new WrapConverter(BuilderSpecs.DESTINATION_CLASS_RESOLVER).convert(e).to(PersonBuilderSpec.class);
+				PersonBuilderSpec<?> wrapped = new WrapConverter(BuilderSpecs.DESTINATION_CLASS_RESOLVER, BuilderSpecs.IGNORED_TYPES).convert(e).to(PersonBuilderSpec.class);
 				CollectionUtils.addItem(this.children, wrapped);
 			}
 		}
@@ -372,7 +372,7 @@ public class PersonBuilderSpec<P> implements Wrappable<Person> {
 	public List<HobbyBuilderSpec<?>> getHobbies() {
 		if (this.$$$wrapped != null && WrapHelper.valueNotSet(this.hobbies, List.class)) {
 			Object o = WrapHelper.getValue(this.$$$wrapped, Person.class, "hobbies");
-			this.hobbies = new WrapConverter(Builders.DESTINATION_CLASS_RESOLVER).convert(o).to(List.class);
+			this.hobbies = new WrapConverter(BuilderSpecs.DESTINATION_CLASS_RESOLVER, BuilderSpecs.IGNORED_TYPES).convert(o).to(List.class);
 		}
 
 		return hobbies;
@@ -456,7 +456,7 @@ public class PersonBuilderSpec<P> implements Wrappable<Person> {
 		}
 		if (hobbies != null) {
 			for (Hobby e : hobbies) {
-				HobbyBuilderSpec<?> wrapped = new WrapConverter(BuilderSpecs.DESTINATION_CLASS_RESOLVER).convert(e).to(HobbyBuilderSpec.class);
+				HobbyBuilderSpec<?> wrapped = new WrapConverter(BuilderSpecs.DESTINATION_CLASS_RESOLVER, BuilderSpecs.IGNORED_TYPES).convert(e).to(HobbyBuilderSpec.class);
 				CollectionUtils.addItem(this.hobbies, wrapped);
 			}
 		}
@@ -505,7 +505,7 @@ public class PersonBuilderSpec<P> implements Wrappable<Person> {
 	public List<SpeechBuilderSpec<?>> getSpeeches() {
 		if (this.$$$wrapped != null && WrapHelper.valueNotSet(this.speeches, List.class)) {
 			Object o = WrapHelper.getValue(this.$$$wrapped, Person.class, "speeches");
-			this.speeches = new WrapConverter(Builders.DESTINATION_CLASS_RESOLVER).convert(o).to(List.class);
+			this.speeches = new WrapConverter(BuilderSpecs.DESTINATION_CLASS_RESOLVER, BuilderSpecs.IGNORED_TYPES).convert(o).to(List.class);
 		}
 
 		return speeches;
@@ -589,7 +589,7 @@ public class PersonBuilderSpec<P> implements Wrappable<Person> {
 		}
 		if (speeches != null) {
 			for (Speech e : speeches) {
-				SpeechBuilderSpec<?> wrapped = new WrapConverter(BuilderSpecs.DESTINATION_CLASS_RESOLVER).convert(e).to(SpeechBuilderSpec.class);
+				SpeechBuilderSpec<?> wrapped = new WrapConverter(BuilderSpecs.DESTINATION_CLASS_RESOLVER, BuilderSpecs.IGNORED_TYPES).convert(e).to(SpeechBuilderSpec.class);
 				CollectionUtils.addItem(this.speeches, wrapped);
 			}
 		}
@@ -638,7 +638,7 @@ public class PersonBuilderSpec<P> implements Wrappable<Person> {
 	public List<PersonBuilderSpec<?>> getFriends() {
 		if (this.$$$wrapped != null && WrapHelper.valueNotSet(this.friends, List.class)) {
 			Object o = WrapHelper.getValue(this.$$$wrapped, Person.class, "friends");
-			this.friends = new WrapConverter(Builders.DESTINATION_CLASS_RESOLVER).convert(o).to(List.class);
+			this.friends = new WrapConverter(BuilderSpecs.DESTINATION_CLASS_RESOLVER, BuilderSpecs.IGNORED_TYPES).convert(o).to(List.class);
 		}
 
 		return friends;
@@ -762,7 +762,7 @@ public class PersonBuilderSpec<P> implements Wrappable<Person> {
 		}
 		if (friends != null) {
 			for (Person e : friends) {
-				PersonBuilderSpec<?> wrapped = new WrapConverter(BuilderSpecs.DESTINATION_CLASS_RESOLVER).convert(e).to(PersonBuilderSpec.class);
+				PersonBuilderSpec<?> wrapped = new WrapConverter(BuilderSpecs.DESTINATION_CLASS_RESOLVER, BuilderSpecs.IGNORED_TYPES).convert(e).to(PersonBuilderSpec.class);
 				CollectionUtils.addItem(this.friends, wrapped);
 			}
 		}

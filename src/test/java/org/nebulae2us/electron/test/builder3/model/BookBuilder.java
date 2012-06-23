@@ -50,11 +50,11 @@ public class BookBuilder<P> implements Wrappable<Book<? extends Color, ? extends
 	}
 
     public Book<? extends Color, ? extends Paper<? extends Color>, ? extends Recordable<? extends Color>, ? extends List<? extends Paper<? extends Color>>> toBook() {
-    	return new Converter(new DestinationClassResolverByAnnotation(), true).convert(this).to(Book.class);
+    	return new Converter(new DestinationClassResolverByAnnotation(), true, BuilderSpecs.IGNORED_TYPES).convert(this).to(Book.class);
     }
 
     public <C extends Color & Serializable, T extends Paper<C>, R extends Recordable<C>, L extends List<? extends T>> Book<C, T, R, L> toBook(Class<C> C, Class<T> T, Class<R> R, Class<L> L) {
-    	return new Converter(new DestinationClassResolverByAnnotation(), true).convert(this).to(Book.class);
+    	return new Converter(new DestinationClassResolverByAnnotation(), true, BuilderSpecs.IGNORED_TYPES).convert(this).to(Book.class);
     }
 
 
@@ -63,7 +63,7 @@ public class BookBuilder<P> implements Wrappable<Book<? extends Color, ? extends
 	public int getSequence() {
 		if (this.$$$wrapped != null && WrapHelper.valueNotSet(this.sequence, int.class)) {
 			Object o = WrapHelper.getValue(this.$$$wrapped, Book.class, "sequence");
-			this.sequence = new WrapConverter(Builders.DESTINATION_CLASS_RESOLVER).convert(o).to(int.class);
+			this.sequence = new WrapConverter(BuilderSpecs.DESTINATION_CLASS_RESOLVER, BuilderSpecs.IGNORED_TYPES).convert(o).to(int.class);
 		}
 
 		return sequence;
@@ -85,7 +85,7 @@ public class BookBuilder<P> implements Wrappable<Book<? extends Color, ? extends
 	public PaperBuilder<?> getMyPaper() {
 		if (this.$$$wrapped != null && WrapHelper.valueNotSet(this.myPaper, PaperBuilder.class)) {
 			Object o = WrapHelper.getValue(this.$$$wrapped, Book.class, "myPaper");
-			this.myPaper = new WrapConverter(Builders.DESTINATION_CLASS_RESOLVER).convert(o).to(PaperBuilder.class);
+			this.myPaper = new WrapConverter(BuilderSpecs.DESTINATION_CLASS_RESOLVER, BuilderSpecs.IGNORED_TYPES).convert(o).to(PaperBuilder.class);
 		}
 
 		return myPaper;
@@ -104,7 +104,7 @@ public class BookBuilder<P> implements Wrappable<Book<? extends Color, ? extends
 
     public BookBuilder<P> myPaper$wrap(Paper myPaper) {
     	verifyMutable();
-    	this.myPaper = new WrapConverter(Builders.DESTINATION_CLASS_RESOLVER).convert(myPaper).to(PaperBuilder.class);
+    	this.myPaper = new WrapConverter(Builders.DESTINATION_CLASS_RESOLVER, Builders.IGNORED_TYPES).convert(myPaper).to(PaperBuilder.class);
         return this;
     }
     
@@ -152,7 +152,7 @@ public class BookBuilder<P> implements Wrappable<Book<? extends Color, ? extends
 	public RecordableBuilder getMyRecordable() {
 		if (this.$$$wrapped != null && WrapHelper.valueNotSet(this.myRecordable, RecordableBuilder.class)) {
 			Object o = WrapHelper.getValue(this.$$$wrapped, Book.class, "myRecordable");
-			this.myRecordable = new WrapConverter(Builders.DESTINATION_CLASS_RESOLVER).convert(o).to(RecordableBuilder.class);
+			this.myRecordable = new WrapConverter(BuilderSpecs.DESTINATION_CLASS_RESOLVER, BuilderSpecs.IGNORED_TYPES).convert(o).to(RecordableBuilder.class);
 		}
 
 		return myRecordable;
@@ -171,7 +171,7 @@ public class BookBuilder<P> implements Wrappable<Book<? extends Color, ? extends
 
     public BookBuilder<P> myRecordable$wrap(Recordable myRecordable) {
     	verifyMutable();
-    	this.myRecordable = new WrapConverter(Builders.DESTINATION_CLASS_RESOLVER).convert(myRecordable).to(RecordableBuilder.class);
+    	this.myRecordable = new WrapConverter(Builders.DESTINATION_CLASS_RESOLVER, Builders.IGNORED_TYPES).convert(myRecordable).to(RecordableBuilder.class);
         return this;
     }
     
@@ -219,7 +219,7 @@ public class BookBuilder<P> implements Wrappable<Book<? extends Color, ? extends
 	public List<String> getKeywords() {
 		if (this.$$$wrapped != null && WrapHelper.valueNotSet(this.keywords, List.class)) {
 			Object o = WrapHelper.getValue(this.$$$wrapped, Book.class, "keywords");
-			this.keywords = new WrapConverter(Builders.DESTINATION_CLASS_RESOLVER).convert(o).to(List.class);
+			this.keywords = new WrapConverter(BuilderSpecs.DESTINATION_CLASS_RESOLVER, BuilderSpecs.IGNORED_TYPES).convert(o).to(List.class);
 		}
 
 		return keywords;
@@ -255,7 +255,7 @@ public class BookBuilder<P> implements Wrappable<Book<? extends Color, ? extends
 	public List<? extends PaperBuilder<?>> getMyPapers() {
 		if (this.$$$wrapped != null && WrapHelper.valueNotSet(this.myPapers, List.class)) {
 			Object o = WrapHelper.getValue(this.$$$wrapped, Book.class, "myPapers");
-			this.myPapers = new WrapConverter(Builders.DESTINATION_CLASS_RESOLVER).convert(o).to(List.class);
+			this.myPapers = new WrapConverter(BuilderSpecs.DESTINATION_CLASS_RESOLVER, BuilderSpecs.IGNORED_TYPES).convert(o).to(List.class);
 		}
 
 		return myPapers;
@@ -359,7 +359,7 @@ public class BookBuilder<P> implements Wrappable<Book<? extends Color, ? extends
 		}
 		if (myPapers != null) {
 			for (Paper e : myPapers) {
-				PaperBuilder<?> wrapped = new WrapConverter(Builders.DESTINATION_CLASS_RESOLVER).convert(e).to(PaperBuilder.class);
+				PaperBuilder<?> wrapped = new WrapConverter(Builders.DESTINATION_CLASS_RESOLVER, Builders.IGNORED_TYPES).convert(e).to(PaperBuilder.class);
 				CollectionUtils.addItem(this.myPapers, wrapped);
 			}
 		}
@@ -408,7 +408,7 @@ public class BookBuilder<P> implements Wrappable<Book<? extends Color, ? extends
 	public Set<? extends RecordableBuilder> getMyRecordables() {
 		if (this.$$$wrapped != null && WrapHelper.valueNotSet(this.myRecordables, Set.class)) {
 			Object o = WrapHelper.getValue(this.$$$wrapped, Book.class, "myRecordables");
-			this.myRecordables = new WrapConverter(Builders.DESTINATION_CLASS_RESOLVER).convert(o).to(Set.class);
+			this.myRecordables = new WrapConverter(BuilderSpecs.DESTINATION_CLASS_RESOLVER, BuilderSpecs.IGNORED_TYPES).convert(o).to(Set.class);
 		}
 
 		return myRecordables;
@@ -512,7 +512,7 @@ public class BookBuilder<P> implements Wrappable<Book<? extends Color, ? extends
 		}
 		if (myRecordables != null) {
 			for (Recordable e : myRecordables) {
-				RecordableBuilder wrapped = new WrapConverter(Builders.DESTINATION_CLASS_RESOLVER).convert(e).to(RecordableBuilder.class);
+				RecordableBuilder wrapped = new WrapConverter(Builders.DESTINATION_CLASS_RESOLVER, Builders.IGNORED_TYPES).convert(e).to(RecordableBuilder.class);
 				CollectionUtils.addItem(this.myRecordables, wrapped);
 			}
 		}
@@ -561,7 +561,7 @@ public class BookBuilder<P> implements Wrappable<Book<? extends Color, ? extends
 	public Map<? extends PaperBuilder<?>, ? extends ColorBuilder<?>> getPaperColors() {
 		if (this.$$$wrapped != null && WrapHelper.valueNotSet(this.paperColors, Map.class)) {
 			Object o = WrapHelper.getValue(this.$$$wrapped, Book.class, "paperColors");
-			this.paperColors = new WrapConverter(Builders.DESTINATION_CLASS_RESOLVER).convert(o).to(Map.class);
+			this.paperColors = new WrapConverter(BuilderSpecs.DESTINATION_CLASS_RESOLVER, BuilderSpecs.IGNORED_TYPES).convert(o).to(Map.class);
 		}
 
 		return paperColors;

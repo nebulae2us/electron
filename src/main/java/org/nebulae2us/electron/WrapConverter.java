@@ -16,6 +16,7 @@
 package org.nebulae2us.electron;
 
 import java.lang.reflect.Constructor;
+import java.util.List;
 
 /**
  * @author Trung Phan
@@ -23,8 +24,8 @@ import java.lang.reflect.Constructor;
  */
 public class WrapConverter extends Converter {
 
-	public WrapConverter(DestinationClassResolver destinationClassResolver) {
-		super(destinationClassResolver, false);
+	public WrapConverter(DestinationClassResolver destinationClassResolver, List<Class<?>> ignoredTypes) {
+		super(destinationClassResolver, false, ignoredTypes);
 	}
 
 	@Override

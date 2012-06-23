@@ -15,6 +15,8 @@
  */
 package org.nebulae2us.electron.test.convert;
 
+import java.util.Collections;
+
 import org.junit.Test;
 import org.nebulae2us.electron.BuilderRepository;
 import org.nebulae2us.electron.WrapConverter;
@@ -40,7 +42,7 @@ public class WrapConverterTest {
 			.name("Person 1")
 			.toPerson();
 		
-		PersonBuilder<?> personWrap = new WrapConverter(DESTINATION_CLASS_RESOLVER).convert(person).to(PersonBuilder.class);
+		PersonBuilder<?> personWrap = new WrapConverter(DESTINATION_CLASS_RESOLVER, Collections.EMPTY_LIST).convert(person).to(PersonBuilder.class);
 		assertTrue(personWrap.getWrappedObject() == person);
 		assertEquals(person.getName(), personWrap.getName());
 	}
@@ -52,7 +54,7 @@ public class WrapConverterTest {
 			.name("Person 1")
 			.toPerson();
 		
-		StudentBuilder<?> studentWrap = new WrapConverter(DESTINATION_CLASS_RESOLVER).convert(student).to(StudentBuilder.class);
+		StudentBuilder<?> studentWrap = new WrapConverter(DESTINATION_CLASS_RESOLVER, Collections.EMPTY_LIST).convert(student).to(StudentBuilder.class);
 		assertTrue(studentWrap.getWrappedObject() == student);
 		assertEquals(student.getName(), studentWrap.getName());
 		
@@ -73,7 +75,7 @@ public class WrapConverterTest {
 					)
 					.toPerson();
 		
-		PersonBuilder<?> personWrap = new WrapConverter(DESTINATION_CLASS_RESOLVER).convert(person).to(PersonBuilder.class);
+		PersonBuilder<?> personWrap = new WrapConverter(DESTINATION_CLASS_RESOLVER, Collections.EMPTY_LIST).convert(person).to(PersonBuilder.class);
 
 		assertTrue(personWrap.getWrappedObject() == person);
 		assertTrue(personWrap.getSpeeches().get(0).getWrappedObject() == person.getSpeeches().get(0));
