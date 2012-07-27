@@ -26,6 +26,7 @@ import org.nebulae2us.electron.function.DenullifyElement;
 import org.nebulae2us.electron.function.ElementToLowerCase;
 import org.nebulae2us.electron.function.ElementToUpperCase;
 import org.nebulae2us.electron.function.ExtractMatchFromElement;
+import org.nebulae2us.electron.function.RemoveEmptyElement;
 import org.nebulae2us.electron.function.RemoveNullElement;
 import org.nebulae2us.electron.function.FormatElement;
 import org.nebulae2us.electron.function.ReplaceElement;
@@ -708,7 +709,7 @@ public final class ImmutableList<E> extends AbstractImmutableList<E> implements 
     
     public ImmutableList<String> extractMatchFromElement(Pattern pattern, int group) {
     	return toList(new ExtractMatchFromElement<E>(pattern, group));
-    }
+    } 
     
     public ImmutableList<E> denullify(E nullValue) {
     	return toList(new DenullifyElement<E>(nullValue));
@@ -716,6 +717,10 @@ public final class ImmutableList<E> extends AbstractImmutableList<E> implements 
     
     public ImmutableList<E> removeNull() {
     	return toList(new RemoveNullElement<E>());
+    }
+    
+    public ImmutableList<E> removeEmpty() {
+    	return toList(new RemoveEmptyElement<E>());
     }
 
     public String join(String delimiter) {
