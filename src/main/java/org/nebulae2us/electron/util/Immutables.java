@@ -57,8 +57,13 @@ public class Immutables {
 		return (ImmutableList<E>)_emptyList;
 	}
 
-	public static final <E> ImmutableList<?> emptyList() {
+	public static final ImmutableList<?> emptyList() {
 		return _emptyList;
+	}
+	
+	@SuppressWarnings("unchecked")
+	public static final ImmutableList<String> emptyStringList() {
+		return (ImmutableList<String>)_emptyList;
 	}
 
 	private static final ImmutableMap<?, ?> _emptyMap = new ImmutableMap<Object, Object>();

@@ -79,7 +79,7 @@ public class Converter {
 		
 		public <T> T to(Class<T> destClass) {
 			if (this.object == null) {
-				return defaultPrimitiveValue(destClass);
+				return defaultValue(destClass);
 			}
 			
 			return (T)new MirrorImpl(Converter.this, this.object, destinationClassResolver, immutable, ignoredTypes).to(TypeHolder.newInstance(destClass));
@@ -210,7 +210,7 @@ public class Converter {
 		return new ConvertGroupBuilder();
 	}
 
-	private static <T> T defaultPrimitiveValue(Class<T> objectClass) {
+	public static <T> T defaultValue(Class<T> objectClass) {
 		Object result = null;
 		
 		if (objectClass == int.class) {
@@ -241,9 +241,9 @@ public class Converter {
 		return (T)result;
 	}
 	
-	private static <T> T convertBasicType(Class<T> destClass, Object srcObject) {
+	public static <T> T convertToBasicType(Class<T> destClass, Object srcObject) {
 		if (srcObject == null) {
-			return defaultPrimitiveValue(destClass);
+			return defaultValue(destClass);
 		}
 		if (destClass.isInstance(srcObject)) {
 			return (T)srcObject;
@@ -332,7 +332,7 @@ public class Converter {
 		}
 		
 		if (result == null) {
-			result = defaultPrimitiveValue(destClass);
+			result = defaultValue(destClass);
 		}
 		
 		return (T)result;
@@ -459,12 +459,12 @@ public class Converter {
 			Class<?> requestedClass = classHolder.getRawClass();
 			
 			if (SCALAR_TYPES.contains(srcClass) || SCALAR_TYPES.contains(requestedClass)) {
-				return convertBasicType(requestedClass, srcObject);
+				return convertToBasicType(requestedClass, srcObject);
 			}
 			
 			if (srcClass.isEnum() || IMMUTABLE_TYPES.contains(srcClass) || isIgnored(srcClass)) {
 				return requestedClass.isAssignableFrom(srcClass) ? srcObject :
-					requestedClass.isPrimitive() ? defaultPrimitiveValue(requestedClass) :
+					requestedClass.isPrimitive() ? defaultValue(requestedClass) :
 					null;
 			}
 			
@@ -557,7 +557,7 @@ public class Converter {
 			Pair<?, Boolean> pair = this.converter.instantiateDestObject(destClass, srcClass, srcObject, this);
 			Object result = pair.getItem1();
 			if (destClass.isPrimitive()) {
-				return result == null ? defaultPrimitiveValue(destClass) : null;
+				return result == null ? defaultValue(destClass) : null;
 			}
 			this.convertedObjects.put(this.srcObject, result);
 
@@ -572,7 +572,7 @@ public class Converter {
 
 					
 					if (SCALAR_TYPES.contains(field.getType())) {
-						Object value = convertBasicType(friendField.getType(), getValue(field, srcObject));
+						Object value = convertToBasicType(friendField.getType(), getValue(field, srcObject));
 						setValue(friendField, result, value);
 					}
 					else {
@@ -697,7 +697,7 @@ public class Converter {
 			
 			if (srcObject == null) {
 				if (objectClass.isPrimitive()) {
-					return defaultPrimitiveValue(objectClass);
+					return defaultValue(objectClass);
 				}
 				else {
 					return null;
@@ -794,71 +794,71 @@ public class Converter {
 		}
 
 		public String toString(String fieldName) {
-			return convertBasicType(String.class, toObject(fieldName));
+			return convertToBasicType(String.class, toObject(fieldName));
 		}
 
 		public Integer toInteger(String fieldName) {
-			return convertBasicType(Integer.class, toObject(fieldName));
+			return convertToBasicType(Integer.class, toObject(fieldName));
 		}
 		
 		public int toIntValue(String fieldName) {
-			return convertBasicType(int.class, toObject(fieldName));
+			return convertToBasicType(int.class, toObject(fieldName));
 		}
 
 		public Long toLong(String fieldName) {
-			return convertBasicType(Long.class, toObject(fieldName));
+			return convertToBasicType(Long.class, toObject(fieldName));
 		}
 		
 		public long toLongValue(String fieldName) {
-			return convertBasicType(long.class, toObject(fieldName));
+			return convertToBasicType(long.class, toObject(fieldName));
 		}
 
 		public Short toShort(String fieldName) {
-			return convertBasicType(Short.class, toObject(fieldName));
+			return convertToBasicType(Short.class, toObject(fieldName));
 		}
 		
 		public short toShortValue(String fieldName) {
-			return convertBasicType(short.class, toObject(fieldName));
+			return convertToBasicType(short.class, toObject(fieldName));
 		}
 
 		public Byte toByte(String fieldName) {
-			return convertBasicType(Byte.class, toObject(fieldName));
+			return convertToBasicType(Byte.class, toObject(fieldName));
 		}
 		
 		public byte toByteValue(String fieldName) {
-			return convertBasicType(byte.class, toObject(fieldName));
+			return convertToBasicType(byte.class, toObject(fieldName));
 		}
 
 		public Double toDouble(String fieldName) {
-			return convertBasicType(Double.class, toObject(fieldName));
+			return convertToBasicType(Double.class, toObject(fieldName));
 		}
 		
 		public double toDoubleValue(String fieldName) {
-			return convertBasicType(double.class, toObject(fieldName));
+			return convertToBasicType(double.class, toObject(fieldName));
 		}
 
 		public Float toFloat(String fieldName) {
-			return convertBasicType(Float.class, toObject(fieldName));
+			return convertToBasicType(Float.class, toObject(fieldName));
 		}
 		
 		public float toFloatValue(String fieldName) {
-			return convertBasicType(float.class, toObject(fieldName));
+			return convertToBasicType(float.class, toObject(fieldName));
 		}
 
 		public Boolean toBoolean(String fieldName) {
-			return convertBasicType(Boolean.class, toObject(fieldName));
+			return convertToBasicType(Boolean.class, toObject(fieldName));
 		}
 		
 		public boolean toBooleanValue(String fieldName) {
-			return convertBasicType(boolean.class, toObject(fieldName));
+			return convertToBasicType(boolean.class, toObject(fieldName));
 		}
 
 		public Character toCharacter(String fieldName) {
-			return convertBasicType(Character.class, toObject(fieldName));
+			return convertToBasicType(Character.class, toObject(fieldName));
 		}
 		
 		public char toCharValue(String fieldName) {
-			return convertBasicType(char.class, toObject(fieldName));
+			return convertToBasicType(char.class, toObject(fieldName));
 		}
 
 
