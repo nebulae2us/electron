@@ -91,7 +91,8 @@ public class Immutables {
 	 * @return
 	 * @throws UnsupportedOperationException if expected collection type is not supported.
 	 */
-	public static final <E, T extends Collection<E>> T toImmutableCollection(Class<T> expectedCollectionType, Collection<E> collection) {
+	public static final <E, T extends Collection> T toImmutableCollection(
+            Class<T> expectedCollectionType, Collection<E> collection) {
 		if (expectedCollectionType == Collection.class || expectedCollectionType == List.class) {
 			return collection instanceof ImmutableList ? (T)collection : (T)new ImmutableList<E>(collection);
 		}
@@ -137,12 +138,12 @@ public class Immutables {
 	 * @param map
 	 * @return
 	 */
-	public static final <K, V, T extends Map<K, V>> T toImmutableMap(Class<T> expectedMapType, Map<K, V> map) {
+	public static final <K, V, T extends Map> T toImmutableMap(Class<T> expectedMapType, Map<K, V> map) {
 		if (expectedMapType == Map.class) {
 			if (map instanceof ImmutableMapAware) {
 				return (T)((ImmutableMapAware<K, V>)map).getImmutableMap();
 			}
-			
+
 			return (T)new ImmutableMap<K, V>(map);
 		}
 		else if (expectedMapType == HashMap.class) {
@@ -161,7 +162,7 @@ public class Immutables {
 			if (map instanceof ImmutableSortedMapAware) {
 				return (T)((ImmutableSortedMapAware<K, V>)map).getImmutableSortedMap();
 			}
-			
+
 			Comparator<Object> comparator = map instanceof SortedMap ? ((SortedMap)map).comparator() : null;
 			return comparator == null ? (T)new ImmutableSortedMap<K, V>(map) : (T)new ImmutableSortedMap<K, V>(map, comparator);
 		}
