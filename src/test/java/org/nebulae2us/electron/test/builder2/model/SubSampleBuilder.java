@@ -31,13 +31,13 @@ public class SubSampleBuilder<P> extends SampleBuilder<P> {
 	}
 
     public SubSample toSubSample() {
-    	return new Converter(new DestinationClassResolverByAnnotation(), true, BuilderSpecs.IGNORED_TYPES).convert(this).to(SubSample.class);
+    	return new Converter(new DestinationClassResolverByAnnotation(), true, Builders.IGNORED_TYPES).convert(this).to(SubSample.class);
     }
     
 
 	@Override
     public SubSample toSample() {
-    	return new Converter(new DestinationClassResolverByAnnotation(), true, BuilderSpecs.IGNORED_TYPES).convert(this).to(SubSample.class);
+    	return new Converter(new DestinationClassResolverByAnnotation(), true, Builders.IGNORED_TYPES).convert(this).to(SubSample.class);
     }
     
 
@@ -162,7 +162,7 @@ public class SubSampleBuilder<P> extends SampleBuilder<P> {
 
 
 	@Override
-	public SubSampleBuilder<P> blanksMap(Map<Class<BlankBuilder>, BlankBuilder<?>> blanksMap) {
+	public SubSampleBuilder<P> blanksMap(Map<Integer, BlankBuilder<?>> blanksMap) {
 		return (SubSampleBuilder<P>)super.blanksMap(blanksMap);
 	}
 	

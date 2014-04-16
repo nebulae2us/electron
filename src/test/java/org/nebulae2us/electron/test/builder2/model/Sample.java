@@ -48,7 +48,7 @@ public class Sample {
 
 	private final Collection<Blank> blanks;
 	
-	private final NavigableMap<Class<Blank>, Blank> blanksMap;
+	private final NavigableMap<Integer, Blank> blanksMap;
 	
 	private final Map<Blank, Blank> blanks2blanks;
 	
@@ -68,8 +68,8 @@ public class Sample {
 		this.friendClasses = (Map<Class<?>, List<Class<?>>>)mirror.toObject("friendClasses");
 		this.blank = mirror.to(Blank.class, "blank");
 		this.blanks = mirror.toListOf(Blank.class, "blanks");
-		this.blanksMap = new ImmutableSortedMap<Class<Blank>, Blank>(
-				(Map<Class<Blank>, Blank>)(Object)mirror.toMapOf(Class.class, Blank.class, "blanksMap"),
+		this.blanksMap = new ImmutableSortedMap<Integer, Blank>(
+				mirror.toMapOf(Integer.class, Blank.class, "blanksMap"),
 				NaturalComparator.getInstance()
 				);
 		
@@ -121,7 +121,7 @@ public class Sample {
 		return blanks;
 	}
 
-	public NavigableMap<Class<Blank>, Blank> getBlanksMap() {
+	public NavigableMap<Integer, Blank> getBlanksMap() {
 		return blanksMap;
 	}
 

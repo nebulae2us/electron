@@ -162,7 +162,7 @@ public class SubSampleBuilderSpec<P> extends SampleBuilderSpec<P> {
 
 
 	@Override
-	public SubSampleBuilderSpec<P> blanksMap(Map<Class<BlankBuilderSpec>, BlankBuilderSpec<?>> blanksMap) {
+	public SubSampleBuilderSpec<P> blanksMap(Map<Integer, BlankBuilderSpec<?>> blanksMap) {
 		return (SubSampleBuilderSpec<P>)super.blanksMap(blanksMap);
 	}
 	

@@ -15,19 +15,17 @@
  */
 package org.nebulae2us.electron.test.builder2.model;
 
+import org.junit.Test;
+import org.nebulae2us.electron.util.MapBuilder;
+import org.nebulae2us.electron.util.SetBuilder;
+
 import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.junit.Test;
-import org.nebulae2us.electron.util.ImmutableSet;
-import org.nebulae2us.electron.util.MapBuilder;
-import org.nebulae2us.electron.util.SetBuilder;
-
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static org.nebulae2us.electron.test.builder2.model.BuilderSpecs.*;
 
 /**
@@ -103,7 +101,7 @@ public class SpecTest {
 	public void sample_blanksMap() {
 		SampleBuilderSpec<?> sampleBuilder = sample()
 				.blanksMap$map()
-					.key( BlankBuilderSpec.class ).value(blank())
+					.key(2).value(blank())
 				.end();
 		
 		assertEquals(1, sampleBuilder.getBlanksMap().size());
@@ -113,7 +111,7 @@ public class SpecTest {
 	public void subSample_blanksMap() {
 		SubSampleBuilderSpec<?> subSampleBuilder = subSample()
 				.blanksMap$map()
-					.key( BlankBuilderSpec.class ).value(blank())
+					.key(1).value(blank())
 //					.key(BlankBuilderSpec.class).value$begin()
 //						.name("Blank 2")
 //					.end()

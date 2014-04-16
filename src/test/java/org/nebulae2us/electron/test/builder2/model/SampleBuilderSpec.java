@@ -520,9 +520,9 @@ public class SampleBuilderSpec<P> implements Wrappable<Sample> {
     }
 
 
-	private NavigableMap<Class<BlankBuilderSpec>, BlankBuilderSpec<?>> blanksMap;
+	private NavigableMap<Integer, BlankBuilderSpec<?>> blanksMap;
 	
-	public NavigableMap<Class<BlankBuilderSpec>, BlankBuilderSpec<?>> getBlanksMap() {
+	public NavigableMap<Integer, BlankBuilderSpec<?>> getBlanksMap() {
 		if (this.$$$wrapped != null && WrapHelper.valueNotSet(this.blanksMap, NavigableMap.class)) {
 			Object o = WrapHelper.getValue(this.$$$wrapped, Sample.class, "blanksMap");
 			this.blanksMap = new WrapConverter(BuilderSpecs.DESTINATION_CLASS_RESOLVER, BuilderSpecs.IGNORED_TYPES).convert(o).to(NavigableMap.class);
@@ -531,19 +531,19 @@ public class SampleBuilderSpec<P> implements Wrappable<Sample> {
 		return blanksMap;
 	}
 
-	public void setBlanksMap(NavigableMap<Class<BlankBuilderSpec>, BlankBuilderSpec<?>> blanksMap) {
+	public void setBlanksMap(NavigableMap<Integer, BlankBuilderSpec<?>> blanksMap) {
 		verifyMutable();
 		this.blanksMap = blanksMap;
 	}
 
-	public SampleBuilderSpec<P> blanksMap(Map<Class<BlankBuilderSpec>, BlankBuilderSpec<?>> blanksMap) {
+	public SampleBuilderSpec<P> blanksMap(Map<Integer, BlankBuilderSpec<?>> blanksMap) {
 		verifyMutable();
 
 		if (this.blanksMap == null) {
-			this.blanksMap = new TreeMap<Class<BlankBuilderSpec>, BlankBuilderSpec<?>>();
+			this.blanksMap = new TreeMap<Integer, BlankBuilderSpec<?>>();
 		}
 		if (blanksMap != null) {
-			for (Map.Entry<Class<BlankBuilderSpec>, BlankBuilderSpec<?>> e : blanksMap.entrySet()) {
+			for (Map.Entry<Integer, BlankBuilderSpec<?>> e : blanksMap.entrySet()) {
 				CollectionUtils.putItem(this.blanksMap, e.getKey(), e.getValue());
 			}
 		}
@@ -556,9 +556,9 @@ public class SampleBuilderSpec<P> implements Wrappable<Sample> {
 		
 		public class Value$builder {
 
-			private Class<BlankBuilderSpec> key;
+			private Integer key;
 
-			private Value$builder(Class<BlankBuilderSpec> key) {
+			private Value$builder(Integer key) {
 				this.key = key;
 			}
 
@@ -580,7 +580,7 @@ public class SampleBuilderSpec<P> implements Wrappable<Sample> {
 			this.$$$parentBuilder = parentBuilder;
 		}
 		
-		public Value$builder key(Class<BlankBuilderSpec> key) {
+		public Value$builder key(Integer key) {
 			return new Value$builder(key);
 		}
 		
@@ -594,7 +594,7 @@ public class SampleBuilderSpec<P> implements Wrappable<Sample> {
 		verifyMutable();
 
 		if (this.blanksMap == null) {
-			this.blanksMap = new TreeMap<Class<BlankBuilderSpec>, BlankBuilderSpec<?>>();
+			this.blanksMap = new TreeMap<Integer, BlankBuilderSpec<?>>();
 		}
 		return new BlanksMap$builder<SampleBuilderSpec<P>>(this);
 	}	
